@@ -467,6 +467,8 @@ bool isTransportMap(int mapID)
     case 1133:   // Transport218600 - Zandalari Ship (Mogu Island) - (MOP)
     case 1172:   // Transport: Siege of Orgrimmar (Alliance) - (MOP)
     case 1173:   // Transport: Siege of Orgrimmar (Horde) - (MOP)
+    case 1192:   // Transport: Iron_Horde_Gorgrond_Train - (WOD)                                               
+    case 1231:   // Transport: Wavemurder Barge - (WOD)
         return true;
     default: // no transport maps
         return false;
@@ -484,6 +486,7 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
         case 530:    // Outland - (TBC / WOTLK / CATA / MOP)
         case 571:    // Northrend - (WOTLK / CATA / MOP)
         case 870:    // Pandaria - (MOP)
+        case 1116:   // Draenor - (WOD)
             return true;
         default:
             break;
@@ -508,10 +511,21 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
         case 627:   // unused.wdt - (CATA / MOP)
         case 930:	// (UNUSED) Scenario: Alcaz Island - (MOP)
         case 995:	// The Depths [UNUSED] - (MOP)
+        case 1010:  // MistsCTF3
         case 1014:  // (UNUSED) Peak of Serenity Scenario - (MOP)
         case 1028:  // (UNUSED) Scenario: Mogu Ruins - (MOP)
         case 1029:  // (UNUSED) Scenario: Mogu Crypt - (MOP)
         case 1049:  // (UNUSED) Scenario: Black Ox Temple - (MOP)
+        case 1060:  // Level Design Land - Dev Only - (MOP)
+        case 1181:  // PattyMack Test Garrison Bldg Map - (WOD)
+        case 1250:  // Alliance - Garrison - Herb Garden 1 (UNUSED) - (WOD)
+        case 1251:  // Alliance - Garrison - Inn 1 DONT USE - (WOD)
+        case 1264:  // Propland - Dev Only - (WOD)
+        case 1270:  // Development Land 3 - (WOD)
+        case 1310:  // Expansion 5 QA Model Map - (WOD)
+        case 1407:  // GorgrondFinaleScenarioMap(zzzOld) - (WOD)
+        case 1427:  // PattyMack Test Garrison Bld Map2 - (WOD)
+
             return true;
         default:
             if (isTransportMap(mapID))
@@ -540,6 +554,9 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
         case 1010:  // CTF3 - (MOP)
         case 1101:  // DOTA - (MOP)
         case 1105:  // GR - (MOP)
+        case 1166:  // Small Battleground - (WOD)
+        case 1431:  // SparringArenaLevel3Stadium  'The Coliseum' - (WOD)
+
             return true;
         default:
             break;
