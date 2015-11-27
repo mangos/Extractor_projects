@@ -1,0 +1,534 @@
+/**
+ * MaNGOS is a full featured server for World of Warcraft, supporting
+ * the following clients: 1.12.x, 2.4.3, 3.3.5a, 4.3.4a and 5.4.8
+ *
+ * Copyright (C) 2005-2015  MaNGOS project <http://getmangos.eu>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * World of Warcraft, and all World of Warcraft or Warcraft art, images,
+ * and lore are copyrighted by Blizzard Entertainment, Inc.
+ */
+
+#include <stdio.h>
+#include <deque>
+#include <set>
+#include <cstdlib>
+#include "../shared/ExtractorCommon.h"
+
+#ifdef WIN32
+#include <direct.h>
+#else
+#include <sys/stat.h>
+#endif
+
+#include <fcntl.h>
+
+#ifndef WIN32
+#include <unistd.h>
+ /* This isn't the nicest way to do things..
+ * TODO: Fix this with snprintf instead and check that it still works
+ */
+#define sprintf_s sprintf 
+#endif
+
+#if defined( __GNUC__ )
+#define _open   open
+#define _close close
+#ifndef O_BINARY
+#define O_BINARY 0
+#endif
+#else
+#include <io.h>
+#endif
+
+#ifdef O_LARGEFILE
+#define OPEN_FLAGS  (O_RDONLY | O_BINARY | O_LARGEFILE)
+#else
+#define OPEN_FLAGS (O_RDONLY | O_BINARY)
+#endif
+
+/**
+*  This function searches for and opens the WoW exe file, using all known variations on its spelling
+*
+*  @RETURN pFile the pointer to the file, so that it can be worked on
+*/
+FILE* openWoWExe()
+{
+    FILE *pFile;
+    const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" };
+    int iExeSpelling = 3; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK)
+
+    /// loop through all possible file names
+    for (int iFileCount = 0; iFileCount < iExeSpelling; iFileCount++)
+    {
+#ifdef WIN32
+        if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
+            return pFile; ///< successfully located the WoW executable
+#else     
+        if (pFile = fopen(ExeFileName[iFileCount], "rb"))
+            return pFile; ///< successfully located the WoW executable
+#endif
+    }
+
+    return 0; ///< failed to locate WoW executable
+}
+
+/**
+*  This function loads up a binary file (WoW executable), then searches for a specified 
+*  group of hex values in order to locate and return the Build # of the file
+* 
+*  @PARAM sFilename is the filename of the WoW executable to be loaded
+*  @RETURN iBuild the build number of the WoW executable, or 0 if failed
+*/
+int getBuildNumber()
+{
+    int iBuild = -1; ///< build version # of the WoW executable (returned value)
+
+    bool bBuildFound = false;
+
+    /// hex values of the text/bytes we need to search for:
+    /// WoW [Rel
+    int iHexValue_W = 0x57;
+    int iHexValue_o = 0x6F;
+    int iHexValue_space = 0x20;
+    int iHexValue_OpeningBracket = 0x5B; // [ 
+    int iHexValue_R = 0x52;
+    int iHexValue_e = 0x65;
+    int iHexValue_l = 0x6C;
+    
+    /// buffers used for working on the file's bytes
+    unsigned char byteSearchBuffer[1]; ///< used for reading in a single character, ready to be 
+                                       ///< tested for the required text we are searching for: "WoW [Rel"
+    unsigned char jumpBytesBuffer[128]; ///< used for skipping past the bytes from the file's start
+                                        ///< to the base # area, before we start searching for the base #, for faster processing
+    unsigned char jumpBytesBuffer2[12]; ///< used for skipping past the bytes between the text being
+                                        ///< searched for and the Base #, so that we can then get at the Base #
+    unsigned char buildNumber[6]; ///< stored here prior to conversion to an integer
+
+    FILE *pFile;
+    if (!(pFile = openWoWExe()))
+        return 0; ///> faled to locate exe file
+    
+    /// jump over as much of the file as possible, before we start searching for the base #
+    for (int i = 0; i < 3300; i++)
+        fread(jumpBytesBuffer, sizeof(jumpBytesBuffer), 1, pFile);
+
+    /// Search for the build #
+    while (!bBuildFound && fread(byteSearchBuffer, 1, 1, pFile))
+    {
+        /// find W
+        if (byteSearchBuffer[0] == 0x57)
+        {
+            /// is the next byte an o
+            fread(byteSearchBuffer, 1, 1, pFile);
+            if (byteSearchBuffer[0] == iHexValue_o)
+            {
+                /// is the next byte a W
+                fread(byteSearchBuffer, 1, 1, pFile);
+                if (byteSearchBuffer[0] == iHexValue_W)
+                {
+                    /// is the next byte a space
+                    fread(byteSearchBuffer, 1, 1, pFile);
+                    if (byteSearchBuffer[0] == iHexValue_space)
+                    {
+                        /// is the next byte an open square bracket
+                        fread(byteSearchBuffer, 1, 1, pFile);
+                        if (byteSearchBuffer[0] == iHexValue_OpeningBracket)
+                        {
+                            /// is the next byte an R
+                            fread(byteSearchBuffer, 1, 1, pFile);
+                            if (byteSearchBuffer[0] == iHexValue_R)
+                            {
+                                /// is the next byte an e
+                                fread(byteSearchBuffer, 1, 1, pFile);
+                                if (byteSearchBuffer[0] == iHexValue_e)
+                                {
+                                    /// is the next byte an l
+                                    fread(byteSearchBuffer, 1, 1, pFile);
+                                    if (byteSearchBuffer[0] == iHexValue_l)
+                                        bBuildFound = true; ///< we are at the Build # area
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
+
+    if (!bBuildFound)
+    {
+        /// close the file
+        fclose(pFile); ///< housekeping
+        return 0; ///< we reached the end of the file without locating the build #, exit funcion
+    }
+
+    /// grab data leading up to the build #
+    fread(jumpBytesBuffer2, sizeof(jumpBytesBuffer2), 1, pFile);
+
+    /// grab the bytes containing the number
+    fread(buildNumber, sizeof(buildNumber), 1, pFile);
+
+    /// place the build number into a string (easy conversion to int)
+    std::stringstream ss;
+    std::string sbuildNumber;
+    ss << buildNumber[0] << buildNumber[1] << buildNumber[2] << buildNumber[3] << buildNumber[4];
+    ss >> sbuildNumber;
+
+    fclose(pFile); ///< housekeping
+
+    /// convert build number into an int
+    iBuild = atoi(sbuildNumber.c_str());
+
+    return iBuild; ///< build # found
+}
+
+/**
+*  This function looks up the Core Version based in the found build Number
+*
+*  @RETURN iCoreNumber the build number of the WoW executable, or -1 if failed
+*/
+int getCoreNumber()
+{
+    return getCoreNumberFromBuild(getBuildNumber());
+}
+
+/**
+*  This function looks up the Core Version based in the found build Number
+*
+*  @PARAM iBuildNumber is the build number of the WoW executable
+*  @RETURN iCoreNumber the build number of the WoW executable, or -1 if failed
+*/
+int getCoreNumberFromBuild(int iBuildNumber)
+{
+    switch (iBuildNumber)
+    {
+    case 5875:  //CLASSIC
+    case 6005:  //CLASSIC
+    case 6141:  //CLASSIC
+        return CLIENT_CLASSIC;
+        break;
+    case 8606:  //TBC
+        return CLIENT_TBC;
+        break;
+    case 12340: //WOTLK
+        return CLIENT_WOTLK;
+        break;
+    case 15595: //CATA
+        return CLIENT_CATA;
+        break;
+    case 18414: //MOP
+        return CLIENT_MOP;
+        break;
+    case 20726: //WOD
+        return CLIENT_WOD;
+        break;
+    case 20740: //LEGION ALPHA
+        return CLIENT_LEGION;
+        break;        
+        
+    default:
+        return -1;
+        break;
+    }
+}
+
+/**
+*  This function displays the standard mangos banner to the console
+*
+*  @PARAM sTitle is the Title text (directly under the MaNGOS logo)
+*  @PARAM iCoreNumber is the Core Number
+*/
+void showBanner(const std::string& sTitle, int iCoreNumber)
+{
+    printf(
+        "        __  __      _  _  ___  ___  ___      \n"
+        "       |  \\/  |__ _| \\| |/ __|/ _ \\/ __|  \n"
+        "       | |\\/| / _` | .` | (_ | (_) \\__ \\  \n"
+        "       |_|  |_\\__,_|_|\\_|\\___|\\___/|___/ \n"
+        "       %s for ", sTitle);
+
+    switch (iCoreNumber)
+    {
+    case CLIENT_CLASSIC:
+        printf("MaNGOSZero\n");
+        break;
+    case CLIENT_TBC:
+        printf("MaNGOSOne\n");
+        break;
+    case CLIENT_WOTLK:
+        printf("MaNGOSTwo\n");
+        break;
+    case CLIENT_CATA:
+        printf("MaNGOSThree\n");
+        break;
+    case CLIENT_MOP:
+        printf("MaNGOSFour\n");
+        break;
+    case CLIENT_WOD:
+        printf("MaNGOSFive\n");
+        break;
+    case CLIENT_LEGION:
+        printf("MaNGOSSix\n");
+        break;
+    default:
+        printf("Unknown Version\n");
+        break;
+    }
+    printf("  ________________________________________________\n");
+
+}
+
+/**
+*  This function displays the standard mangos help banner to the console
+*/
+void showWebsiteBanner()
+{
+    printf(
+        "  ________________________________________________\n\n"
+        "    For help and support please visit:            \n"
+        "    Website / Forum / Wiki: https://getmangos.eu  \n"
+        "  ________________________________________________\n"
+        );
+}
+
+
+/**
+*  This function returns the .map file 'magic' number based on the core number
+*
+*  @PARAM iCoreNumber is the Core Number
+*/
+char *setMapMagicVersion(int iCoreNumber)
+{
+    switch (iCoreNumber)
+    {
+    case CLIENT_CLASSIC:
+        return "z1.3"; 
+        break;
+    case CLIENT_TBC:
+        return "s1.3";
+        break;
+    case CLIENT_WOTLK:
+        return "v1.3";
+        break;
+    case CLIENT_CATA:
+        return "c1.3";
+        break;
+    case CLIENT_MOP:
+        return "p1.3";
+        break;
+    case CLIENT_WOD:
+        return "w1.3";
+        break;
+    case CLIENT_LEGION:
+        return "l1.3";
+        break;
+    default:
+        return "UNKN";
+        break;
+    }
+}
+
+/**
+*  This function returns the .vmap file 'magic' number based on the core number
+*
+*  @PARAM iCoreNumber is the Core Number
+*/
+char *setVMapMagicVersion(int iCoreNumber)
+{
+    switch (iCoreNumber)
+    {
+    case CLIENT_CLASSIC:
+        return "VMAPz05";
+        break;
+    case CLIENT_TBC:
+        return "VMAPs05";
+        break;
+    case CLIENT_WOTLK:
+        return "VMAP005";
+        break;
+    case CLIENT_CATA:
+        return "VMAPc04";
+        break;
+    case CLIENT_MOP:
+        return "VMAPp04";
+        break;
+    case CLIENT_WOD:
+        return "VMAPw04";
+        break;
+    case CLIENT_LEGION:
+        return "VMAPl04";
+        break;
+    default:
+        return "VMAPUNK";
+        break;
+    }
+}
+
+/**
+* @Create Folders based on the path provided
+*
+* @param sPath
+*/
+void CreateDir(const std::string& sPath)
+{
+#ifdef WIN32
+    _mkdir(sPath.c_str());
+#else
+    mkdir(sPath.c_str(), 0777);
+#endif
+}
+
+/**
+* @Checks whether the Filename in the client exists
+*
+* @param sFileName
+* @return bool
+*/
+bool ClientFileExists(const char* sFileName)
+{
+    int fp = _open(sFileName, OPEN_FLAGS);
+    if (fp != -1)
+    {
+        _close(fp);
+        return true;
+    }
+
+    return false;
+}
+
+/**************************************************************************/
+bool isTransportMap(int mapID)
+{
+    switch (mapID)
+    {
+        // transport maps
+    case 582:    // Transport: Rut'theran to Auberdine
+    case 584:    // Transport: Menethil to Theramore
+    case 586:    // Transport: Exodar to Auberdine
+    case 587:    // Transport: Feathermoon Ferry - (TBC / WOTLK / CATA / MOP)
+    case 588:    // Transport: Menethil to Auberdine - (TBC / WOTLK / CATA / MOP)
+    case 589:    // Transport: Orgrimmar to Grom'Gol - (TBC / WOTLK / CATA / MOP)
+    case 590:    // Transport: Grom'Gol to Undercity - (TBC / WOTLK / CATA / MOP)
+    case 591:    // Transport: Undercity to Orgrimmar - (TBC / WOTLK / CATA / MOP)
+    case 592:    // Transport: Borean Tundra Test - (WOTLK / CATA / MOP)
+    case 593:    // Transport: Booty Bay to Ratchet - (TBC / WOTLK / CATA / MOP)
+    case 594:    // Transport: Howling Fjord Sister Mercy (Quest) - (WOTLK / CATA / MOP)
+    case 596:    // Transport: Naglfar - (WOTLK / CATA / MOP)
+    case 610:    // Transport: Tirisfal to Vengeance Landing - (WOTLK / CATA / MOP)
+    case 612:    // Transport: Menethil to Valgarde - (WOTLK / CATA / MOP)
+    case 613:    // Transport: Orgrimmar to Warsong Hold - (WOTLK / CATA / MOP)
+    case 614:    // Transport: Stormwind to Valiance Keep - (WOTLK / CATA / MOP)
+    case 620:    // Transport: Moa'ki to Unu'pe - (WOTLK / CATA / MOP)
+    case 621:    // Transport: Moa'ki to Kamagua - (WOTLK / CATA / MOP)
+    case 622:    // Transport: Orgrim's Hammer - (WOTLK / CATA / MOP)
+    case 623:    // Transport: The Skybreaker - (WOTLK / CATA / MOP)
+    case 641:    // Transport: Alliance Airship BG - (WOTLK / CATA / MOP)
+    case 642:    // Transport: HordeAirshipBG - (WOTLK / CATA / MOP)
+    case 647:    // Transport: Orgrimmar to Thunder Bluff - (WOTLK / CATA / MOP)
+    case 662:    // Transport: Alliance Vashj'ir Ship - (WOTLK / CATA / MOP)
+    case 672:    // Transport: The Skybreaker (Icecrown Citadel Raid) - (WOTLK / CATA / MOP)
+    case 673:    // Transport: Orgrim's Hammer (Icecrown Citadel Raid) - (WOTLK / CATA / MOP)
+    case 674:    // Transport: Ship to Vashj'ir - (WOTLK / CATA / MOP)
+    case 712:    // Transport: The Skybreaker (IC Dungeon) - (WOTLK / CATA / MOP)
+    case 713:    // Transport: Orgrim's Hammer (IC Dungeon) - (WOTLK / CATA / MOP)
+    case 718:    // Transport: The Mighty Wind (Icecrown Citadel Raid) - (WOTLK / CATA / MOP)
+    case 738:    // Ship to Vashj'ir (Orgrimmar -> Vashj'ir) - (CATA / MOP)
+    case 739:    // Vashj'ir Sub - Horde - (CATA / MOP)
+    case 740:    // Vashj'ir Sub - Alliance - (CATA / MOP)
+    case 741:    // Twilight Highlands Horde Transport - (CATA / MOP)
+    case 742:    // Vashj'ir Sub - Horde - Circling Abyssal Maw - (CATA / MOP)
+    case 743:    // Vashj'ir Sub - Alliance circling Abyssal Maw - (CATA / MOP)
+    case 746:    // Uldum Phase Oasis - (CATA / MOP)
+    case 747:    // Transport: Deepholm Gunship - (CATA / MOP)
+    case 748:    // Transport: Onyxia/Nefarian Elevator - (CATA / MOP)
+    case 749:    // Transport: Gilneas Moving Gunship - (CATA / MOP)
+    case 750:    // Transport: Gilneas Static Gunship - (CATA / MOP)
+    case 762:    // Twilight Highlands Zeppelin 1 - (CATA / MOP)
+    case 763:    // Twilight Highlands Zeppelin 2 - (CATA / MOP)
+    case 765:    // Krazzworks Attack Zeppelin - (CATA / MOP)
+    case 766:    // Transport: Gilneas Moving Gunship 02 - (CATA / MOP)
+    case 767:    // Transport: Gilneas Moving Gunship 03 - (CATA / MOP)
+        return true;
+    default: // no transport maps
+        return false;
+    }
+}
+
+/**************************************************************************/
+bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_skipBattlegrounds)
+{
+    if (m_skipContinents)
+        switch (mapID)
+        {
+        case 0:        // Eastern Kingdoms
+        case 1:        // Kalimdor
+        case 530:    // Outland - (TBC / WOTLK / CATA / MOP)
+        case 571:    // Northrend - (WOTLK / CATA / MOP)
+            return true;
+        default:
+            break;
+        }
+
+    if (m_skipJunkMaps)
+        switch (mapID)
+        {
+        case 13:    // test.wdt
+        case 25:    // ScottTest.wdt
+        case 29:    // Test.wdt
+        case 35:    // StornWind Crypt (Unused Instance)
+        case 37:    // Ashara.wdt (Unused Raid Area)
+        case 42:    // Colin.wdt
+        case 44:    // Monastry.wdt (Unused Old SM)
+        case 169:   // EmeraldDream.wdt (unused, and very large)
+        case 451:   // development.wdt
+        case 573:   // ExteriorTest.wdt - (WOTLK / CATA / MOP)
+        case 597:   // CraigTest.wdt - (WOTLK / CATA / MOP)
+        case 605:   // development_nonweighted.wdt - (WOTLK / CATA / MOP)
+        case 606:   // QA_DVD.wdt - (WOTLK / CATA / MOP)
+        case 627:   // unused.wdt - (CATA / MOP)
+            return true;
+        default:
+            if (isTransportMap(mapID))
+            {
+                return true;
+            }
+            break;
+        }
+
+    if (m_skipBattlegrounds)
+        switch (mapID)
+        {
+        case 30:    // AV
+        case 37:    // AC
+        case 489:   // WSG
+        case 529:   // AB
+        case 566:   // EotS - (TBC / WOTLK / CATA / MOP)
+        case 607:   // SotA - (WOTLK / CATA / MOP)
+        case 628:   // IoC - (WOTLK / CATA / MOP)
+        case 726:   // TP - (CATA / MOP)
+        case 727:   // SM - (CATA / MOP)
+        case 728:   // BfG - (CATA / MOP)
+        case 761:   // BfG2 - (CATA / MOP)
+        case 968:   // EotS2 - (CATA / MOP)
+            return true;
+        default:
+            break;
+        }
+
+    return false;
+}
+
