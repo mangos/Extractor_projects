@@ -462,6 +462,11 @@ bool isTransportMap(int mapID)
     case 765:    // Krazzworks Attack Zeppelin - (CATA / MOP)
     case 766:    // Transport: Gilneas Moving Gunship 02 - (CATA / MOP)
     case 767:    // Transport: Gilneas Moving Gunship 03 - (CATA / MOP)
+    case 1113:   // Transport: DarkmoonCarousel - (MOP)
+    case 1132:   // Transport218599 - The Skybag (Brawl'gar Arena) - (MOP)
+    case 1133:   // Transport218600 - Zandalari Ship (Mogu Island) - (MOP)
+    case 1172:   // Transport: Siege of Orgrimmar (Alliance) - (MOP)
+    case 1173:   // Transport: Siege of Orgrimmar (Horde) - (MOP)
         return true;
     default: // no transport maps
         return false;
@@ -474,10 +479,11 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
     if (m_skipContinents)
         switch (mapID)
         {
-        case 0:        // Eastern Kingdoms
-        case 1:        // Kalimdor
+        case 0:      // Eastern Kingdoms - (CLASSIC / TBC / WOTLK / CATA / MOP)
+        case 1:      // Kalimdor - (CLASSIC - TBC / WOTLK / CATA / MOP)
         case 530:    // Outland - (TBC / WOTLK / CATA / MOP)
         case 571:    // Northrend - (WOTLK / CATA / MOP)
+        case 870:    // Pandaria - (MOP)
             return true;
         default:
             break;
@@ -500,6 +506,12 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
         case 605:   // development_nonweighted.wdt - (WOTLK / CATA / MOP)
         case 606:   // QA_DVD.wdt - (WOTLK / CATA / MOP)
         case 627:   // unused.wdt - (CATA / MOP)
+        case 930:	// (UNUSED) Scenario: Alcaz Island - (MOP)
+        case 995:	// The Depths [UNUSED] - (MOP)
+        case 1014:  // (UNUSED) Peak of Serenity Scenario - (MOP)
+        case 1028:  // (UNUSED) Scenario: Mogu Ruins - (MOP)
+        case 1029:  // (UNUSED) Scenario: Mogu Crypt - (MOP)
+        case 1049:  // (UNUSED) Scenario: Black Ox Temple - (MOP)
             return true;
         default:
             if (isTransportMap(mapID))
@@ -524,6 +536,10 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
         case 728:   // BfG - (CATA / MOP)
         case 761:   // BfG2 - (CATA / MOP)
         case 968:   // EotS2 - (CATA / MOP)
+        case 998:	// VOP - (MOP)
+        case 1010:  // CTF3 - (MOP)
+        case 1101:  // DOTA - (MOP)
+        case 1105:  // GR - (MOP)
             return true;
         default:
             break;
