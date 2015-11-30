@@ -259,7 +259,7 @@ void showBanner(const std::string& sTitle, int iCoreNumber)
         "       |  \\/  |__ _| \\| |/ __|/ _ \\/ __|  \n"
         "       | |\\/| / _` | .` | (_ | (_) \\__ \\  \n"
         "       |_|  |_\\__,_|_|\\_|\\___|\\___/|___/ \n"
-        "       %s for ", sTitle);
+        "       %s for ", sTitle.c_str());
 
     switch (iCoreNumber)
     {
