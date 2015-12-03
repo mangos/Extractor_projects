@@ -52,7 +52,7 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
 
     _unload();
 
-    bool bBoundingTriangles;
+    bool bBoundingTriangles = false;
     uint32 uofsBoundingVertices = 0;
     uint32 uofsBoundingTriangles = 0;
     uint32 unBoundingVertices = 0;
