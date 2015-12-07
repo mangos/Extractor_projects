@@ -87,7 +87,7 @@ int MAP_LIQUID_TYPE_WATER    = 0x08;
 
 #define LANG_COUNT 12
 
-static char* CONF_mpq_list[] = /**< List MPQs to extract from */
+static const char* CONF_mpq_list[] = /**< List MPQs to extract from */
 {
     "common.MPQ",       // TBC / Wotlk
     "common-2.MPQ",     // TBC / Wotlk
@@ -320,11 +320,11 @@ void ReadLiquidTypeTableDBC()
 //
 
 // Map file format data
-static char const* MAP_MAGIC         = "MAPS"; /**< TODO */
-static char *MAP_VERSION_MAGIC = "0000"; /**< TODO */
-static char const* MAP_AREA_MAGIC    = "AREA"; /**< TODO */
-static char const* MAP_HEIGHT_MAGIC  = "MHGT"; /**< TODO */
-static char const* MAP_LIQUID_MAGIC  = "MLIQ"; /**< TODO */
+static char const MAP_MAGIC[]           = "MAPS"; /**< TODO */
+static char       MAP_VERSION_MAGIC[32] = "0000"; /**< TODO */
+static char const MAP_AREA_MAGIC[]      = "AREA"; /**< TODO */
+static char const MAP_HEIGHT_MAGIC[]    = "MHGT"; /**< TODO */
+static char const MAP_LIQUID_MAGIC[]    = "MLIQ"; /**< TODO */
 
 /**
  * @brief
@@ -1181,7 +1181,7 @@ int main(int argc, char** argv)
     iCoreNumber = getCoreNumberFromBuild(thisBuild);
     showBanner("DBC Extractor & Map Generator", iCoreNumber);
 
-    MAP_VERSION_MAGIC = setMapMagicVersion(iCoreNumber);
+    setMapMagicVersion(iCoreNumber, MAP_VERSION_MAGIC);
 
     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
     {

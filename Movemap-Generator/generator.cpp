@@ -28,7 +28,7 @@
 
 using namespace MMAP;
 
-static char const* MAP_VERSION_MAGIC = "x1.3"; /**< TODO */
+static char MAP_VERSION_MAGIC[32] = "0000"; /**< TODO */
 
 
 bool checkDirectories(bool debugOutput)
@@ -73,6 +73,7 @@ void printUsage(char* prg)
     printf(" Usage: %s [OPTION]\n\n", prg);
     printf(" Generate movement maps from extracted client maps.\n");
     printf("   -h, --help                        show the usage\n");
+    printf("   --threads [#]                     number of worker threads (default 3).\n");
     printf("   --maxAngle [#]                    max walkable inclination angle.\n");
     printf("   --tile [#,#]                      build the specified tile.\n");
     printf("   --skipLiquid [true|false]         skip liquid data for maps.\n");
@@ -108,6 +109,7 @@ bool handleArgs(int argc, char** argv,
                 bool& debugOutput,
                 bool& silent,
                 bool& bigBaseUnit,
+                int& num_threads,
                 char*& offMeshInputPath)
 {
     char* param = NULL;
@@ -124,6 +126,18 @@ bool handleArgs(int argc, char** argv,
                 { maxAngle = maxangle; }
             else
                 { printf("invalid option for '--maxAngle', using default\n"); }
+        }
+        else if (strcmp(argv[i], "--threads") == 0)
+        {
+            param = argv[++i];
+            if (!param)
+                { return false; }
+
+            int nThreads = atoi(param);
+            if (nThreads > 0)
+                { num_threads = nThreads; }
+            else
+                { printf("invalid option for '--threads', using default (3)\n"); }
         }
         else if (strcmp(argv[i], "--tile") == 0)
         {
@@ -270,7 +284,7 @@ int main(int argc, char** argv)
     int thisBuild = getBuildNumber();
     int iCoreNumber = getCoreNumberFromBuild(thisBuild);
     showBanner("Movement Map Generator", iCoreNumber);
-    MAP_VERSION_MAGIC = setMapMagicVersion(iCoreNumber);
+    setMapMagicVersion(iCoreNumber, MAP_VERSION_MAGIC);
     showWebsiteBanner();
 
     int mapnum = -1;
@@ -283,12 +297,13 @@ int main(int argc, char** argv)
          debugOutput = false,
          silent = false,
          bigBaseUnit = false;
+    int num_threads = 3;
     char* offMeshInputPath = NULL;
 
     bool validParam = handleArgs(argc, argv, mapnum,
                                  tileX, tileY, maxAngle,
                                  skipLiquid, skipContinents, skipJunkMaps, skipBattlegrounds,
-                                 debugOutput, silent, bigBaseUnit, offMeshInputPath);
+                                 debugOutput, silent, bigBaseUnit, num_threads, offMeshInputPath);
 
     if (!validParam)
         { return silent ? -1 : finish(" You have specified invalid parameters (use -? for more help)", -1); }
@@ -310,6 +325,14 @@ int main(int argc, char** argv)
 
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
+
+    if (num_threads > 1 && builder.activate(num_threads)== -1)
+        {
+            if (!silent)
+                { printf("Thread initialization was not ok. Revert to single-threaded build"); }
+
+            builder.activate(1);
+        }
 
     if (tileX > -1 && tileY > -1 && mapnum >= 0)
         { builder.buildSingleTile(mapnum, tileX, tileY, MAP_VERSION_MAGIC); }

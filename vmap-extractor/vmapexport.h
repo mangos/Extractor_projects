@@ -45,7 +45,7 @@ enum ModelFlags
     MOD_HAS_BOUND = 1 << 2
 };
 
-extern const char* szWorkDirWmo; /**< TODO */
+extern char const szWorkDirWmo[]; /**< TODO */
 //extern const char* szRawVMAPMagic; /**< vmap magic string for extracted raw vmap data */
 
 /**

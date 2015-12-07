@@ -37,6 +37,7 @@
 
 #include "IVMapManager.h"
 #include "WorldModel.h"
+#include "MapBuilderTask.h"
 
 using namespace std;
 using namespace VMAP;
@@ -112,6 +113,13 @@ namespace MMAP
              *
              */
             ~MapBuilder();
+
+            /**
+             * @brief initiates multi-threaded build
+             *
+             * @param numThreads
+             */
+            int activate(int num_threads);
 
             /**
              * @brief builds all mmap tiles for the specified map id (ignores skip settings)
@@ -232,6 +240,9 @@ namespace MMAP
 
             float m_maxWalkableAngle; /**< TODO */
             bool m_bigBaseUnit; /**< TODO */
+
+            int m_numThreads;
+            MapBuilderTask m_builderTask;
 
             rcContext* m_rcContext; /**< build performance - not really used for now */
     };

@@ -22,35 +22,41 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <sstream>
+#ifndef _MAP_BUILDER_TASK_H_INCLUDED
+#define _MAP_BUILDER_TASK_H_INCLUDED
 
-FILE* openWoWExe();
-int getBuildNumber();
-int getCoreNumber();
-int getCoreNumberFromBuild(int iBuildNumber);
-void showBanner(const std::string& title, int iCoreNumber);
-void showWebsiteBanner();
-void setMapMagicVersion(int iCoreNumber, char* magic);
-void setVMapMagicVersion(int iCoreNumber, char* magic);
-void CreateDir(const std::string& sPath);
-bool ClientFileExists(const char* sFileName);
-bool isTransportMap(int mapID);
-bool shouldSkipMap(int mapID, bool m_skipContinents, bool m_skipJunkMaps, bool m_skipBattlegrounds);
+#include <ace/Thread_Mutex.h>
+#include <ace/Condition_Thread_Mutex.h>
 
+#include "DelayExecutor.h"
 
-static const char *langs[12] = { "enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
-
-/// Enumerated Core Numbers
-enum CoreNumber
+namespace MMAP
 {
-    CLIENT_CLASSIC = 0,
-    CLIENT_TBC = 1,
-    CLIENT_WOTLK = 2,
-    CLIENT_CATA = 3,
-    CLIENT_MOP = 4,
-    CLIENT_WOD = 5,
-    CLIENT_LEGION = 6
-};
+    class MapBuilder;
+
+    class MapBuilderTask
+    {
+        public:
+            MapBuilderTask();
+            virtual ~MapBuilderTask();
+
+            int schedule_build(MapBuilder& mb, ACE_UINT32 mapId, char const* MAGIC);
+            void build_finished();
+
+            int wait();
+
+            int activate(int num_threads);
+
+            int deactivate();
+
+            bool activated();
+
+        private:
+            DelayExecutor m_executor;
+            ACE_Thread_Mutex m_mutex;
+            ACE_Condition_Thread_Mutex m_condition;
+            size_t pending_requests;
+
+    };
+}
+#endif //_MAP_BUILDER_TASK_H_INCLUDED

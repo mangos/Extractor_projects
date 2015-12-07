@@ -82,8 +82,9 @@ bool preciseVectorData = true;
 // Constants
 
 //static const char * szWorkDirMaps = ".\\Maps";
-const char* szWorkDirWmo = "./Buildings";
-char* szRawVMAPMagic = "VMAP000";
+char const szWorkDirWmo[]   = "./Buildings";
+char       szRawVMAPMagic[] = "VMAP000";
+
 // Local testing functions
 
 bool FileExists(const char* file)
@@ -171,7 +172,7 @@ void ReadLiquidTypeTableDBC()
     printf(" Success! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
 }
 
-void ParsMapFiles(int iCoreNumber, const void *szRawVMAPMagic)
+void ParsMapFiles(int iCoreNumber, char const *szRawVMAPMagic)
 {
     char fn[512];
     //char id_filename[64];
@@ -453,7 +454,7 @@ int main(int argc, char** argv)
     int iCoreNumber = getCoreNumberFromBuild(thisBuild);
 
     showBanner("Vertical Map Asset Extractor", iCoreNumber);
-    szRawVMAPMagic = setVMapMagicVersion(iCoreNumber);
+    setVMapMagicVersion(iCoreNumber, szRawVMAPMagic);
     showWebsiteBanner();
 
     bool success = true;

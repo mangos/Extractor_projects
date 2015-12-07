@@ -47,7 +47,8 @@ namespace MMAP
         m_maxWalkableAngle(maxWalkableAngle),
         m_bigBaseUnit(bigBaseUnit),
         m_rcContext(NULL),
-        m_offMeshFilePath(offMeshFilePath)
+        m_offMeshFilePath(offMeshFilePath),
+        m_numThreads(1)
     {
         m_terrainBuilder = new TerrainBuilder(skipLiquid);
 
@@ -67,6 +68,17 @@ namespace MMAP
 
         delete m_terrainBuilder;
         delete m_rcContext;
+    }
+
+    /**************************************************************************/
+    int MapBuilder::activate(int num_threads)
+    {
+        m_numThreads = num_threads;
+
+        if (m_numThreads > 1)
+            return m_builderTask.activate(num_threads);
+
+        return 0;
     }
 
     /**************************************************************************/
@@ -154,7 +166,12 @@ namespace MMAP
         {
             uint32 mapID = (*it).first;
             if (!shouldSkipMap(mapID,m_skipContinents,m_skipJunkMaps,m_skipBattlegrounds))
-                { buildMap(mapID, MAP_VERSION_MAGIC); }
+                {
+                    if (m_numThreads > 1 && m_builderTask.activated())
+                        { m_builderTask.schedule_build(*this, mapID, MAP_VERSION_MAGIC); }
+                    else
+                        { buildMap(mapID, MAP_VERSION_MAGIC); }
+                }
         }
     }
 
