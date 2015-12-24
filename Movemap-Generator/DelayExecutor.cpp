@@ -28,11 +28,6 @@
 
 #include "DelayExecutor.h"
 
-DelayExecutor* DelayExecutor::instance()
-{
-    return ACE_Singleton<DelayExecutor, ACE_Thread_Mutex>::instance();
-}
-
 DelayExecutor::DelayExecutor()
     : activated_(false)
 {

@@ -137,7 +137,7 @@ bool handleArgs(int argc, char** argv,
             if (nThreads > 0)
                 { num_threads = nThreads; }
             else
-                { printf("invalid option for '--threads', using default (3)\n"); }
+                { printf("invalid option for '--threads', using default (0)\n"); }
         }
         else if (strcmp(argv[i], "--tile") == 0)
         {
@@ -297,7 +297,7 @@ int main(int argc, char** argv)
          debugOutput = false,
          silent = false,
          bigBaseUnit = false;
-    int num_threads = 3;
+    int num_threads = 0;
     char* offMeshInputPath = NULL;
 
     bool validParam = handleArgs(argc, argv, mapnum,
@@ -326,12 +326,10 @@ int main(int argc, char** argv)
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
-    if (num_threads > 1 && builder.activate(num_threads)== -1)
+    if (num_threads > 0 && builder.activate(num_threads)== -1)
         {
             if (!silent)
                 { printf("Thread initialization was not ok. Revert to single-threaded build"); }
-
-            builder.activate(1);
         }
 
     if (tileX > -1 && tileY > -1 && mapnum >= 0)
@@ -340,6 +338,9 @@ int main(int argc, char** argv)
         { builder.buildMap(uint32(mapnum), MAP_VERSION_MAGIC); }
     else
         { builder.buildAllMaps(MAP_VERSION_MAGIC); }
+
+    if (num_threads > 1 && builder.activated())
+        builder.wait();
 
     return silent ? 1 : finish(" Movemap build is complete!", 1);
 }

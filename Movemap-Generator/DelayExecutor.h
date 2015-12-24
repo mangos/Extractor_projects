@@ -36,23 +36,15 @@ class DelayExecutor : protected ACE_Task_Base
         DelayExecutor();
         virtual ~DelayExecutor();
 
-        static DelayExecutor* instance();
-
         int execute(ACE_Method_Request* new_req);
-
         int activate(int num_threads = 1);
-
         int deactivate();
-
         bool activated();
-
         virtual int svc();
 
     private:
-
         ACE_Activation_Queue queue_;
         bool activated_;
-
         void activated(bool s);
 };
 
