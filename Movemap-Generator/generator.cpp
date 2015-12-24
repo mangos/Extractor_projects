@@ -73,7 +73,7 @@ void printUsage(char* prg)
     printf(" Usage: %s [OPTION]\n\n", prg);
     printf(" Generate movement maps from extracted client maps.\n");
     printf("   -h, --help                        show the usage\n");
-    printf("   --threads [#]                     number of worker threads (default 3).\n");
+    printf("   --threads [#]                     number of worker threads (default 0).\n");
     printf("   --maxAngle [#]                    max walkable inclination angle.\n");
     printf("   --tile [#,#]                      build the specified tile.\n");
     printf("   --skipLiquid [true|false]         skip liquid data for maps.\n");
@@ -326,7 +326,7 @@ int main(int argc, char** argv)
     MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
-    if (num_threads > 0 && builder.activate(num_threads)== -1)
+    if (num_threads && builder.activate(num_threads)== -1)
         {
             if (!silent)
                 { printf("Thread initialization was not ok. Revert to single-threaded build"); }
@@ -339,7 +339,7 @@ int main(int argc, char** argv)
     else
         { builder.buildAllMaps(MAP_VERSION_MAGIC); }
 
-    if (num_threads > 1 && builder.activated())
+    if (num_threads && builder.activated())
         builder.wait();
 
     return silent ? 1 : finish(" Movemap build is complete!", 1);

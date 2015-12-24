@@ -247,7 +247,7 @@ namespace MMAP
             uint32 mapID = (*it).first;
             if (!shouldSkipMap(mapID,m_skipContinents,m_skipJunkMaps,m_skipBattlegrounds))
                 {
-                    if (m_numThreads > 1 && activated())
+                    if (m_numThreads && activated())
                         { schedule_build(mapID, MAP_VERSION_MAGIC); }
                     else
                         { buildMap(mapID, MAP_VERSION_MAGIC); }
