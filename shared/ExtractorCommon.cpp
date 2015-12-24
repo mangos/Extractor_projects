@@ -78,7 +78,7 @@ FILE* openWoWExe()
         if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
             return pFile; ///< successfully located the WoW executable
 #else     
-        if (pFile = fopen(ExeFileName[iFileCount], "rb"))
+        if ((pFile = fopen(ExeFileName[iFileCount], "rb")))
             return pFile; ///< successfully located the WoW executable
 #endif
     }
@@ -311,33 +311,33 @@ void showWebsiteBanner()
 *
 *  @PARAM iCoreNumber is the Core Number
 */
-char *setMapMagicVersion(int iCoreNumber)
+void setMapMagicVersion(int iCoreNumber, char* magic)
 {
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        return "z1.3"; 
+        strcpy(magic,"z1.3"); 
         break;
     case CLIENT_TBC:
-        return "s1.3";
+        strcpy(magic,"s1.3");
         break;
     case CLIENT_WOTLK:
-        return "v1.3";
+        strcpy(magic,"v1.3");
         break;
     case CLIENT_CATA:
-        return "c1.3";
+        strcpy(magic,"c1.3");
         break;
     case CLIENT_MOP:
-        return "p1.3";
+        strcpy(magic,"p1.3");
         break;
     case CLIENT_WOD:
-        return "w1.3";
+        strcpy(magic,"w1.3");
         break;
     case CLIENT_LEGION:
-        return "l1.3";
+        strcpy(magic,"l1.3");
         break;
     default:
-        return "UNKN";
+        strcpy(magic,"UNKN");
         break;
     }
 }
@@ -347,33 +347,33 @@ char *setMapMagicVersion(int iCoreNumber)
 *
 *  @PARAM iCoreNumber is the Core Number
 */
-char *setVMapMagicVersion(int iCoreNumber)
+void setVMapMagicVersion(int iCoreNumber, char* magic)
 {
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        return "VMAPz05";
+        strcpy(magic,"VMAPz05");
         break;
     case CLIENT_TBC:
-        return "VMAPs05";
+        strcpy(magic,"VMAPs05");
         break;
     case CLIENT_WOTLK:
-        return "VMAP005";
+        strcpy(magic,"VMAP005");
         break;
     case CLIENT_CATA:
-        return "VMAPc04";
+        strcpy(magic,"VMAPc04");
         break;
     case CLIENT_MOP:
-        return "VMAPp04";
+        strcpy(magic,"VMAPp04");
         break;
     case CLIENT_WOD:
-        return "VMAPw04";
+        strcpy(magic,"VMAPw04");
         break;
     case CLIENT_LEGION:
-        return "VMAPl04";
+        strcpy(magic,"VMAPl04");
         break;
     default:
-        return "VMAPUNK";
+        strcpy(magic,"VMAPUNK");
         break;
     }
 }

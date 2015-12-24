@@ -36,6 +36,29 @@ using namespace VMAP;
 
 namespace MMAP
 {
+    class MapBuilderRequest : public ACE_Method_Request
+    {
+        private:
+
+            MapBuilder&      m_builder;
+            ACE_UINT32       m_mapId;
+            char const*      m_magic;
+
+        public:
+
+            MapBuilderRequest(ACE_UINT32 mapID, MapBuilder& mb, char const* MAGIC)
+                : m_builder(mb), m_mapId(mapID), m_magic(MAGIC)
+            {
+            }
+
+            virtual int call()
+            {
+                m_builder.buildMap(m_mapId, m_magic);
+                m_builder.build_finished();
+                return 0;
+            }
+    };
+
     MapBuilder::MapBuilder(float maxWalkableAngle, bool skipLiquid,
                            bool skipContinents, bool skipJunkMaps, bool skipBattlegrounds,
                            bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath) :
@@ -47,7 +70,8 @@ namespace MMAP
         m_maxWalkableAngle(maxWalkableAngle),
         m_bigBaseUnit(bigBaseUnit),
         m_rcContext(NULL),
-        m_offMeshFilePath(offMeshFilePath)
+        m_offMeshFilePath(offMeshFilePath),
+        m_numThreads(0), m_executor(), m_mutex(), m_condition(m_mutex), pending_requests(0)
     {
         m_terrainBuilder = new TerrainBuilder(skipLiquid);
 
@@ -59,6 +83,8 @@ namespace MMAP
     /**************************************************************************/
     MapBuilder::~MapBuilder()
     {
+        deactivate();
+
         for (TileList::iterator it = m_tiles.begin(); it != m_tiles.end(); ++it)
         {
             (*it).second->clear();
@@ -67,6 +93,72 @@ namespace MMAP
 
         delete m_terrainBuilder;
         delete m_rcContext;
+    }
+
+    /**************************************************************************/
+    int MapBuilder::activate(int num_threads)
+    {
+        m_numThreads = num_threads;
+        return m_executor.activate(num_threads);
+    }
+
+    /**************************************************************************/
+    int MapBuilder::deactivate()
+    {
+        wait();
+
+        return m_executor.deactivate();
+    }
+
+    /**************************************************************************/
+    int MapBuilder::wait()
+    {
+        ACE_GUARD_RETURN(ACE_Thread_Mutex, guard, m_mutex, -1);
+
+        while (pending_requests > 0)
+            m_condition.wait();
+
+        return 0;
+    }
+
+    /**************************************************************************/
+    int MapBuilder::schedule_build(ACE_UINT32 mapID, char const* magic)
+    {
+        ACE_GUARD_RETURN(ACE_Thread_Mutex, guard, m_mutex, -1);
+
+        ++pending_requests;
+
+        if (m_executor.execute(new MapBuilderRequest(mapID, *this, magic)) == -1)
+        {
+            ACE_DEBUG((LM_ERROR, ACE_TEXT("(%t) \n"), ACE_TEXT("Failed to schedule map build")));
+
+            --pending_requests;
+            return -1;
+        }
+
+        return 0;
+    }
+
+    /**************************************************************************/
+    bool MapBuilder::activated()
+    {
+        return m_executor.activated();
+    }
+
+    /**************************************************************************/
+    void MapBuilder::build_finished()
+    {
+        ACE_GUARD(ACE_Thread_Mutex, guard, m_mutex);
+
+        if (pending_requests == 0)
+        {
+            ACE_ERROR((LM_ERROR, ACE_TEXT("(%t)\n"), ACE_TEXT("MapBuilder::build_finished BUG, report to developers")));
+            return;
+        }
+
+        --pending_requests;
+
+        m_condition.broadcast();
     }
 
     /**************************************************************************/
@@ -154,7 +246,12 @@ namespace MMAP
         {
             uint32 mapID = (*it).first;
             if (!shouldSkipMap(mapID,m_skipContinents,m_skipJunkMaps,m_skipBattlegrounds))
-                { buildMap(mapID, MAP_VERSION_MAGIC); }
+                {
+                    if (m_numThreads && activated())
+                        { schedule_build(mapID, MAP_VERSION_MAGIC); }
+                    else
+                        { buildMap(mapID, MAP_VERSION_MAGIC); }
+                }
         }
     }
 
@@ -265,7 +362,7 @@ namespace MMAP
 
         dtFreeNavMesh(navMesh);
 
-        printf(" Complete!                               \n\n");
+        printf(" Map %03u complete!                               \n\n", mapID);
     }
 
     /**************************************************************************/
@@ -606,7 +703,7 @@ namespace MMAP
 
         delete [] tiles;
 
-//#if defined (CATA)
+#if defined (CATA)
         // remove padding for extraction
         for (int i = 0; i < iv.polyMesh->nverts; ++i)
         {
@@ -614,7 +711,7 @@ namespace MMAP
             v[0] -= (unsigned short)config.borderSize;
             v[2] -= (unsigned short)config.borderSize;
         }
-//#endif
+#endif
         // set polygons as walkable
         // TODO: special flags for DYNAMIC polygons, ie surfaces that can be turned on and off
         for (int i = 0; i < iv.polyMesh->npolys; ++i)

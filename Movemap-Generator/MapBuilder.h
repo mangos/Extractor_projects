@@ -37,6 +37,9 @@
 
 #include "IVMapManager.h"
 #include "WorldModel.h"
+#include <ace/Thread_Mutex.h>
+#include <ace/Condition_Thread_Mutex.h>
+#include "DelayExecutor.h"
 
 using namespace std;
 using namespace VMAP;
@@ -112,6 +115,41 @@ namespace MMAP
              *
              */
             ~MapBuilder();
+
+            /**
+             * @brief initiates multi-threaded build
+             *
+             * @param numThreads
+             * @return -1 on error
+             */
+            int activate(int num_threads);
+
+            /**
+             * @brief waits the completion of all threads
+             *
+             * @return 0 on finish, blocks otherwise
+             */
+            int wait();
+
+            /**
+             * @brief deactivates the thread pool manager
+             *
+             * @return int
+             */
+            int deactivate();
+
+            /**
+             * @brief gets the status of thread pool manager
+             *
+             * @return bool
+             */
+            bool activated();
+
+            /**
+             * @brief signals the completion of map tiles building 
+             *
+             */
+            void build_finished();
 
             /**
              * @brief builds all mmap tiles for the specified map id (ignores skip settings)
@@ -220,6 +258,16 @@ namespace MMAP
              */
             bool shouldSkipTile(int mapID, int tileX, int tileY);
 
+            /**
+             * @brief schedules an async map build 
+             *
+             * @param mapID
+             * @param mmap version
+             * @return -1 on error
+             */
+            int schedule_build(ACE_UINT32 mapId, char const* MAGIC);
+
+
             TerrainBuilder* m_terrainBuilder; /**< TODO */
             TileList m_tiles; /**< TODO */
 
@@ -232,6 +280,12 @@ namespace MMAP
 
             float m_maxWalkableAngle; /**< TODO */
             bool m_bigBaseUnit; /**< TODO */
+
+            int m_numThreads;
+            DelayExecutor m_executor;
+            ACE_Thread_Mutex m_mutex;
+            ACE_Condition_Thread_Mutex m_condition;
+            size_t pending_requests;
 
             rcContext* m_rcContext; /**< build performance - not really used for now */
     };

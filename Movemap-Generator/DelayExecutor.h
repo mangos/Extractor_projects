@@ -22,35 +22,30 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <sstream>
+#ifndef _M_DELAY_EXECUTOR_H
+#define _M_DELAY_EXECUTOR_H
 
-FILE* openWoWExe();
-int getBuildNumber();
-int getCoreNumber();
-int getCoreNumberFromBuild(int iBuildNumber);
-void showBanner(const std::string& title, int iCoreNumber);
-void showWebsiteBanner();
-void setMapMagicVersion(int iCoreNumber, char* magic);
-void setVMapMagicVersion(int iCoreNumber, char* magic);
-void CreateDir(const std::string& sPath);
-bool ClientFileExists(const char* sFileName);
-bool isTransportMap(int mapID);
-bool shouldSkipMap(int mapID, bool m_skipContinents, bool m_skipJunkMaps, bool m_skipBattlegrounds);
+#include <ace/Task.h>
+#include <ace/Activation_Queue.h>
+#include <ace/Method_Request.h>
 
-
-static const char *langs[12] = { "enGB", "enUS", "deDE", "esES", "frFR", "koKR", "zhCN", "zhTW", "enCN", "enTW", "esMX", "ruRU" };
-
-/// Enumerated Core Numbers
-enum CoreNumber
+class DelayExecutor : protected ACE_Task_Base
 {
-    CLIENT_CLASSIC = 0,
-    CLIENT_TBC = 1,
-    CLIENT_WOTLK = 2,
-    CLIENT_CATA = 3,
-    CLIENT_MOP = 4,
-    CLIENT_WOD = 5,
-    CLIENT_LEGION = 6
+    public:
+
+        DelayExecutor();
+        virtual ~DelayExecutor();
+
+        int execute(ACE_Method_Request* new_req);
+        int activate(int num_threads = 1);
+        int deactivate();
+        bool activated();
+        virtual int svc();
+
+    private:
+        ACE_Activation_Queue queue_;
+        bool activated_;
+        void activated(bool s);
 };
+
+#endif // _M_DELAY_EXECUTOR_H

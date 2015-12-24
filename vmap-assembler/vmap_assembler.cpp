@@ -28,8 +28,8 @@
 #include "TileAssembler.h"
 #include "ExtractorCommon.h"
 
-const char* szVMAPMagic = "VMAP_4.0";
-const char* RAW_VMAP_MAGIC = "VMAPUNKN";
+char const szVMAPMagic[]      = "VMAP_4.0";
+char       RAW_VMAP_MAGIC[32] = "VMAPUNKN";
 
 //=======================================================
 void Usage(char* prg)
@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     int iCoreNumber = getCoreNumber();
 
     showBanner("Vertical Map Builder", iCoreNumber);
-    RAW_VMAP_MAGIC = setVMapMagicVersion(iCoreNumber);
+    setVMapMagicVersion(iCoreNumber, RAW_VMAP_MAGIC);
     showWebsiteBanner();
 
     if (argc != 3)
