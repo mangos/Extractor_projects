@@ -26,7 +26,8 @@
 #include <deque>
 #include <set>
 #include <cstdlib>
-#include "../shared/ExtractorCommon.h"
+#include <cstring>
+#include "ExtractorCommon.h"
 
 #ifdef WIN32
 #include <direct.h>
@@ -316,28 +317,28 @@ void setMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        strcpy(magic,"z1.3"); 
+        std::strcpy(magic,"z1.3"); 
         break;
     case CLIENT_TBC:
-        strcpy(magic,"s1.3");
+        std::strcpy(magic,"s1.3");
         break;
     case CLIENT_WOTLK:
-        strcpy(magic,"v1.3");
+        std::strcpy(magic,"v1.3");
         break;
     case CLIENT_CATA:
-        strcpy(magic,"c1.3");
+        std::strcpy(magic,"c1.3");
         break;
     case CLIENT_MOP:
-        strcpy(magic,"p1.3");
+        std::strcpy(magic,"p1.3");
         break;
     case CLIENT_WOD:
-        strcpy(magic,"w1.3");
+        std::strcpy(magic,"w1.3");
         break;
     case CLIENT_LEGION:
-        strcpy(magic,"l1.3");
+        std::strcpy(magic,"l1.3");
         break;
     default:
-        strcpy(magic,"UNKN");
+        std::strcpy(magic,"UNKN");
         break;
     }
 }
@@ -352,28 +353,28 @@ void setVMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        strcpy(magic,"VMAPz05");
+        std::strcpy(magic,"VMAPz05");
         break;
     case CLIENT_TBC:
-        strcpy(magic,"VMAPs05");
+        std::strcpy(magic,"VMAPs05");
         break;
     case CLIENT_WOTLK:
-        strcpy(magic,"VMAP005");
+        std::strcpy(magic,"VMAP005");
         break;
     case CLIENT_CATA:
-        strcpy(magic,"VMAPc04");
+        std::strcpy(magic,"VMAPc04");
         break;
     case CLIENT_MOP:
-        strcpy(magic,"VMAPp04");
+        std::strcpy(magic,"VMAPp04");
         break;
     case CLIENT_WOD:
-        strcpy(magic,"VMAPw04");
+        std::strcpy(magic,"VMAPw04");
         break;
     case CLIENT_LEGION:
-        strcpy(magic,"VMAPl04");
+        std::strcpy(magic,"VMAPl04");
         break;
     default:
-        strcpy(magic,"VMAPUNK");
+        std::strcpy(magic,"VMAPUNK");
         break;
     }
 }
