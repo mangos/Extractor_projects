@@ -660,6 +660,7 @@ namespace MMAP
         if (!dmmerge)
         {
             printf("%s alloc dmmerge FAILED!          \r", tileString);
+            delete [] pmmerge;
             delete [] tiles;
             return;
         }
@@ -683,6 +684,8 @@ namespace MMAP
         if (!iv.polyMesh)
         {
             printf("%s alloc iv.polyMesh FAILED!          \r", tileString);
+            delete [] pmmerge;
+            delete [] dmmerge;
             delete [] tiles;
             return;
         }
@@ -692,6 +695,8 @@ namespace MMAP
         if (!iv.polyMeshDetail)
         {
             printf("%s alloc m_dmesh FAILED!          \r", tileString);
+            delete [] pmmerge;
+            delete [] dmmerge;
             delete [] tiles;
             return;
         }
