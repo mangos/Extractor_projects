@@ -59,7 +59,6 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/DelayExecutor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TerrainBuilder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VMapExtensions.cpp
-    ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.h
     ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.cpp
 )
 
@@ -77,9 +76,9 @@ set(EXECUTABLE_LINK_FLAGS "")
 
 if(UNIX)
     if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
-        set(EXECUTABLE_LINK_FLAGS "-Wl,-lrt -pthread ${EXECUTABLE_LINK_FLAGS}")
+        set(EXECUTABLE_LINK_FLAGS "-Wl,--no-as-needed -lrt -pthread ${EXECUTABLE_LINK_FLAGS}")
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-        set(EXECUTABLE_LINK_FLAGS "-Wl,-ldl -pthread -lrt ${EXECUTABLE_LINK_FLAGS}")
+        set(EXECUTABLE_LINK_FLAGS "-Wl,--no-as-needed -ldl -pthread -lrt ${EXECUTABLE_LINK_FLAGS}")
     endif()
 endif()
 
