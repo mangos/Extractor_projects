@@ -19,10 +19,20 @@
 
 set(EXECUTABLE_NAME "vmap-extractor")
 
+# comment next line to disable debug mode
+add_definitions("-DIOMAP_DEBUG")
+add_definitions("-DNO_CORE_FUNCS")
+
 include_directories(
+    ${CMAKE_SOURCE_DIR}/src/shared
+    ${CMAKE_SOURCE_DIR}/src/game/vmap
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite
+    ${CMAKE_SOURCE_DIR}/dep/g3dlite/G3D
+    ${CMAKE_SOURCE_DIR}/src/framework
     ${CMAKE_SOURCE_DIR}/dep/libmpq
     ${CMAKE_SOURCE_DIR}/dep/loadlib
     ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared
+    ${ACE_INCLUDE_DIR}
 )
 
 if(WIN32)
@@ -32,17 +42,39 @@ endif()
 
 add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_SRCS}
     adtfile.cpp
-    dbcfile.cpp
     model.cpp
     vmapexport.cpp
     wdtfile.cpp
     wmo.cpp
     ${CMAKE_SOURCE_DIR}/src/shared/Auth/md5.c
-    ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.h
+    ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/dbcfile.cpp
     ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.cpp
 )
 
-target_link_libraries(${EXECUTABLE_NAME} loadlib libmpq bzip2 zlib)
+if(NOT ACE_USE_EXTERNAL)
+    target_link_libraries(${EXECUTABLE_NAME} ace)
+else()
+    target_link_libraries(${EXECUTABLE_NAME} ACE)
+endif()
+
+target_link_libraries(${EXECUTABLE_NAME} loadlib libmpq g3dlite vmap bzip2 zlib)
+
+set(EXECUTABLE_LINK_FLAGS "")
+
+if(UNIX)
+    if(CMAKE_SYSTEM_NAME MATCHES "FreeBSD")
+        set(EXECUTABLE_LINK_FLAGS "-Wl,--no-as-needed -lrt -pthread ${EXECUTABLE_LINK_FLAGS}")
+    elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set(EXECUTABLE_LINK_FLAGS "-Wl,--no-as-needed -ldl -pthread -lrt ${EXECUTABLE_LINK_FLAGS}")
+    endif()
+endif()
+
+if(APPLE)
+    set(EXECUTABLE_LINK_FLAGS "-framework CoreServices ${EXECUTABLE_LINK_FLAGS}")
+endif()
+
+set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "${EXECUTABLE_LINK_FLAGS}")
+
 
 #Output the compiled exes to build/bin/$(Configuration)/tools directory on windows by default
 if(WIN32)

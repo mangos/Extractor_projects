@@ -54,7 +54,7 @@
 #include <ml/mpq.h>
 #include "vmapexport.h"
 #include "Auth/md5.h"
-
+#include "TileAssembler.h"
 #include "ExtractorCommon.h"
 
 //------------------------------------------------------------------------------
@@ -452,6 +452,7 @@ int main(int argc, char** argv)
 {
     int thisBuild = getBuildNumber();
     int iCoreNumber = getCoreNumberFromBuild(thisBuild);
+    std::string outDir = std::string(output_path) + "/vmaps";
 
     showBanner("Vertical Map Asset Extractor", iCoreNumber);
     setVMapMagicVersion(iCoreNumber, szRawVMAPMagic);
@@ -469,9 +470,22 @@ int main(int argc, char** argv)
         std::string sdir = std::string(szWorkDirWmo) + "/dir";
         std::string sdir_bin = std::string(szWorkDirWmo) + "/dir_bin";
         struct stat status;
+        bool dirty = false;
+
         if (!stat(sdir.c_str(), &status) || !stat(sdir_bin.c_str(), &status))
         {
-            printf(" Your output directory seems to be polluted, please use an empty directory!\n");
+            printf(" Your %s directory seems to exist, please delete it!\n", szWorkDirWmo);
+            dirty = true;
+        }
+
+        if (!stat(outDir.c_str(), &status))
+        {
+            printf(" Your %s directory seems to exist, please delete it!\n", outDir.c_str());
+            dirty = true;
+        }
+
+        if (dirty)
+        {
             printf(" <press return to exit>");
             char garbage[2];
             int ret = scanf("%c", garbage);
@@ -481,13 +495,9 @@ int main(int argc, char** argv)
 
     printf(" Beginning work ....\n");
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    // Create the working directory
-    if (mkdir(szWorkDirWmo
-#if defined(__linux__) || defined(__APPLE__) || defined(__FreeBSD__)
-              , 0711
-#endif
-             ))
-        { success = (errno == EEXIST); }
+    // Create the working and ouput directories
+    CreateDir(std::string(szWorkDirWmo));
+    CreateDir(outDir);
 
     // prepare archive name list
     std::vector<std::string> archiveNames;
@@ -542,14 +552,31 @@ int main(int argc, char** argv)
         ExtractGameobjectModels(iCoreNumber, szRawVMAPMagic);
     }
 
-    printf("\n");
+    delete [] LiqType;
+
     if (!success)
     {
         printf("ERROR: Extract for %s. Work NOT complete.\n   Precise vector data=%d.\nPress any key.\n", szRawVMAPMagic, preciseVectorData);
         getchar();
+        return 1;
     }
 
-    printf(" Extraction Work complete. No errors.\n");
-    delete [] LiqType;
+    VMAP::TileAssembler* ta = new VMAP::TileAssembler(std::string(szWorkDirWmo), outDir);
+
+    if (!ta->convertWorld2(szRawVMAPMagic))
+        { success = false; }
+
+    delete ta;
+
+    if (!success)
+    {
+        printf("ERROR: VMAP building for %s NOT completed", szRawVMAPMagic);
+        getchar();
+        return 1;
+    }
+
+    printf("\n");
+    printf(" VMAP building complete. No errors.\n");
+
     return 0;
 }

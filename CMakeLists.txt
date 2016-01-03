@@ -37,12 +37,11 @@ add_library(vmap
     ${CMAKE_SOURCE_DIR}/src/game/vmap/ModelInstance.cpp
 )
 
+target_link_libraries(vmap g3dlite zlib)
+
 # Used for install targets in subdirs
 set(TOOLS_DIR "tools")
 
-target_link_libraries(vmap g3dlite zlib)
-
 add_subdirectory(Movemap-Generator)
 add_subdirectory(map-extractor)
-add_subdirectory(vmap-assembler)
 add_subdirectory(vmap-extractor)

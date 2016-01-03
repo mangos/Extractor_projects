@@ -33,11 +33,11 @@ include_directories(
 )
 
 set(SOURCES
-    ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.h
+    ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/dbcfile.cpp
     ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.cpp
 )
 
-add_executable(${EXECUTABLE_NAME} dbcfile.cpp System.cpp ${SOURCES} ${EXECUTABLE_SRCS})
+add_executable(${EXECUTABLE_NAME} System.cpp ${SOURCES} ${EXECUTABLE_SRCS})
 
 target_link_libraries(${EXECUTABLE_NAME} libmpq loadlib)
 
