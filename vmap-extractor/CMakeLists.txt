@@ -42,6 +42,7 @@ endif()
 
 add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_SRCS}
     adtfile.cpp
+    assembler.cpp
     model.cpp
     vmapexport.cpp
     wdtfile.cpp
