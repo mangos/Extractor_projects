@@ -54,7 +54,7 @@
 #include <ml/mpq.h>
 #include "vmapexport.h"
 #include "Auth/md5.h"
-#include "TileAssembler.h"
+
 #include "ExtractorCommon.h"
 
 //------------------------------------------------------------------------------
@@ -63,6 +63,7 @@
 #define MPQ_BLOCK_SIZE 0x1000
 //-----------------------------------------------------------------------------
 
+bool AssembleVMAP(std::string src, std::string dest, const char* szMagic);
 extern ArchiveSet gOpenArchives;
 
 typedef struct
@@ -561,12 +562,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    VMAP::TileAssembler* ta = new VMAP::TileAssembler(std::string(szWorkDirWmo), outDir);
-
-    if (!ta->convertWorld2(szRawVMAPMagic))
-        { success = false; }
-
-    delete ta;
+    success = AssembleVMAP(std::string(szWorkDirWmo), outDir, szRawVMAPMagic);
 
     if (!success)
     {
