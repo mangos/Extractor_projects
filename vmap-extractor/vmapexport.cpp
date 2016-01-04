@@ -54,7 +54,7 @@
 #include <ml/mpq.h>
 #include "vmapexport.h"
 #include "Auth/md5.h"
-#include "TileAssembler.h"
+
 #include "ExtractorCommon.h"
 
 //------------------------------------------------------------------------------
