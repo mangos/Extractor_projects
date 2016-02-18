@@ -94,12 +94,12 @@ static const char* CONF_mpq_list[] = /**< List MPQs to extract from */
     "dbc.MPQ",          // Classic Only
     "lichking.MPQ",     // Wotlk
     "expansion.MPQ",    // TBC / Wotlk
+    "terrain.MPQ",      // Classic Only
     "patch.MPQ",        // TBC / Wotlk
     "patch-2.MPQ",      // TBC / Wotlk
     "patch-3.MPQ",      // TBC / Wotlk
     "patch-4.MPQ",      // TBC / Wotlk
     "patch-5.MPQ",      // TBC / Wotlk
-    "terrain.MPQ",      // Classic Only
 };
 /**
  * @brief
