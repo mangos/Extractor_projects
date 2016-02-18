@@ -317,25 +317,25 @@ void setMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic,"z1.3"); 
+        std::strcpy(magic,"z1.4"); 
         break;
     case CLIENT_TBC:
-        std::strcpy(magic,"s1.3");
+        std::strcpy(magic,"s1.4");
         break;
     case CLIENT_WOTLK:
-        std::strcpy(magic,"v1.3");
+        std::strcpy(magic,"v1.4");
         break;
     case CLIENT_CATA:
-        std::strcpy(magic,"c1.3");
+        std::strcpy(magic,"c1.4");
         break;
     case CLIENT_MOP:
-        std::strcpy(magic,"p1.3");
+        std::strcpy(magic,"p1.4");
         break;
     case CLIENT_WOD:
-        std::strcpy(magic,"w1.3");
+        std::strcpy(magic,"w1.4");
         break;
     case CLIENT_LEGION:
-        std::strcpy(magic,"l1.3");
+        std::strcpy(magic,"l1.4");
         break;
     default:
         std::strcpy(magic,"UNKN");
@@ -353,25 +353,25 @@ void setVMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic,"VMAPz05");
+        std::strcpy(magic,"VMAPz06");
         break;
     case CLIENT_TBC:
-        std::strcpy(magic,"VMAPs05");
+        std::strcpy(magic,"VMAPs06");
         break;
     case CLIENT_WOTLK:
-        std::strcpy(magic,"VMAP005");
+        std::strcpy(magic,"VMAPt06");
         break;
     case CLIENT_CATA:
-        std::strcpy(magic,"VMAPc04");
+        std::strcpy(magic,"VMAPc06");
         break;
     case CLIENT_MOP:
-        std::strcpy(magic,"VMAPp04");
+        std::strcpy(magic,"VMAPp06");
         break;
     case CLIENT_WOD:
-        std::strcpy(magic,"VMAPw04");
+        std::strcpy(magic,"VMAPw06");
         break;
     case CLIENT_LEGION:
-        std::strcpy(magic,"VMAPl04");
+        std::strcpy(magic,"VMAPl06");
         break;
     default:
         std::strcpy(magic,"VMAPUNK");
