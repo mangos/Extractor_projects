@@ -22,30 +22,23 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#ifndef _M_DELAY_EXECUTOR_H
-#define _M_DELAY_EXECUTOR_H
+#ifndef TILE_THREAD_POOL_H
+#define TILE_THREAD_POOL_H
 
-#include <ace/Task.h>
-#include <ace/Activation_Queue.h>
-#include <ace/Method_Request.h>
+#include "ace/Task.h"
+#include "ace/Barrier.h"
 
-class DelayExecutor : protected ACE_Task_Base
+
+class TileThreadPool : public ACE_Task<ACE_MT_SYNCH>
 {
-    public:
+public:
+    TileThreadPool();
+    ~TileThreadPool();
+    int start(int threads = 1);
+    virtual int svc(void);
 
-        DelayExecutor();
-        virtual ~DelayExecutor();
-
-        int execute(ACE_Method_Request* new_req);
-        int activate(int num_threads = 1);
-        int deactivate();
-        bool activated();
-        virtual int svc();
-
-    private:
-        ACE_Activation_Queue queue_;
-        bool activated_;
-        void activated(bool s);
+protected:
+    ACE_Barrier *m_barrier;
 };
 
-#endif // _M_DELAY_EXECUTOR_H
+#endif

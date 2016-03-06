@@ -22,14 +22,12 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
+#include "ace/High_Res_Timer.h"
 #include "MMapCommon.h"
 #include "MapBuilder.h"
 #include "ExtractorCommon.h"
 
 using namespace MMAP;
-
-static char MAP_VERSION_MAGIC[32] = "0000"; /**< TODO */
-
 
 bool checkDirectories(bool debugOutput)
 {
@@ -134,10 +132,10 @@ bool handleArgs(int argc, char** argv,
                 { return false; }
 
             int nThreads = atoi(param);
-            if (nThreads > 0)
+            if (nThreads)
                 { num_threads = nThreads; }
             else
-                { printf("invalid option for '--threads', using default (0)\n"); }
+                { printf("invalid option for '--threads', using single threaded build\n"); }
         }
         else if (strcmp(argv[i], "--tile") == 0)
         {
@@ -281,10 +279,11 @@ int finish(const char* message, int returnValue)
 
 int main(int argc, char** argv)
 {
+    char map_magic[16];
     int thisBuild = getBuildNumber();
     int iCoreNumber = getCoreNumberFromBuild(thisBuild);
     showBanner("Movement Map Generator", iCoreNumber);
-    setMapMagicVersion(iCoreNumber, MAP_VERSION_MAGIC);
+    setMapMagicVersion(iCoreNumber, map_magic);
     showWebsiteBanner();
 
     int mapnum = -1;
@@ -306,14 +305,14 @@ int main(int argc, char** argv)
                                  debugOutput, silent, bigBaseUnit, num_threads, offMeshInputPath);
 
     if (!validParam)
-        { return silent ? -1 : finish(" You have specified invalid parameters (use -? for more help)", -1); }
+        { return silent ? -1 : finish(" You have specified invalid parameters (use -h for more help)", -1); }
 
     if (mapnum == -1 && debugOutput)
     {
         if (silent)
             { return -2; }
 
-        printf("You have specifed debug output, but didn't specify a map to generate.\n");
+        printf(" You have specifed debug output, but didn't specify a map to generate.\n");
         printf(" This will generate debug output for ALL maps.\n");
         printf(" Are you sure you want to continue? (y/n) ");
         if (getchar() != 'y')
@@ -323,24 +322,34 @@ int main(int argc, char** argv)
     if (!checkDirectories(debugOutput))
         { return silent ? -3 : finish(" Press any key to close...", -3); }
 
-    MapBuilder builder(maxAngle, skipLiquid, skipContinents, skipJunkMaps,
+    MapBuilder builder(map_magic, maxAngle, skipLiquid, skipContinents, skipJunkMaps,
                        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
-    if (num_threads && builder.activate(num_threads)== -1)
+    ACE_Time_Value elapsed;
+    ACE_High_Res_Timer timer;
+    
+    timer.start();
+    if (tileX > -1 && tileY > -1 && mapnum >= 0)
+        { builder.buildSingleTile(mapnum, tileX, tileY); }
+    else 
+    {
+        if (num_threads && builder.activate(num_threads)== -1)
         {
             if (!silent)
-                { printf("Thread initialization was not ok. Revert to single-threaded build"); }
+              { printf(" Thread initialization was not ok. The build is single threaded\n"); }
         }
 
-    if (tileX > -1 && tileY > -1 && mapnum >= 0)
-        { builder.buildSingleTile(mapnum, tileX, tileY, MAP_VERSION_MAGIC); }
-    else if (mapnum >= 0)
-        { builder.buildMap(uint32(mapnum), MAP_VERSION_MAGIC); }
-    else
-        { builder.buildAllMaps(MAP_VERSION_MAGIC); }
+        if (builder.activated())
+          { printf(" Using %d thread(s) for building\n", num_threads);}
 
-    if (num_threads && builder.activated())
-        builder.wait();
-
-    return silent ? 1 : finish(" Movemap build is complete!", 1);
+        if (mapnum >= 0)
+          { builder.buildMap(uint32(mapnum), true); }
+        else
+          { builder.buildAllMaps(); }
+    }
+    timer.stop();
+    timer.elapsed_time(elapsed);
+    printf(" \n Total build time: %ld seconds\n\n", elapsed.sec());
+    
+    return silent ? 1 : finish(" Movemap build is complete! Press enter to exit\n", 1);
 }
