@@ -53,10 +53,10 @@ add_definitions(-DDT_POLYREF64)
 
 
 set(SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/TileThreadPool.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/IntermediateValues.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/generator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/MapBuilder.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/DelayExecutor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/TerrainBuilder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/VMapExtensions.cpp
     ${CMAKE_SOURCE_DIR}/src/tools/Extractor_projects/shared/ExtractorCommon.cpp

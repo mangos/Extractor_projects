@@ -37,9 +37,8 @@
 
 #include "IVMapManager.h"
 #include "WorldModel.h"
-#include <ace/Thread_Mutex.h>
-#include <ace/Condition_Thread_Mutex.h>
-#include "DelayExecutor.h"
+
+#include "TileThreadPool.h"
 
 using namespace std;
 using namespace VMAP;
@@ -101,7 +100,8 @@ namespace MMAP
              * @param bigBaseUnit
              * @param offMeshFilePath
              */
-            MapBuilder(float maxWalkableAngle   = 60.f,
+            MapBuilder(const char* magic,
+                       float maxWalkableAngle   = 60.f,
                        bool skipLiquid          = false,
                        bool skipContinents      = false,
                        bool skipJunkMaps        = true,
@@ -117,46 +117,11 @@ namespace MMAP
             ~MapBuilder();
 
             /**
-             * @brief initiates multi-threaded build
-             *
-             * @param numThreads
-             * @return -1 on error
-             */
-            int activate(int num_threads);
-
-            /**
-             * @brief waits the completion of all threads
-             *
-             * @return 0 on finish, blocks otherwise
-             */
-            int wait();
-
-            /**
-             * @brief deactivates the thread pool manager
-             *
-             * @return int
-             */
-            int deactivate();
-
-            /**
-             * @brief gets the status of thread pool manager
-             *
-             * @return bool
-             */
-            bool activated();
-
-            /**
-             * @brief signals the completion of map tiles building 
-             *
-             */
-            void build_finished();
-
-            /**
              * @brief builds all mmap tiles for the specified map id (ignores skip settings)
              *
              * @param mapID
              */
-            void buildMap(int mapID, char const* MAP_VERSION_MAGIC);
+            void buildMap(int mapID, bool standAlone = true);
 
             /**
              * @brief builds an mmap tile for the specified map and its mesh
@@ -165,13 +130,27 @@ namespace MMAP
              * @param tileX
              * @param tileY
              */
-            void buildSingleTile(int mapID, int tileX, int tileY, char const* MAP_VERSION_MAGIC);
+            void buildSingleTile(int mapID, int tileX, int tileY);
 
             /**
              * @brief builds list of maps, then builds all of mmap tiles (based on the skip settings)
              *
              */
-            void buildAllMaps(char const* MAP_VERSION_MAGIC);
+            void buildAllMaps();
+            
+            int activate(int num_threads);
+            
+            bool activated() const { return m_poolActivated; }
+
+            /**
+             * @brief
+             *
+             * @param mapID
+             * @param tileX
+             * @param tileY
+             * @param navMesh
+             */
+            void buildTile(int mapID, int tileX, int tileY, dtNavMesh* navMesh);
 
         private:
             /**
@@ -193,17 +172,8 @@ namespace MMAP
              * @param mapID
              * @param navMesh
              */
-            void buildNavMesh(int mapID, dtNavMesh*& navMesh);
+            void buildNavMesh(int mapID, dtNavMesh*& navMesh, dtNavMeshParams*& navMeshParams);
 
-            /**
-             * @brief
-             *
-             * @param mapID
-             * @param tileX
-             * @param tileY
-             * @param navMesh
-             */
-            void buildTile(int mapID, int tileX, int tileY, dtNavMesh* navMesh, char const* MAP_VERSION_MAGIC);
 
             /**
              * @brief move map building
@@ -258,16 +228,6 @@ namespace MMAP
              */
             bool shouldSkipTile(int mapID, int tileX, int tileY);
 
-            /**
-             * @brief schedules an async map build 
-             *
-             * @param mapID
-             * @param mmap version
-             * @return -1 on error
-             */
-            int schedule_build(ACE_UINT32 mapId, char const* MAGIC);
-
-
             TerrainBuilder* m_terrainBuilder; /**< TODO */
             TileList m_tiles; /**< TODO */
 
@@ -280,13 +240,12 @@ namespace MMAP
 
             float m_maxWalkableAngle; /**< TODO */
             bool m_bigBaseUnit; /**< TODO */
+            char const* m_magic;
 
-            int m_numThreads;
-            DelayExecutor m_executor;
-            ACE_Thread_Mutex m_mutex;
-            ACE_Condition_Thread_Mutex m_condition;
-            size_t pending_requests;
-
+            int             m_numThreads;
+            TileThreadPool* m_threadPool;
+            bool            m_poolActivated;
+            
             rcContext* m_rcContext; /**< build performance - not really used for now */
     };
 }
