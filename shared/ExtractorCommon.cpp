@@ -69,8 +69,8 @@
 FILE* openWoWExe()
 {
     FILE *pFile;
-    const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" };
-    int iExeSpelling = 3; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK)
+    const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" ,"World of Warcraft.exe"};
+    int iExeSpelling = 4; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK) and a variant
 
     /// loop through all possible file names
     for (int iFileCount = 0; iFileCount < iExeSpelling; iFileCount++)
@@ -78,7 +78,7 @@ FILE* openWoWExe()
 #ifdef WIN32
         if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
             return pFile; ///< successfully located the WoW executable
-#else     
+#else
         if ((pFile = fopen(ExeFileName[iFileCount], "rb")))
             return pFile; ///< successfully located the WoW executable
 #endif
@@ -105,13 +105,13 @@ int getBuildNumber()
     int iHexValue_W = 0x57;
     int iHexValue_o = 0x6F;
     int iHexValue_space = 0x20;
-    int iHexValue_OpeningBracket = 0x5B; // [ 
+    int iHexValue_OpeningBracket = 0x5B; // [
     int iHexValue_R = 0x52;
     int iHexValue_e = 0x65;
     int iHexValue_l = 0x6C;
-    
+
     /// buffers used for working on the file's bytes
-    unsigned char byteSearchBuffer[1]; ///< used for reading in a single character, ready to be 
+    unsigned char byteSearchBuffer[1]; ///< used for reading in a single character, ready to be
                                        ///< tested for the required text we are searching for: "WoW [Rel"
     unsigned char jumpBytesBuffer[128]; ///< used for skipping past the bytes from the file's start
                                         ///< to the base # area, before we start searching for the base #, for faster processing
@@ -122,7 +122,7 @@ int getBuildNumber()
     FILE *pFile;
     if (!(pFile = openWoWExe()))
         return 0; ///> faled to locate exe file
-    
+
     /// jump over as much of the file as possible, before we start searching for the base #
     for (int i = 0; i < 3300; i++)
         fread(jumpBytesBuffer, sizeof(jumpBytesBuffer), 1, pFile);
@@ -168,7 +168,7 @@ int getBuildNumber()
                 }
             }
         }
-    }    
+    }
 
     if (!bBuildFound)
     {
@@ -234,13 +234,13 @@ int getCoreNumberFromBuild(int iBuildNumber)
     case 18414: //MOP
         return CLIENT_MOP;
         break;
-    case 20726: //WOD
+    case 21355: //WOD
         return CLIENT_WOD;
         break;
     case 20740: //LEGION ALPHA
         return CLIENT_LEGION;
-        break;        
-        
+        break;
+
     default:
         return -1;
         break;
@@ -468,7 +468,7 @@ bool isTransportMap(int mapID)
     case 1133:   // Transport218600 - Zandalari Ship (Mogu Island) - (MOP)
     case 1172:   // Transport: Siege of Orgrimmar (Alliance) - (MOP)
     case 1173:   // Transport: Siege of Orgrimmar (Horde) - (MOP)
-    case 1192:   // Transport: Iron_Horde_Gorgrond_Train - (WOD)                                               
+    case 1192:   // Transport: Iron_Horde_Gorgrond_Train - (WOD)
     case 1231:   // Transport: Wavemurder Barge - (WOD)
         return true;
     default: // no transport maps
