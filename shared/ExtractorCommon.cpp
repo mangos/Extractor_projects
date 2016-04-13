@@ -75,10 +75,6 @@ FILE* openWoWExe()
     /// loop through all possible file names
     for (int iFileCount = 0; iFileCount < iExeSpelling; iFileCount++)
     {
-        printf("\n");
-        printf("Searching for executable in ");
-        printf(ExeFileName[iFileCount]);
-        printf("\n");
 #ifdef WIN32
         if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
             return pFile; ///< successfully located the WoW executable
