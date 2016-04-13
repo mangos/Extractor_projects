@@ -70,7 +70,7 @@ FILE* openWoWExe()
 {
     FILE *pFile;
     const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" ,"World of Warcraft.exe", "World of Warcraft.app/Contents/MacOS/World of Warcraft"};
-    int iExeSpelling = 4; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK) and a variant
+    int iExeSpelling = 5; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK) and a variant
 
     /// loop through all possible file names
     for (int iFileCount = 0; iFileCount < iExeSpelling; iFileCount++)
