@@ -69,7 +69,7 @@
 FILE* openWoWExe()
 {
     FILE *pFile;
-    const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" ,"World of Warcraft.exe"};
+    const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" ,"World of Warcraft.exe", "World of Warcraft.app/Contents/MacOS/World of Warcraft"};
     int iExeSpelling = 4; ///> WoW.exe (Classic, CATA), Wow.exe (TBC, MoP, WoD), wow.exe (WOTLK) and a variant
 
     /// loop through all possible file names
@@ -101,27 +101,26 @@ int getBuildNumber()
     bool bBuildFound = false;
 
     /// hex values of the text/bytes we need to search for:
-    /// WoW [Rel
+    /// WoW [
     int iHexValue_W = 0x57;
     int iHexValue_o = 0x6F;
     int iHexValue_space = 0x20;
     int iHexValue_OpeningBracket = 0x5B; // [
-    int iHexValue_R = 0x52;
-    int iHexValue_e = 0x65;
-    int iHexValue_l = 0x6C;
 
     /// buffers used for working on the file's bytes
     unsigned char byteSearchBuffer[1]; ///< used for reading in a single character, ready to be
                                        ///< tested for the required text we are searching for: "WoW [Rel"
     unsigned char jumpBytesBuffer[128]; ///< used for skipping past the bytes from the file's start
                                         ///< to the base # area, before we start searching for the base #, for faster processing
-    unsigned char jumpBytesBuffer2[12]; ///< used for skipping past the bytes between the text being
+    unsigned char jumpNonAssertionBytesBuffer[7]; ///< used for skipping past the bytes between the text being
                                         ///< searched for and the Base #, so that we can then get at the Base #
+    unsigned char jumpAssertionBytesBuffer[26]; ///< skip the 'assertions enabled' part of the version string in an OS X based
+                                        ///< version of the game.
     unsigned char buildNumber[6]; ///< stored here prior to conversion to an integer
 
     FILE *pFile;
     if (!(pFile = openWoWExe()))
-        return 0; ///> faled to locate exe file
+        return 0; ///> failed to locate exe file
 
     /// jump over as much of the file as possible, before we start searching for the base #
     for (int i = 0; i < 3300; i++)
@@ -149,20 +148,28 @@ int getBuildNumber()
                         fread(byteSearchBuffer, 1, 1, pFile);
                         if (byteSearchBuffer[0] == iHexValue_OpeningBracket)
                         {
-                            /// is the next byte an R
+                            // Check for assertions
+                            unsigned char releaseBuffer[7];
+                            fread(releaseBuffer, sizeof(releaseBuffer), 1, pFile);
+
                             fread(byteSearchBuffer, 1, 1, pFile);
-                            if (byteSearchBuffer[0] == iHexValue_R)
+                            if (byteSearchBuffer[0] == iHexValue_space)
                             {
-                                /// is the next byte an e
-                                fread(byteSearchBuffer, 1, 1, pFile);
-                                if (byteSearchBuffer[0] == iHexValue_e)
-                                {
-                                    /// is the next byte an l
-                                    fread(byteSearchBuffer, 1, 1, pFile);
-                                    if (byteSearchBuffer[0] == iHexValue_l)
-                                        bBuildFound = true; ///< we are at the Build # area
-                                }
+                                /*
+                                 * Longer version name found. E.g.;
+                                 * WoW [Release Assertions Enabled] Build 5875
+                                 */
+                                fread(jumpAssertionBytesBuffer, sizeof(jumpAssertionBytesBuffer), 1, pFile);
+                            } else {
+                                /**
+                                 * Regular build version found. E.g.;
+                                 * WoW [Release] Build 5875
+                                 */
+                                /// grab data leading up to the build #
+                                fread(jumpNonAssertionBytesBuffer, sizeof(jumpNonAssertionBytesBuffer), 1, pFile);
                             }
+
+                            bBuildFound = true;
                         }
                     }
                 }
@@ -176,9 +183,6 @@ int getBuildNumber()
         fclose(pFile); ///< housekeping
         return 0; ///< we reached the end of the file without locating the build #, exit funcion
     }
-
-    /// grab data leading up to the build #
-    fread(jumpBytesBuffer2, sizeof(jumpBytesBuffer2), 1, pFile);
 
     /// grab the bytes containing the number
     fread(buildNumber, sizeof(buildNumber), 1, pFile);
@@ -317,7 +321,7 @@ void setMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic,"z1.4"); 
+        std::strcpy(magic,"z1.4");
         break;
     case CLIENT_TBC:
         std::strcpy(magic,"s1.4");
