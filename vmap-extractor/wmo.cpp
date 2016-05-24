@@ -472,7 +472,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     }
                     break;
                 case 2:
-                    if (iCoreNumber == CLIENT_TBC)
+                    if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
                     {
                     liquidEntry = 3;        // magma
                     }
