@@ -284,12 +284,4 @@ inline void rotate(float x0, float y0, float* x, float* y, float angle)
  */
 inline Vec3D fixCoords(const Vec3D& v) { return Vec3D(v.z, v.x, v.y); }
 
-/**
- * @brief
- *
- * @param v
- * @return Vec3D
- */
-inline Vec3D fixCoordSystem(const Vec3D& v) { return Vec3D(v.x, v.z, -v.y); }
-
 #endif

@@ -90,7 +90,7 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
 
         for (size_t i = 0; i < unBoundingVertices; i++)
         {
-            vertices[i] = fixCoordSystem(boundingVertices[i].pos);
+            vertices[i] = boundingVertices[i].pos;
         }
 
         uint16* triangles = (uint16*)(f.getBuffer() + uofsBoundingTriangles);
@@ -119,7 +119,7 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
         printf("Can't create the output file '%s'\n", outfilename.c_str());
         return false;
     }
-    
+
     fwrite(szRawVMAPMagic, 8, 1, output);
     uint32 nVertices = 0;
     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
@@ -168,15 +168,7 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&nVertices, sizeof(int), 1, output);
     if (nVertices > 0)
-    {
-        for (uint32 vpos = 0; vpos < nVertices; ++vpos)
-        {
-            float tmp = vertices[vpos].y;
-            vertices[vpos].y = -vertices[vpos].z;
-            vertices[vpos].z = tmp;
-        }
-        fwrite(vertices, sizeof(float) * 3, nVertices, output);
-    }
+        { fwrite(vertices, sizeof(float) * 3, nVertices, output); }
 
     fclose(output);
 
