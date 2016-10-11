@@ -441,7 +441,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
             switch (((uint8)liquidEntry - 1) & 3)
             {
                 case 0:
-                    if (iCoreNumber == CLIENT_WOTLK)
+                    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
                         liquidEntry = ((mogpFlags & 0x80000) != 0) + 13;
                     }
@@ -466,7 +466,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     {
                         liquidEntry = 2;        // ocean
                     }
-                    if (iCoreNumber == CLIENT_WOTLK)
+                    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
                     liquidEntry = 14;
                     }
@@ -476,7 +476,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     {
                     liquidEntry = 3;        // magma
                     }
-                    if (iCoreNumber == CLIENT_WOTLK)
+                    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
                     liquidEntry = 19;
                     }
@@ -493,7 +493,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                             liquidEntry = 4; 
                         }    // Normal slime
                     }
-                    if (iCoreNumber == CLIENT_WOTLK)
+                    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
                     liquidEntry = 20;
                     }

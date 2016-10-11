@@ -1192,7 +1192,7 @@ int main(int argc, char** argv)
      MAP_LIQUID_TYPE_WATER  =     0x08;
     }
 
-    if (iCoreNumber == CLIENT_WOTLK)
+    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
     {
      MAP_LIQUID_TYPE_NO_WATER =   0x00;
      MAP_LIQUID_TYPE_WATER   =    0x01;
