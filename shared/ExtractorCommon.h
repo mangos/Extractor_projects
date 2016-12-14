@@ -35,6 +35,7 @@ void showBanner(const std::string& title, int iCoreNumber);
 void showWebsiteBanner();
 void setMapMagicVersion(int iCoreNumber, char* magic);
 void setVMapMagicVersion(int iCoreNumber, char* magic);
+void setMMapMagicVersion(int iCoreNumber, char* magic);
 void CreateDir(const std::string& sPath);
 bool ClientFileExists(const char* sFileName);
 bool isTransportMap(int mapID);

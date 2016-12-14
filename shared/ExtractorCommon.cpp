@@ -384,6 +384,46 @@ void setVMapMagicVersion(int iCoreNumber, char* magic)
 }
 
 /**
+*  This function returns the .mmap file 'magic' number based on the core number
+*
+*  @PARAM iCoreNumber is the Core Number
+*/
+void setMMapMagicVersion(int iCoreNumber, char* magic)
+{
+    switch (iCoreNumber)
+    {
+    case CLIENT_CLASSIC:
+        std::strcpy(magic, "z05");
+        break;
+    case CLIENT_TBC:
+        std::strcpy(magic, "s05");
+        break;
+    case CLIENT_WOTLK:
+        std::strcpy(magic, "t05");
+        break;
+    case CLIENT_CATA:
+        std::strcpy(magic, "c05");
+        break;
+    case CLIENT_MOP:
+        std::strcpy(magic, "p05");
+        break;
+    case CLIENT_WOD:
+        std::strcpy(magic, "w05");
+        break;
+    case CLIENT_LEGION:
+        std::strcpy(magic, "l05");
+        break;
+    default:
+        std::strcpy(magic, "UNK");
+        break;
+    }
+}
+
+//#define MMAP_VERSION 4
+
+
+
+/**
 * @Create Folders based on the path provided
 *
 * @param sPath
