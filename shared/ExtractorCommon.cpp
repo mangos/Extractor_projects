@@ -110,9 +110,9 @@ int getBuildNumber()
     // as the first digit is used to locate the possible location of the build number
     // then the following bytes are grabbed, 3 for pre WOTLK, 4 for WOTLK and later.
     // Those grabbed bytes are then compared with the below variables in order to idenity the exe's build
-    unsigned char vanillaBuild1[3] = { 0x30, 0x30, 0x35 };       // (5)875
+    unsigned char vanillaBuild1[3] = { 0x38, 0x37, 0x35 };       // (5)875
     unsigned char vanillaBuild2[3] = { 0x30, 0x30, 0x35 };       // (6)005
-    unsigned char vanillaBuild3[3] = { 0x30, 0x30, 0x35 };       // (6)141
+    unsigned char vanillaBuild3[3] = { 0x31, 0x34, 0x31 };       // (6)141
     unsigned char tbcBuild[3]      = { 0x36, 0x30, 0x36 };       // (8)606
     unsigned char wotlkBuild[4]    = { 0x32, 0x33, 0x34, 0x30 }; // (1)2340
     unsigned char cataBuild[4]     = { 0x35, 0x35, 0x39, 0x35 }; // (1)5595
