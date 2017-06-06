@@ -298,25 +298,25 @@ void setMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic,"z1.4");
+        std::strcpy(magic,"z1.5");
         break;
     case CLIENT_TBC:
-        std::strcpy(magic,"s1.4");
+        std::strcpy(magic,"s1.5");
         break;
     case CLIENT_WOTLK:
-        std::strcpy(magic,"v1.4");
+        std::strcpy(magic,"v1.5");
         break;
     case CLIENT_CATA:
-        std::strcpy(magic,"c1.4");
+        std::strcpy(magic,"c1.5");
         break;
     case CLIENT_MOP:
-        std::strcpy(magic,"p1.4");
+        std::strcpy(magic,"p1.5");
         break;
     case CLIENT_WOD:
-        std::strcpy(magic,"w1.4");
+        std::strcpy(magic,"w1.5");
         break;
     case CLIENT_LEGION:
-        std::strcpy(magic,"l1.4");
+        std::strcpy(magic,"l1.5");
         break;
     default:
         std::strcpy(magic,"UNKN");
@@ -334,25 +334,25 @@ void setVMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic,"VMAPz06");
+        std::strcpy(magic,"VMAPz07");
         break;
     case CLIENT_TBC:
-        std::strcpy(magic,"VMAPs06");
+        std::strcpy(magic,"VMAPs07");
         break;
     case CLIENT_WOTLK:
-        std::strcpy(magic,"VMAPt06");
+        std::strcpy(magic,"VMAPt07");
         break;
     case CLIENT_CATA:
-        std::strcpy(magic,"VMAPc06");
+        std::strcpy(magic,"VMAPc07");
         break;
     case CLIENT_MOP:
-        std::strcpy(magic,"VMAPp06");
+        std::strcpy(magic,"VMAPp07");
         break;
     case CLIENT_WOD:
-        std::strcpy(magic,"VMAPw06");
+        std::strcpy(magic,"VMAPw07");
         break;
     case CLIENT_LEGION:
-        std::strcpy(magic,"VMAPl06");
+        std::strcpy(magic,"VMAPl07");
         break;
     default:
         std::strcpy(magic,"VMAPUNK");
@@ -370,25 +370,25 @@ void setMMapMagicVersion(int iCoreNumber, char* magic)
     switch (iCoreNumber)
     {
     case CLIENT_CLASSIC:
-        std::strcpy(magic, "z05");
+        std::strcpy(magic, "z06");
         break;
     case CLIENT_TBC:
-        std::strcpy(magic, "s05");
+        std::strcpy(magic, "s06");
         break;
     case CLIENT_WOTLK:
-        std::strcpy(magic, "t05");
+        std::strcpy(magic, "t06");
         break;
     case CLIENT_CATA:
-        std::strcpy(magic, "c05");
+        std::strcpy(magic, "c06");
         break;
     case CLIENT_MOP:
-        std::strcpy(magic, "p05");
+        std::strcpy(magic, "p06");
         break;
     case CLIENT_WOD:
-        std::strcpy(magic, "w05");
+        std::strcpy(magic, "w06");
         break;
     case CLIENT_LEGION:
-        std::strcpy(magic, "l05");
+        std::strcpy(magic, "l06");
         break;
     default:
         std::strcpy(magic, "UNK");
