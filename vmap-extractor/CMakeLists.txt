@@ -58,7 +58,7 @@ else()
     target_link_libraries(${EXECUTABLE_NAME} ACE)
 endif()
 
-target_link_libraries(${EXECUTABLE_NAME} loadlib libmpq g3dlite vmap bzip2 zlib)
+target_link_libraries(${EXECUTABLE_NAME} loadlib libmpq g3dlite vmap BZip2::BZip2 ZLIB::ZLIB)
 
 set(EXECUTABLE_LINK_FLAGS "")
 
