@@ -67,7 +67,7 @@ else()
     target_link_libraries(${EXECUTABLE_NAME} ACE)
 endif()
 
-target_link_libraries(${EXECUTABLE_NAME} g3dlite vmap detour recast zlib shared)
+target_link_libraries(${EXECUTABLE_NAME} g3dlite vmap detour recast ZLIB::ZLIB shared)
 
 set(EXECUTABLE_LINK_FLAGS "")
 
