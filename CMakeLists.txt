@@ -17,13 +17,13 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-# Used for install targets in subdirs
+# Used for install targets
 set(TOOLS_DIR "tools")
 
 set(SHARED_SRCS
     shared/dbcfile.cpp
     shared/ExtractorCommon.cpp
-	shared/dbcfile.h
+    shared/dbcfile.h
     shared/ExtractorCommon.h
 )
 
@@ -32,7 +32,7 @@ set(SHARED_SRCS
 #=======================================================#
 add_executable(map-extractor
     map-extractor/System.cpp
-	${SHARED_SRCS}
+    ${SHARED_SRCS}
     $<$<BOOL:${WIN32}>:map-extractor/map-extractor.rc>
 )
 
@@ -44,7 +44,7 @@ target_include_directories(map-extractor
 
 target_link_libraries(map-extractor
     PUBLIC
-	    loadlib
+    loadlib
 )
 
 install(
@@ -54,7 +54,7 @@ install(
 
 if(WIN32 AND MSVC)
     install(
-	    FILES $<TARGET_PDB_FILE:map-extractor>
+        FILES $<TARGET_PDB_FILE:map-extractor>
         DESTINATION ${BIN_DIR}/${TOOLS_DIR}
         OPTIONAL)
 endif()
@@ -88,20 +88,20 @@ target_include_directories(vmap-extractor
 
 target_link_libraries(vmap-extractor
     PUBLIC
-	    loadlib
-		vmap2
+        loadlib
+        vmap2
 )
 
 install(
     TARGETS vmap-extractor
-    DESTINATION "${BIN_DIR}/${TOOLS_DIR}"
+    DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 
 if(WIN32 AND MSVC)
     install(
-	    FILES $<TARGET_PDB_FILE:vmap-extractor>
-	    DESTINATION ${BIN_DIR}/${TOOLS_DIR}
-		OPTIONAL
+        FILES $<TARGET_PDB_FILE:vmap-extractor>
+        DESTINATION ${BIN_DIR}/${TOOLS_DIR}
+        OPTIONAL
 )
 endif()
 
@@ -123,8 +123,8 @@ add_executable(mmap-extractor
     Movemap-Generator/TileThreadPool.h
     Movemap-Generator/VMapExtensions.cpp
     shared/ExtractorCommon.cpp
-	shared/ExtractorCommon.h
-	$<$<BOOL:${WIN32}>:Movemap-Generator/Movemap-Generator.rc>
+    shared/ExtractorCommon.h
+    $<$<BOOL:${WIN32}>:Movemap-Generator/Movemap-Generator.rc>
 )
 
 target_include_directories(mmap-extractor
@@ -137,18 +137,18 @@ target_link_libraries(mmap-extractor
     PUBLIC
         vmap2
         shared
-		RecastNavigation::Recast
-		Threads::Threads
+        RecastNavigation::Recast
+        Threads::Threads
 )
 
 install(
     TARGETS mmap-extractor
-	DESTINATION "${BIN_DIR}/${TOOLS_DIR}"
+    DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 
 if(WIN32 AND MSVC)
     install(
-	    FILES $<TARGET_PDB_FILE:mmap-extractor>
+        FILES $<TARGET_PDB_FILE:mmap-extractor>
         DESTINATION ${BIN_DIR}/${TOOLS_DIR}
         OPTIONAL
 )
