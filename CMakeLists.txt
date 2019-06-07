@@ -19,6 +19,7 @@
 
 # Used for install targets
 set(TOOLS_DIR "tools")
+set(EXTRACTOR_BINARIES_DIR "${CMAKE_SOURCE_DIR}/src/tools/Extractor_Binaries")
 
 set(SHARED_SRCS
     shared/dbcfile.cpp
@@ -145,6 +146,20 @@ target_link_libraries(mmap-extractor
 install(
     TARGETS mmap-extractor
     DESTINATION ${BIN_DIR}/${TOOLS_DIR}
+)
+
+install (
+	FILES "${EXTRACTOR_BINARIES_DIR}/MoveMapGen.sh"        
+         DESTINATION ${BIN_DIR}/${TOOLS_DIR}
+)
+install (
+	FILES "${EXTRACTOR_BINARIES_DIR}/offmesh.txt"        
+         DESTINATION ${BIN_DIR}/${TOOLS_DIR}
+)
+
+install (
+	FILES "${EXTRACTOR_BINARIES_DIR}/mmap_excluded.txt"        
+         DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 
 if(WIN32 AND MSVC)
