@@ -170,10 +170,10 @@ void ReadLiquidTypeTableDBC()
         LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
     }
 
-    printf(" Success! (%u LiqTypes loaded)\n", (unsigned int)LiqType_count);
+    printf(" Success! (%u Liquid Types loaded)\n", (unsigned int)LiqType_count);
 }
 
-void ParsMapFiles(int iCoreNumber, char const *szRawVMAPMagic)
+void ParseMapFiles(int iCoreNumber)
 {
     char fn[512];
     //char id_filename[64];
@@ -283,8 +283,8 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames, int iCoreNum
 
         sprintf(path, "%s/Data/patch", input_path);
         if (!scan_patches(path, pArchiveNames))
-        { 
-            return(false); 
+        {
+            return(false);
         }
     }
 
@@ -342,7 +342,7 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames, int iCoreNum
         {
             pArchiveNames.push_back(input_path + string("lichking.MPQ"));
         }
-       
+
         // now, scan for the patch levels in the core dir
         printf(" Scanning patch levels from data directory.\n");
         sprintf(path, "%spatch", input_path);
@@ -378,7 +378,7 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames, int iCoreNum
 void Usage(char* prg)
 {
     printf(" Usage: %s [OPTION]\n\n", prg);
-    printf(" Extract client database fiels and generate map files.\n");
+    printf(" Extract client database files and generate map files.\n");
     printf("   -h, --help            show the usage\n");
     printf("   -d, --data <path>     search path for game client archives\n");
     printf("   -s, --small           extract smaller vmaps by optimizing data. Reduces\n");
@@ -392,8 +392,6 @@ void Usage(char* prg)
 bool processArgv(int argc, char** argv)
 {
     bool result = true;
-    bool hasInputPathParam = false;
-    bool preciseVectorData = true;
     char* param = NULL;
 
     for (int i = 1; i < argc; ++i)
@@ -406,7 +404,6 @@ bool processArgv(int argc, char** argv)
         else if (strcmp(argv[i], "-s") == 0 || strcmp(argv[i], "--small") == 0 )
         {
             result = true;
-            preciseVectorData = false;
         }
         else if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "--data") == 0 )
         {
@@ -418,7 +415,6 @@ bool processArgv(int argc, char** argv)
             }
 
             result = true;
-            hasInputPathParam = true;
             strcpy(input_path, param);
             if (input_path[strlen(input_path) - 1] != '\\' || input_path[strlen(input_path) - 1] != '/')
             {
@@ -516,7 +512,7 @@ int main(int argc, char** argv)
         return 1;
     }
     if (iCoreNumber == CLIENT_CLASSIC)
-    {    
+    {
         ReadLiquidTypeTableDBC();
     }
 
@@ -524,8 +520,7 @@ int main(int argc, char** argv)
     if (success)
         { success = ExtractWmo(iCoreNumber, szRawVMAPMagic); }
 
-    //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-    //map.dbc
+    // Open map.dbc
     if (success)
     {
         DBCFile* dbc = new DBCFile("DBFilesClient\\Map.dbc");
@@ -546,7 +541,7 @@ int main(int argc, char** argv)
 
 
         delete dbc;
-        ParsMapFiles(iCoreNumber, szRawVMAPMagic);
+        ParseMapFiles(iCoreNumber);
         delete [] map_ids;
         //nError = ERROR_SUCCESS;
         // Extract models, listed in DameObjectDisplayInfo.dbc
