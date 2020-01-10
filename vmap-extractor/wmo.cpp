@@ -392,7 +392,9 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
         fwrite(VERT, 4, 3, output);
         for (uint32 i = 0; i < nVertices; ++i)
             if (IndexRenum[i] >= 0)
-                { check -= fwrite(MOVT + 3 * i, sizeof(float), 3, output); }
+            {
+                check -= fwrite(MOVT + 3 * i, sizeof(float), 3, output);
+            }
 
         assert(check == 0);
 
@@ -409,7 +411,9 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
         // according to WoW.Dev Wiki:
         uint32 liquidEntry;
         if (rootWMO->liquidType & 4)
-            { liquidEntry = liquidType; }
+        {
+            liquidEntry = liquidType;
+        }
         else if (liquidType == 15)
             { liquidEntry = 0; }
         else
@@ -428,11 +432,15 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                 {
                     ++v2;
                     if (v2 >= v1)
-                        { break; }
+                    {
+                        break;
+                    }
                 }
 
                 if (v2 < v1 && (LiquBytes[v2] & 0xF) != 15)
-                    { liquidEntry = (LiquBytes[v2] & 0xF) + 1; }
+                {
+                    liquidEntry = (LiquBytes[v2] & 0xF) + 1;
+                }
             }
         }
 
@@ -572,7 +580,9 @@ WMOInstance::WMOInstance(MPQFile& f, std::string& WmoInstName, uint32 mapID, uin
     fclose(input);
 
     if (nVertices == 0 || file_read <= 0)
-        { return; }
+    {
+        return;
+    }
 
     float x, z;
     x = pos.x;
@@ -616,7 +626,9 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name.c_str());
 
     if (FileExists(szLocalFile))
-        { return true; }
+    {
+        return true;
+    }
 
     int p = 0;
     //Select root wmo files
@@ -629,12 +641,16 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
         {
             int m = cpy[i];
             if (isdigit(m))
-                { p++; }
+            {
+                p++;
+            }
         }
     }
 
     if (p == 3)
-        { return true; }
+    {
+        return true;
+    }
 
     bool file_ok = true;
     printf(" Extracting %s\n", fname.c_str());
@@ -685,7 +701,9 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
 
     // Delete the extracted file in the case of an error
     if (!file_ok)
-        { remove(szLocalFile); }
+    {
+        remove(szLocalFile);
+    }
     return true;
 }
 
@@ -708,7 +726,9 @@ bool ExtractWmo(int iCoreNumber, const void *szRawVMAPMagic)
     }
 
     if (success)
-        { printf("\n Extraction of WMO's complete, No fatal errors\n"); }
+    {
+        printf("\n Extraction of WMO's complete, No fatal errors\n");
+    }
         { printf("\n Reading Maps\n"); }
         { printf(" _______________________________________________________\n"); }
 

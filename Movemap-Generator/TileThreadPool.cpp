@@ -52,7 +52,9 @@ int TileThreadPool::svc(void)
     while (1)
     {
         if (this->getq(msg) == -1)
-          { ACE_ERROR_RETURN((LM_ERROR, "%p\n", "getq"), -1); }
+        {
+            ACE_ERROR_RETURN((LM_ERROR, "%p\n", "getq"), -1);
+        }
 
         if (msg->msg_type() == ACE_Message_Block::MB_HANGUP)
         {

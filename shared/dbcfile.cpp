@@ -146,7 +146,9 @@ size_t DBCFile::getMaxId()
     for (size_t i = 0; i < getRecordCount(); ++i)
     {
         if (maxId < getRecord(i).getUInt(0))
-            { maxId = getRecord(i).getUInt(0); }
+        {
+            maxId = getRecord(i).getUInt(0);
+        }
     }
     return maxId;
 }

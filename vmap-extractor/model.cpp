@@ -168,7 +168,9 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
     fwrite(&wsize, sizeof(int), 1, output);
     fwrite(&nVertices, sizeof(int), 1, output);
     if (nVertices > 0)
-        { fwrite(vertices, sizeof(float) * 3, nVertices, output); }
+    {
+        fwrite(vertices, sizeof(float) * 3, nVertices, output);
+    }
 
     fclose(output);
 
@@ -215,7 +217,9 @@ ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, ui
     fclose(input);
 
     if (nVertices == 0 || file_read <= 0)
-        { return; }
+    {
+        return;
+    }
 
     uint16 adtId = 0;// not used for models
     uint32 flags = MOD_M2;
@@ -256,11 +260,15 @@ bool ExtractSingleModel(std::string& origPath, std::string& fixedName, StringSet
     output += fixedName;
 
     if (FileExists(output.c_str()))
-        { return true; }
+    {
+        return true;
+    }
 
     Model mdl(origPath);                                    // Possible changed fname
     if (!mdl.open(failedPaths, iCoreNumber))
-        { return false; }
+    {
+        return false;
+    }
 
     return mdl.ConvertToVMAPModel(output, iCoreNumber, szRawVMAPMagic);
 }
@@ -288,13 +296,17 @@ void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
         path = it->getString(1);
 
         if (path.length() < 4)
-            { continue; }
+        {
+            continue;
+        }
 
         string name;
 
         string ch_ext = GetExtension(path);
         if (ch_ext.empty())
-            { continue; }
+        {
+            continue;
+        }
 
         bool result = false;
         if (ch_ext == "wmo")

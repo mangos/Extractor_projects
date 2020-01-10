@@ -31,7 +31,9 @@ bool AssembleVMAP(std::string src, std::string dest, const char* szMagic)
     VMAP::TileAssembler* ta = new VMAP::TileAssembler(src, dest);
 
     if (!ta->convertWorld2(szMagic))
-        { success = false; }
+    {
+        success = false;
+    }
 
     delete ta;
     return success;

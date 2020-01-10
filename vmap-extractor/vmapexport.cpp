@@ -459,7 +459,9 @@ int main(int argc, char** argv)
 
     // Use command line arguments, when some
     if (!processArgv(argc, argv))
-        { return 1; }
+    {
+        return 1;
+    }
 
     // some simple check if working dir is dirty
     else
@@ -503,7 +505,9 @@ int main(int argc, char** argv)
     {
         MPQArchive* archive = new MPQArchive(archiveNames[i].c_str());
         if (!gOpenArchives.size() || gOpenArchives.front() != archive)
-            { delete archive; }
+        {
+            delete archive;
+        }
     }
 
     if (gOpenArchives.empty())
@@ -518,7 +522,9 @@ int main(int argc, char** argv)
 
     // extract data
     if (success)
-        { success = ExtractWmo(iCoreNumber, szRawVMAPMagic); }
+    {
+        success = ExtractWmo(iCoreNumber, szRawVMAPMagic);
+    }
 
     // Open map.dbc
     if (success)
