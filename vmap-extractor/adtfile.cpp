@@ -34,7 +34,10 @@ ADTFile::ADTFile(char* filename): ADT(filename)
 
 bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths,int iCoreNumber, const void *szRawVMAPMagic)
 {
-    if (ADT.isEof()) { return false; }
+    if (ADT.isEof())
+    {
+        return false;
+    }
 
     uint32 size;
 
@@ -48,7 +51,7 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
     xMap = TempMapNumber.substr(TempMapNumber.find("_") + 1, (TempMapNumber.find_last_of("_") - 1) - (TempMapNumber.find("_")));
     yMap = TempMapNumber.substr(TempMapNumber.find_last_of("_") + 1, (TempMapNumber.length()) - (TempMapNumber.find_last_of("_")));
     AdtFilename.erase((AdtFilename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
-    
+
     std::string AdtMapNumber = xMap + ' ' + yMap + ' ' + GetUniformName(AdtFilename);
 
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";

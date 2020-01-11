@@ -42,7 +42,7 @@
  /* This isn't the nicest way to do things..
  * TODO: Fix this with snprintf instead and check that it still works
  */
-#define sprintf_s sprintf 
+#define sprintf_s sprintf
 #endif
 
 #if defined( __GNUC__ )
@@ -90,7 +90,7 @@ FILE* openWoWExe()
 /**
 *  This function loads up a binary file (WoW executable), then searches for and returns
 *  the build number of the file. The build number is searched for in hex form.
-* 
+*
 *  @PARAM sFilename is the filename of the WoW executable to be loaded
 *  @RETURN iBuild the build number of the WoW executable, or 0 if failed
 */
@@ -129,7 +129,7 @@ int getBuildNumber()
     /// jump over as much of the file as possible, before we start searching for the base #
     for (int i = 0; i < 3300; i++)
         fread(jumpBytesBuffer, sizeof(jumpBytesBuffer), 1, pFile);
-       
+
     /// Search for the build #
     while (fread(byteSearchBuffer, 1, 1, pFile))
     {

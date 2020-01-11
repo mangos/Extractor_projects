@@ -137,9 +137,9 @@ namespace MMAP
              *
              */
             void buildAllMaps();
-            
+
             int activate(int num_threads);
-            
+
             bool activated() const { return m_poolActivated; }
 
             /**
@@ -245,7 +245,7 @@ namespace MMAP
             int             m_numThreads;
             TileThreadPool* m_threadPool;
             bool            m_poolActivated;
-            
+
             rcContext* m_rcContext; /**< build performance - not really used for now */
     };
 }

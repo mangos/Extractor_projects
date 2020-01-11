@@ -497,8 +497,8 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                             liquidEntry = 21;   // Naxxramas slime
                         }
                         else
-                        { 
-                            liquidEntry = 4; 
+                        {
+                            liquidEntry = 4;
                         }    // Normal slime
                     }
                     if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
@@ -598,7 +598,10 @@ WMOInstance::WMOInstance(MPQFile& f, std::string& WmoInstName, uint32 mapID, uin
 
     float scale = 1.0f;
     uint32 flags = MOD_HAS_BOUND;
-    if (tileX == 65 && tileY == 65) { flags |= MOD_WORLDSPAWN; }
+    if (tileX == 65 && tileY == 65)
+    {
+        flags |= MOD_WORLDSPAWN;
+    }
     //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, Bound_lo, Bound_hi, name
     fwrite(&mapID, sizeof(uint32), 1, pDirfile);
     fwrite(&tileX, sizeof(uint32), 1, pDirfile);
@@ -622,7 +625,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     // Copy files from archive
     char szLocalFile[1024];
     string plain_name = GetUniformName(fname);
-        
+
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name.c_str());
 
     if (FileExists(szLocalFile))
@@ -682,7 +685,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
             sprintf(groupFileName, "%s_%03d.wmo", temp, i);
 
             string s(groupFileName);
-            
+
             WMOGroup fgroup(s);
             if (!fgroup.open())
             {

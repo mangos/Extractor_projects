@@ -57,7 +57,7 @@ class Tile_Message_Block : public ACE_Message_Block
     protected:
         Tile_Message_Block& operator=(const Tile_Message_Block&);
         Tile_Message_Block(const Tile_Message_Block&);
-        
+
         TileBuilder* m_tileBuilder;
 };
 

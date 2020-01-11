@@ -607,8 +607,14 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         for (int x = 0; x < ADT_GRID_SIZE; x++)
         {
             float h = V8[y][x];
-            if (maxHeight < h) { maxHeight = h; }
-            if (minHeight > h) { minHeight = h; }
+            if (maxHeight < h)
+            {
+                maxHeight = h;
+            }
+            if (minHeight > h)
+            {
+                minHeight = h;
+            }
         }
     }
     for (int y = 0; y <= ADT_GRID_SIZE; y++)
@@ -616,8 +622,14 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         for (int x = 0; x <= ADT_GRID_SIZE; x++)
         {
             float h = V9[y][x];
-            if (maxHeight < h) { maxHeight = h; }
-            if (minHeight > h) { minHeight = h; }
+            if (maxHeight < h)
+            {
+                maxHeight = h;
+            }
+            if (minHeight > h)
+            {
+                minHeight = h;
+            }
         }
     }
 
@@ -897,13 +909,31 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
             {
                 if (liquid_show[y][x])
                 {
-                    if (minX > x) { minX = x; }
-                    if (maxX < x) { maxX = x; }
-                    if (minY > y) { minY = y; }
-                    if (maxY < y) { maxY = y; }
+                    if (minX > x)
+                    {
+                        minX = x;
+                    }
+                    if (maxX < x)
+                    {
+                        maxX = x;
+                    }
+                    if (minY > y)
+                    {
+                        minY = y;
+                    }
+                    if (maxY < y)
+                    {
+                        maxY = y;
+                    }
                     float h = liquid_height[y][x];
-                    if (maxHeight < h) { maxHeight = h; }
-                    if (minHeight > h) { minHeight = h; }
+                    if (maxHeight < h)
+                    {
+                        maxHeight = h;
+                    }
+                    if (minHeight > h)
+                    {
+                        minHeight = h;
+                    }
                 }
                 else
                     { liquid_height[y][x] = CONF_use_minHeight; }

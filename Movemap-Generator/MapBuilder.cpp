@@ -84,7 +84,7 @@ namespace MMAP
         int result = -1;
         m_numThreads = num_threads;
         m_threadPool = new TileThreadPool();
-        
+
         if (m_threadPool && m_numThreads && !m_poolActivated)
         {
             result = m_threadPool->start(m_numThreads);
@@ -189,7 +189,7 @@ namespace MMAP
                 buildMap(mapID, false);
             }
         }
-        
+
         if (activated())
         {
             Tile_Message_Block *finish_mb = new Tile_Message_Block(NULL);
@@ -238,7 +238,7 @@ namespace MMAP
         }
 
         if (activated())
-          { dtFreeNavMesh(navMesh); }  // each tile will get it's own pointer to navMesh 
+          { dtFreeNavMesh(navMesh); }  // each tile will get it's own pointer to navMesh
 
         // now start building/scheduling mmtiles for each tile
         printf(" %s map %03u [%u tiles]\n", activated() ? "Scheduling" : "Building", mapID, (unsigned int)tiles->size());

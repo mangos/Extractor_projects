@@ -126,7 +126,10 @@ std::string GetUniformName(std::string& path)
       file = path.substr(found+1);
       tempPath = path.substr(0,found);
     }
-    else { file = tempPath = path; }
+    else
+    {
+        file = tempPath = path;
+    }
 
     if(!tempPath.empty())
         compute_md5(tempPath.c_str(),digest);
@@ -143,8 +146,14 @@ std::string GetExtension(std::string& path)
 {
     string ext;
     size_t foundExt = path.find_last_of(".");
-    if (foundExt != std::string::npos) { ext=path.substr(foundExt+1);}
-    else {ext.clear();}
+    if (foundExt != std::string::npos)
+    {
+        ext=path.substr(foundExt+1);
+    }
+    else
+    {
+        ext.clear();
+    }
     std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
     return ext;
 }

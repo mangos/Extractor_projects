@@ -199,7 +199,7 @@ ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, ui
         f.read(&scaleZeroOnly,4);  // The above three lines introduced a regression bug in Mangos Zero, is Fine for other cores.
         sc = scaleZeroOnly / 1024.0f; // scale factor - divide by 1024. why not just use a float?
     }
-    
+
     char tempname[512];
     sprintf(tempname, "%s/%s", szWorkDirWmo, ModelInstName.c_str());
     FILE* input;
@@ -223,7 +223,10 @@ ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, ui
 
     uint16 adtId = 0;// not used for models
     uint32 flags = MOD_M2;
-    if (tileX == 65 && tileY == 65) { flags |= MOD_WORLDSPAWN; }
+    if (tileX == 65 && tileY == 65)
+    {
+        flags |= MOD_WORLDSPAWN;
+    }
     //write mapID, tileX, tileY, Flags, ID, Pos, Rot, Scale, name
     fwrite(&mapID, sizeof(uint32), 1, pDirfile);
     fwrite(&tileX, sizeof(uint32), 1, pDirfile);
