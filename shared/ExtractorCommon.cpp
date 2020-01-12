@@ -77,10 +77,14 @@ FILE* openWoWExe()
     {
 #ifdef WIN32
         if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
+        {
             return pFile; ///< successfully located the WoW executable
+        }
 #else
         if ((pFile = fopen(ExeFileName[iFileCount], "rb")))
+        {
             return pFile; ///< successfully located the WoW executable
+        }
 #endif
     }
 
@@ -143,13 +147,21 @@ int getBuildNumber()
             fread(preWOTLKbuildNumber, sizeof(preWOTLKbuildNumber), 1, pFile);
 
             if (!memcmp(preWOTLKbuildNumber, vanillaBuild1, sizeof(preWOTLKbuildNumber))) /// build is Vanilla?
+            {
                 return 5875;
+            }
             else if (!memcmp(preWOTLKbuildNumber, vanillaBuild2, sizeof(preWOTLKbuildNumber))) /// build is Vanilla?
+            {
                 return 6005;
+            }
             else if (!memcmp(preWOTLKbuildNumber, vanillaBuild3, sizeof(preWOTLKbuildNumber))) /// build is Vanilla?
+            {
                 return 6141;
+            }
             else if (!memcmp(preWOTLKbuildNumber, tbcBuild, sizeof(preWOTLKbuildNumber))) /// build is TBC?
+            {
                 return 8606;
+            }
         }
 
         /// WOTLK, CATA, MoP
@@ -159,11 +171,17 @@ int getBuildNumber()
             fread(postTBCbuildNumber, sizeof(postTBCbuildNumber), 1, pFile);
 
             if (!memcmp(postTBCbuildNumber, wotlkBuild, sizeof(postTBCbuildNumber))) /// build is WOTLK?
+            {
                 return 12340;
+            }
             else if (!memcmp(postTBCbuildNumber, cataBuild, sizeof(postTBCbuildNumber))) /// build is CATA?
+            {
                 return 15595;
+            }
             else if (!memcmp(postTBCbuildNumber, mopBuild, sizeof(postTBCbuildNumber))) /// build is MoP?
+            {
                 return 18414;
+            }
         }
     }
 

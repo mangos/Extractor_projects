@@ -720,7 +720,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
             map.heightMapSize += sizeof(uint16_V9) + sizeof(uint16_V8);
         }
         else
-            { map.heightMapSize += sizeof(V9) + sizeof(V8); }
+        {
+            map.heightMapSize += sizeof(V9) + sizeof(V8);
+        }
     }
 
     // Get from MCLQ chunk (old)
@@ -863,7 +865,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
                             liquid_height[cy][cx] = height[pos];
                         }
                         else
-                            { liquid_height[cy][cx] = h->heightLevel1; }
+                        {
+                            liquid_height[cy][cx] = h->heightLevel1;
+                        }
                         pos++;
                     }
                 }
@@ -936,7 +940,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
                     }
                 }
                 else
-                    { liquid_height[y][x] = CONF_use_minHeight; }
+                {
+                    liquid_height[y][x] = CONF_use_minHeight;
+                }
             }
         }
         map.liquidMapOffset = map.heightMapOffset + map.heightMapSize;
@@ -971,7 +977,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
             liquidHeader.liquidType = type;
         }
         else
-            { map.liquidMapSize += sizeof(liquid_entry) + sizeof(liquid_flags); }
+        {
+            map.liquidMapSize += sizeof(liquid_entry) + sizeof(liquid_flags);
+        }
 
         if (!(liquidHeader.flags & MAP_LIQUID_NO_HEIGHT))
         {
@@ -987,7 +995,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         map.holesOffset = map.liquidMapOffset + map.liquidMapSize;
     }
     else
-        { map.holesOffset = map.heightMapOffset + map.heightMapSize; }
+    {
+        map.holesOffset = map.heightMapOffset + map.heightMapSize;
+    }
 
     map.holesSize = sizeof(holes);
     memset(holes, 0, map.holesSize);
@@ -1331,7 +1341,9 @@ int main(int argc, char** argv)
                     ExtractDBCFiles(i, true);
                 }
                 else
-                { ExtractDBCFiles(i, false); }
+                {
+                    ExtractDBCFiles(i, false);
+                }
 
                 //Close MPQs
                 CloseMPQFiles();

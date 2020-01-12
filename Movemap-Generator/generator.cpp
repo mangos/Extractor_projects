@@ -127,7 +127,9 @@ bool handleArgs(int argc, char** argv,
                 maxAngle = maxangle;
             }
             else
-                { printf("invalid option for '--maxAngle', using default\n"); }
+            {
+                printf("invalid option for '--maxAngle', using default\n");
+            }
         }
         else if (strcmp(argv[i], "--threads") == 0)
         {
@@ -143,7 +145,9 @@ bool handleArgs(int argc, char** argv,
                 num_threads = nThreads;
             }
             else
-                { printf("invalid option for '--threads', using single threaded build\n"); }
+            {
+                printf("invalid option for '--threads', using single threaded build\n");
+            }
         }
         else if (strcmp(argv[i], "--tile") == 0)
         {
@@ -186,9 +190,13 @@ bool handleArgs(int argc, char** argv,
                 skipLiquid = true;
             }
             else if (strcmp(param, "false") == 0)
-                { skipLiquid = false; }
+            {
+                skipLiquid = false;
+            }
             else
-                { printf("invalid option for '--skipLiquid', using default\n"); }
+            {
+                printf("invalid option for '--skipLiquid', using default\n");
+            }
         }
         else if (strcmp(argv[i], "--skipContinents") == 0)
         {
@@ -203,9 +211,13 @@ bool handleArgs(int argc, char** argv,
                 skipContinents = true;
             }
             else if (strcmp(param, "false") == 0)
-                { skipContinents = false; }
+            {
+                skipContinents = false;
+            }
             else
-                { printf("invalid option for '--skipContinents', using default\n"); }
+            {
+                printf("invalid option for '--skipContinents', using default\n");
+            }
         }
         else if (strcmp(argv[i], "--skipJunkMaps") == 0)
         {
@@ -220,9 +232,13 @@ bool handleArgs(int argc, char** argv,
                 skipJunkMaps = true;
             }
             else if (strcmp(param, "false") == 0)
-                { skipJunkMaps = false; }
+            {
+                skipJunkMaps = false;
+            }
             else
-                { printf("invalid option for '--skipJunkMaps', using default\n"); }
+            {
+                printf("invalid option for '--skipJunkMaps', using default\n");
+            }
         }
         else if (strcmp(argv[i], "--skipBattlegrounds") == 0)
         {
@@ -237,9 +253,13 @@ bool handleArgs(int argc, char** argv,
                 skipBattlegrounds = true;
             }
             else if (strcmp(param, "false") == 0)
-                { skipBattlegrounds = false; }
+            {
+                skipBattlegrounds = false;
+            }
             else
-                { printf("invalid option for '--skipBattlegrounds', using default\n"); }
+            {
+                printf("invalid option for '--skipBattlegrounds', using default\n");
+            }
         }
         else if (strcmp(argv[i], "--debugOutput") == 0)
         {
@@ -254,9 +274,13 @@ bool handleArgs(int argc, char** argv,
                 debugOutput = true;
             }
             else if (strcmp(param, "false") == 0)
-                { debugOutput = false; }
+            {
+                debugOutput = false;
+            }
             else
-                { printf("invalid option for '--debugOutput', using default true\n"); }
+            {
+                printf("invalid option for '--debugOutput', using default true\n");
+            }
         }
         else if (strcmp(argv[i], "--silent") == 0)
         {
@@ -275,9 +299,13 @@ bool handleArgs(int argc, char** argv,
                 bigBaseUnit = true;
             }
             else if (strcmp(param, "false") == 0)
-                { bigBaseUnit = false; }
+            {
+                bigBaseUnit = false;
+            }
             else
-                { printf("invalid option for '--bigBaseUnit', using default false\n"); }
+            {
+                printf("invalid option for '--bigBaseUnit', using default false\n");
+            }
         }
         else if (strcmp(argv[i], "--offMeshInput") == 0)
         {
@@ -403,7 +431,9 @@ int main(int argc, char** argv)
             builder.buildMap(uint32(mapnum), true);
         }
         else
-          { builder.buildAllMaps(); }
+        {
+            builder.buildAllMaps();
+        }
     }
     timer.stop();
     timer.elapsed_time(elapsed);
