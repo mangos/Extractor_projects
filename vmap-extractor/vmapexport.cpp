@@ -108,7 +108,9 @@ void compute_md5(const char* value, char* result)
     md5_finish(&ctx, digest);
 
     for(int i=0;i<16;i++)
+    {
         sprintf(result+2*i,"%02x",digest[i]);
+    }
     result[32]='\0';
 }
 
