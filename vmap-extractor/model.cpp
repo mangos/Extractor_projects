@@ -338,7 +338,9 @@ void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
     {
         printf("\n Warning: Some models could not be extracted, see below\n");
         for (StringSet::const_iterator itr = failedPaths.begin(); itr != failedPaths.end(); ++itr)
-            { printf(" Could not find file of model %s\n", itr->c_str()); }
+        {
+            printf(" Could not find file of model %s\n", itr->c_str());
+        }
         printf("\n A few of these warnings are expected to happen, so be not alarmed!\n");
     }
 

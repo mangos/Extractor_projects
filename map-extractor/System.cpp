@@ -283,7 +283,9 @@ void ReadAreaTableDBC()
     memset(areas, 0xff, (maxid + 1) * sizeof(uint16));
 
     for (uint32 x = 0; x < area_count; ++x)
-        { areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3); }
+    {
+        areas[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+    }
 
     maxAreaId = dbc.getMaxId();
 
@@ -310,7 +312,9 @@ void ReadLiquidTypeTableDBC()
     memset(LiqType, 0xff, (LiqType_maxid + 1) * sizeof(uint16));
 
     for (uint32 x = 0; x < LiqType_count; ++x)
-        { LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3); }
+    {
+        LiqType[dbc.getRecord(x).getUInt(0)] = dbc.getRecord(x).getUInt(3);
+    }
 
     printf(" Success! %lu liquid types loaded.\n", LiqType_count);
 }
@@ -703,20 +707,28 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         {
             for (int y = 0; y < ADT_GRID_SIZE; y++)
                 for (int x = 0; x < ADT_GRID_SIZE; x++)
-                    { uint8_V8[y][x] = uint8((V8[y][x] - minHeight) * step + 0.5f); }
+                {
+                    uint8_V8[y][x] = uint8((V8[y][x] - minHeight) * step + 0.5f);
+                }
             for (int y = 0; y <= ADT_GRID_SIZE; y++)
                 for (int x = 0; x <= ADT_GRID_SIZE; x++)
-                    { uint8_V9[y][x] = uint8((V9[y][x] - minHeight) * step + 0.5f); }
+                {
+                    uint8_V9[y][x] = uint8((V9[y][x] - minHeight) * step + 0.5f);
+                }
             map.heightMapSize += sizeof(uint8_V9) + sizeof(uint8_V8);
         }
         else if (heightHeader.flags & MAP_HEIGHT_AS_INT16)
         {
             for (int y = 0; y < ADT_GRID_SIZE; y++)
                 for (int x = 0; x < ADT_GRID_SIZE; x++)
-                    { uint16_V8[y][x] = uint16((V8[y][x] - minHeight) * step + 0.5f); }
+                {
+                    uint16_V8[y][x] = uint16((V8[y][x] - minHeight) * step + 0.5f);
+                }
             for (int y = 0; y <= ADT_GRID_SIZE; y++)
                 for (int x = 0; x <= ADT_GRID_SIZE; x++)
-                    { uint16_V9[y][x] = uint16((V9[y][x] - minHeight) * step + 0.5f); }
+                {
+                    uint16_V9[y][x] = uint16((V9[y][x] - minHeight) * step + 0.5f);
+                }
             map.heightMapSize += sizeof(uint16_V9) + sizeof(uint16_V8);
         }
         else
@@ -1063,7 +1075,9 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         if (!(liquidHeader.flags & MAP_LIQUID_NO_HEIGHT))
         {
             for (int y = 0; y < liquidHeader.height; y++)
-                { fwrite(&liquid_height[y + liquidHeader.offsetY][liquidHeader.offsetX], sizeof(float), liquidHeader.width, output); }
+            {
+                fwrite(&liquid_height[y + liquidHeader.offsetY][liquidHeader.offsetX], sizeof(float), liquidHeader.width, output);
+            }
         }
     }
 
@@ -1268,7 +1282,10 @@ void LoadCommonMPQFiles()
  */
 inline void CloseMPQFiles()
 {
-    for (ArchiveSet::iterator j = gOpenArchives.begin(); j != gOpenArchives.end(); ++j) { (*j)->close(); }
+    for (ArchiveSet::iterator j = gOpenArchives.begin(); j != gOpenArchives.end(); ++j)
+    {
+        (*j)->close();
+    }
     gOpenArchives.clear();
 }
 
