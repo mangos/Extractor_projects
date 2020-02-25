@@ -240,7 +240,9 @@ namespace MMAP
         }
 
         if (activated())
-          { dtFreeNavMesh(navMesh); }  // each tile will get it's own pointer to navMesh
+        {
+            dtFreeNavMesh(navMesh);   // each tile will get it's own pointer to navMesh
+        }
 
         // now start building/scheduling mmtiles for each tile
         printf(" %s map %03u [%u tiles]\n", activated() ? "Scheduling" : "Building", mapID, (unsigned int)tiles->size());

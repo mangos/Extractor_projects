@@ -51,6 +51,7 @@
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
+
 #else
 #include <io.h>
 #endif
@@ -77,10 +78,14 @@ FILE* openWoWExe()
     {
 #ifdef WIN32
         if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
+        {
             return pFile; ///< successfully located the WoW executable
+        }
 #else
         if ((pFile = fopen(ExeFileName[iFileCount], "rb")))
+        {
             return pFile; ///< successfully located the WoW executable
+        }
 #endif
     }
 
@@ -428,6 +433,7 @@ void CreateDir(const std::string& sPath)
 #else
     mkdir(sPath.c_str(), 0777);
 #endif
+
 }
 
 /**

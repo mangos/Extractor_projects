@@ -970,7 +970,9 @@ namespace MMAP
             float size;
             if (10 != sscanf(buf, "%d %d,%d (%f %f %f) (%f %f %f) %f", &mid, &tx, &ty,
                              &p0[0], &p0[1], &p0[2], &p1[0], &p1[1], &p1[2], &size))
-                { continue; }
+            {
+                continue;
+            }
 
             if ((mapID == mid) && (tileX == tx) && (tileY == ty))
             {

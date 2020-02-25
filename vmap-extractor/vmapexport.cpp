@@ -134,9 +134,13 @@ std::string GetUniformName(std::string& path)
     }
 
     if(!tempPath.empty())
+    {
         compute_md5(tempPath.c_str(),digest);
+    }
     else
+    {
         compute_md5("\\",digest);
+    }
 
     string result;
     result = result.assign(digest) + "-" + file;
@@ -235,6 +239,7 @@ void getGamePath()
 #else
     strcpy(input_path, "Data/");
 #endif
+
 }
 
 bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
@@ -325,9 +330,13 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames, int iCoreNum
             // check if locale exists:
             struct stat status;
             if (stat(localePath.c_str(), &status))
+            {
                 continue;
+            }
             if ((status.st_mode & S_IFDIR) == 0)
+            {
                 continue;
+            }
             printf(" Found locale '%s'\n", i->c_str());
             locales.push_back(*i);
         }
@@ -372,7 +381,9 @@ bool fillArchiveNameVector(std::vector<std::string>& pArchiveNames, int iCoreNum
             printf(" Locale: %s\n", i->c_str());
             sprintf(path, "%s%s/patch-%s", input_path, i->c_str(), i->c_str());
             if (scan_patches(path, pArchiveNames))
+            {
                 foundOne = true;
+            }
         }
         printf("\n");
         if (!foundOne)
