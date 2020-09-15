@@ -482,7 +482,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     }
                     if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
-                    liquidEntry = 14;
+                        liquidEntry = 14;
                     }
                     break;
                 case 2:
@@ -492,7 +492,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     }
                     if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
-                    liquidEntry = 19;
+                        liquidEntry = 19;
                     }
                     break;
                 case 3:
@@ -509,7 +509,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                     }
                     if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {
-                    liquidEntry = 20;
+                        liquidEntry = 20;
                     }
                     break;
                 default:

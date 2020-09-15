@@ -194,7 +194,7 @@ ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, ui
         f.read(&fFlags, 2); // unknown but flag 1 is used for biodome in Outland, currently this value is not used
         sc = scaleOthers / 1024.0f; // scale factor - divide by 1024. why not just use a float?
     }
-    if (coreNumber == CLIENT_CLASSIC)
+    if (coreNumber == CLIENT_CLASSIC || coreNumber == CLIENT_CATA)
     {
         f.read(&scaleZeroOnly,4);  // The above three lines introduced a regression bug in Mangos Zero, is Fine for other cores.
         sc = scaleZeroOnly / 1024.0f; // scale factor - divide by 1024. why not just use a float?

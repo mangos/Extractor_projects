@@ -158,6 +158,7 @@ DBCFile::Iterator DBCFile::begin()
     assert(data);
     return Iterator(*this, data);
 }
+
 DBCFile::Iterator DBCFile::end()
 {
     assert(data);
