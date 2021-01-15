@@ -27,13 +27,20 @@
 #include "vmapexport.h"
 #include "adtfile.h"
 
-ADTFile::ADTFile(char* filename): ADT(filename)
+ADTFile::ADTFile(char* filename): AdtFilename(filename)
 {
-    AdtFilename.assign(filename);
 }
 
 bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths,int iCoreNumber, const void *szRawVMAPMagic)
 {
+    HANDLE adtHandle;
+
+    if (!OpenNewestFile(AdtFilename.c_str(), &adtHandle)) {
+        printf("Error initializing ADT %s\n", AdtFilename);
+    }
+
+    MPQFile ADT(adtHandle, AdtFilename.c_str());
+
     if (ADT.isEof())
     {
         return false;
@@ -43,16 +50,17 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
 
     std::string xMap;
     std::string yMap;
+    std::string filename = AdtFilename;
 
-    AdtFilename.erase(AdtFilename.find(".adt"), 4);
+    filename.erase(filename.find(".adt"), 4);
     std::string TempMapNumber;
 
-    TempMapNumber = AdtFilename.substr(AdtFilename.length() - 6, 6);
+    TempMapNumber = filename.substr(filename.length() - 6, 6);
     xMap = TempMapNumber.substr(TempMapNumber.find("_") + 1, (TempMapNumber.find_last_of("_") - 1) - (TempMapNumber.find("_")));
     yMap = TempMapNumber.substr(TempMapNumber.find_last_of("_") + 1, (TempMapNumber.length()) - (TempMapNumber.find_last_of("_")));
-    AdtFilename.erase((AdtFilename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
+    filename.erase((filename.length() - xMap.length() - yMap.length() - 2), (xMap.length() + yMap.length() + 2));
 
-    std::string AdtMapNumber = xMap + ' ' + yMap + ' ' + GetUniformName(AdtFilename);
+    std::string AdtMapNumber = xMap + ' ' + yMap + ' ' + GetUniformName(filename);
 
     std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
     FILE* dirfile;
@@ -157,5 +165,4 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
 
 ADTFile::~ADTFile()
 {
-    ADT.close();
 }

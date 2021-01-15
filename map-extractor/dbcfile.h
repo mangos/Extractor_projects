@@ -27,6 +27,7 @@
 
 #include <cassert>
 #include <string>
+#include "StormLib.h"
 
 /**
  * @brief
@@ -41,6 +42,7 @@ class DBCFile
          * @param filename
          */
         DBCFile(const std::string& filename);
+        DBCFile(HANDLE file);
         /**
          * @brief
          *
@@ -292,6 +294,7 @@ class DBCFile
         size_t getMaxId();
     private:
         std::string filename; /**< TODO */
+        HANDLE fileHandle; /**< TODO */
         size_t recordSize; /**< TODO */
         size_t recordCount; /**< TODO */
         size_t fieldCount; /**< TODO */

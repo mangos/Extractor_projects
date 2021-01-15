@@ -44,7 +44,11 @@ WMORoot::WMORoot(std::string& filename) : filename(filename)
 
 bool WMORoot::open()
 {
-    MPQFile f(filename.c_str());
+    HANDLE mpqFile;
+    if (!OpenNewestFile(filename.c_str(), &mpqFile)) {
+        printf("Error opening WMO Root %s\n", filename);
+    }
+    MPQFile f(mpqFile, filename.c_str());
     if (f.isEof())
     {
         printf(" No such file %s.\n", filename.c_str());
@@ -150,7 +154,13 @@ WMOGroup::WMOGroup(std::string& filename) : filename(filename),
 
 bool WMOGroup::open()
 {
-    MPQFile f(filename.c_str());
+    HANDLE mpqHandle;
+
+    if (!OpenNewestFile(filename.c_str(), &mpqHandle)) {
+        printf("Error opening WMOGroup %s\n", filename);
+    }
+
+    MPQFile f(mpqHandle, filename.c_str());
     if (f.isEof())
     {
         printf(" No such file.\n");
@@ -635,6 +645,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     string plain_name = GetUniformName(fname);
 
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name.c_str());
+    
 
     if (FileExists(szLocalFile))
     {
@@ -665,6 +676,12 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
 
     bool file_ok = true;
     printf(" Extracting %s\n", fname.c_str());
+
+    HANDLE wmoHandle;
+
+    if (!OpenNewestFile(fname.c_str(), &wmoHandle)) {
+        printf("Error opening WMO file %s\n", fname);
+    }
 
     WMORoot froot(fname);
     if (!froot.open())
@@ -722,18 +739,22 @@ bool ExtractWmo(int iCoreNumber, const void *szRawVMAPMagic)
 {
     bool success = true;
 
-    for (ArchiveSet::const_iterator ar_itr = gOpenArchives.begin(); ar_itr != gOpenArchives.end() && success; ++ar_itr)
-    {
-        vector<std::string> filelist;
+    // Extract WMO in the reverse-order of the MPQ priority (ensure the highest priority WMO is erasing others)
 
-        (*ar_itr)->GetFileListTo(filelist);
-        for (vector<std::string>::iterator fname = filelist.begin(); fname != filelist.end() && success; ++fname)
+    for (ArchiveSet::reverse_iterator ar_itr = gOpenArchives.rbegin(); ar_itr != gOpenArchives.rend() && success; ++ar_itr)
+    {
+        SFILE_FIND_DATA data;
+        HANDLE find = SFileFindFirstFile(*ar_itr, "*.wmo", &data, NULL);
+        if (find != NULL)
         {
-            if (fname->find(".wmo") != string::npos)
+            do
             {
-                ExtractSingleWmo(*fname, iCoreNumber, szRawVMAPMagic);
-            }
+                std::string str = data.cFileName;
+                printf("Extracting wmo %s\n", str.c_str());
+                success |= ExtractSingleWmo(str, iCoreNumber, szRawVMAPMagic);
+            } while (SFileFindNextFile(find, &data));
         }
+        SFileFindClose(find);
     }
 
     if (success)

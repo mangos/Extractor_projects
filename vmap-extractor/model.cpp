@@ -26,7 +26,7 @@
 #include <algorithm>
 #include <cstdio>
 
-#include <ml/mpq.h>
+#include <mpq.h>
 #include "model.h"
 #include "wmo.h"
 #include "dbcfile.h"
@@ -39,7 +39,12 @@ Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0
 
 bool Model::open(StringSet& failedPaths, int iCoreNumber)
 {
-    MPQFile f(filename.c_str());
+    HANDLE mpqHandle;
+    if (!OpenNewestFile(filename.c_str(), &mpqHandle)) {
+        printf("Error opening model file %s\n", filename.c_str());
+        return false;
+    }
+    MPQFile f(mpqHandle, filename.c_str());
 
     ok = !f.isEof();
 
@@ -280,7 +285,12 @@ void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
 {
     printf("\n");
     printf("Extracting GameObject models...\n");
-    DBCFile dbc("DBFilesClient\\GameObjectDisplayInfo.dbc");
+    HANDLE dbcHandle;
+    if (!OpenNewestFile("DBFilesClient\\GameObjectDisplayInfo.dbc", &dbcHandle)) {
+        printf("Error opening GameObjectDisplayInfo.dbc\n");
+        return;
+    }
+    DBCFile dbc(dbcHandle);
     if (!dbc.open())
     {
         printf("Fatal error: Invalid GameObjectDisplayInfo.dbc file format!\n");

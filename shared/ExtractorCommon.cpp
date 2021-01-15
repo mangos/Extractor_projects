@@ -67,7 +67,7 @@
 *
 *  @RETURN pFile the pointer to the file, so that it can be worked on
 */
-FILE* openWoWExe()
+FILE* openWoWExe(char const* path)
 {
     FILE *pFile;
     const char* ExeFileName[] = { "WoW.exe", "Wow.exe", "wow.exe" ,"World of Warcraft.exe", "World of Warcraft.app/Contents/MacOS/World of Warcraft"};
@@ -76,13 +76,15 @@ FILE* openWoWExe()
     /// loop through all possible file names
     for (int iFileCount = 0; iFileCount < iExeSpelling; iFileCount++)
     {
+        char tmp1[512];
+        sprintf(tmp1, "%s/%s", path, ExeFileName[iFileCount]);
 #ifdef WIN32
-        if (fopen_s(&pFile, ExeFileName[iFileCount], "rb") == 0)
+        if (fopen_s(&pFile, tmp1, "rb") == 0)
         {
             return pFile; ///< successfully located the WoW executable
         }
 #else
-        if ((pFile = fopen(ExeFileName[iFileCount], "rb")))
+        if ((pFile = fopen(tmp1, "rb")))
         {
             return pFile; ///< successfully located the WoW executable
         }
@@ -99,7 +101,7 @@ FILE* openWoWExe()
 *  @PARAM sFilename is the filename of the WoW executable to be loaded
 *  @RETURN iBuild the build number of the WoW executable, or 0 if failed
 */
-int getBuildNumber()
+int getBuildNumber(char const* path)
 {
     int iBuild = -1; ///< build version # of the WoW executable (returned value)
 
@@ -124,7 +126,7 @@ int getBuildNumber()
     unsigned char mopBuild[4]      = { 0x38, 0x34, 0x31, 0x34 }; // (1)8414
 
     FILE *pFile;
-    if (!(pFile = openWoWExe()))
+    if (!(pFile = openWoWExe(path)))
     {
         printf("\nFatal Error: failed to locate the WoW executable!\n\n");
         printf("\nExiting program!!\n");

@@ -26,7 +26,7 @@
 #include "vmapexport.h"
 #include "wdtfile.h"
 
-WDTFile::WDTFile(char* file_name, char* file_name1): WDT(file_name)
+WDTFile::WDTFile(HANDLE handle, char* file_name, char* file_name1): WDT(handle, file_name)
 {
     filename.assign(file_name1);
 }
@@ -63,6 +63,20 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
 
         if (!strcmp(fourcc, "MAIN"))
         {
+            // Area Info
+            if (size != (MAP_TILE_SIZE * MAP_TILE_SIZE * sizeof(SMAreaInfo))) 
+            {
+                printf("The size for the ADT Map Tile is not the expected one. This file looks corrupted: %s", filename.c_str());
+                return false;
+            }
+
+            for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++) 
+            {
+                SMAreaInfo* info = new SMAreaInfo();
+                WDT.read(&(info->flags), 4);
+                WDT.read(&(info->asyncId), 4);
+                mapAreaInfo[i] = info;
+            }
         }
         if (!strcmp(fourcc, "MWMO"))
         {
@@ -113,17 +127,26 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
 WDTFile::~WDTFile(void)
 {
     WDT.close();
+    for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++) 
+    {
+        delete mapAreaInfo[i];
+    }
 }
 
-ADTFile* WDTFile::GetMap(int x, int z)
+bool WDTFile::hasTerrain(int x, int y)
 {
-    if (!(x >= 0 && z >= 0 && x < 64 && z < 64))
+    return (mapAreaInfo[x * MAP_TILE_SIZE + y]->flags & TERRAIN_HAS_ADT);
+}
+
+ADTFile* WDTFile::GetMap(int x, int y)
+{
+    if (!(x >= 0 && y >= 0 && x < 64 && y < 64) || !hasTerrain(x, y))
     {
         return NULL;
     }
 
     char name[512];
 
-    sprintf(name, "World\\Maps\\%s\\%s_%d_%d.adt", filename.c_str(), filename.c_str(), x, z);
+    sprintf(name, "World\\Maps\\%s\\%s_%d_%d.adt", filename.c_str(), filename.c_str(), y, x);
     return new ADTFile(name);
 }

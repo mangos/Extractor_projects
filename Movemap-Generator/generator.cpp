@@ -71,6 +71,7 @@ void printUsage(char* prg)
     printf(" Usage: %s [OPTION]\n\n", prg);
     printf(" Generate movement maps from extracted client maps.\n");
     printf("   -h, --help                        show the usage\n");
+    printf("   -i, --input <path>                search path for game client folder\n");
     printf("   --threads [#]                     number of worker threads (default 0).\n");
     printf("   --maxAngle [#]                    max walkable inclination angle.\n");
     printf("   --tile [#,#]                      build the specified tile.\n");
@@ -96,6 +97,7 @@ void printUsage(char* prg)
 }
 
 bool handleArgs(int argc, char** argv,
+                char* gameInputPath,
                 int& mapnum,
                 int& tileX,
                 int& tileY,
@@ -113,7 +115,17 @@ bool handleArgs(int argc, char** argv,
     char* param = NULL;
     for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[i], "--maxAngle") == 0)
+        if (strcmp(argv[i], "-i") == 0 || strcmp(argv[i], "--input") == 0)
+        {
+            param = argv[++i];
+            if (!param)
+            {
+                return false;
+            }
+
+            strcpy(gameInputPath, param);
+        }
+        else if (strcmp(argv[i], "--maxAngle") == 0)
         {
             param = argv[++i];
             if (!param)
@@ -350,12 +362,8 @@ int finish(const char* message, int returnValue)
 int main(int argc, char** argv)
 {
     char map_magic[16];
-    int thisBuild = getBuildNumber();
-    int iCoreNumber = getCoreNumberFromBuild(thisBuild);
-    showBanner("Movement Map Generator", iCoreNumber);
-    setMapMagicVersion(iCoreNumber, map_magic);
-    showWebsiteBanner();
 
+    char input_path[128] = ".";         /**< TODO */
     int mapnum = -1;
     float maxAngle = 60.0f;
     int tileX = -1, tileY = -1;
@@ -369,7 +377,7 @@ int main(int argc, char** argv)
     int num_threads = 0;
     char* offMeshInputPath = NULL;
 
-    bool validParam = handleArgs(argc, argv, mapnum,
+    bool validParam = handleArgs(argc, argv, input_path, mapnum,
                                  tileX, tileY, maxAngle,
                                  skipLiquid, skipContinents, skipJunkMaps, skipBattlegrounds,
                                  debugOutput, silent, bigBaseUnit, num_threads, offMeshInputPath);
@@ -378,6 +386,12 @@ int main(int argc, char** argv)
     {
         return silent ? -1 : finish(" You have specified invalid parameters (use -h for more help)", -1);
     }
+
+    int thisBuild = getBuildNumber(input_path);
+    int iCoreNumber = getCoreNumberFromBuild(thisBuild);
+    showBanner("Movement Map Generator", iCoreNumber);
+    setMapMagicVersion(iCoreNumber, map_magic);
+    showWebsiteBanner();
 
     if (mapnum == -1 && debugOutput)
     {

@@ -25,78 +25,66 @@
 #include "dbcfile.h"
 #undef min
 #undef max
-#include <ml/mpq.h>
+#include <mpq.h>
 
 #include <cstdio>
 
-DBCFile::DBCFile(const std::string& filename):
+DBCFile::DBCFile(const std::string& filename) :
     filename(filename),
     data(0)
 {
 
 }
+
+DBCFile::DBCFile(HANDLE file) : fileHandle(file), data(0)
+{
+
+}
+
 bool DBCFile::open()
 {
-    MPQFile f(filename.c_str());
-
-    // Need some error checking, otherwise an unhandled exception error occurs
-    // if people screw with the data path.
-    if (f.isEof() == true)
-    {
-        f.close();
-        data = NULL;
-        printf("Could not open DBCFile %s.\n", filename.c_str());
-        return false;
-    }
-
     unsigned char header[4];
     unsigned int na, nb, es, ss;
 
-    if (f.read(header, 4) != 4)                             // Number of records
+    if (!SFileReadFile(fileHandle, header, 4, NULL, NULL))              // Magic header
     {
-        f.close();
-        data = NULL;
-        printf("Could not read header in DBCFile %s.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("Could not read header in DBCFile %s. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
     if (header[0] != 'W' || header[1] != 'D' || header[2] != 'B' || header[3] != 'C')
     {
-        f.close();
-        data = NULL;
-        printf("The header in DBCFile %s did not match.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("The header in DBCFile %s did not match. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
-    if (f.read(&na, 4) != 4)                                // Number of records
+    if (!SFileReadFile(fileHandle, &na, 4, NULL, NULL))                 // Number of records
     {
-        f.close();
-        data = NULL;
-        printf("Could not read number of records from DBCFile %s.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("Could not read number of records from DBCFile %s. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
-    if (f.read(&nb, 4) != 4)                                // Number of fields
+    if (!SFileReadFile(fileHandle, &nb, 4, NULL, NULL))                 // Number of fields
     {
-        f.close();
-        data = NULL;
-        printf("Could not read number of fields from DBCFile %s.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("Could not read number of fields from DBCFile %s. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
-    if (f.read(&es, 4) != 4)                                // Size of a record
+    if (!SFileReadFile(fileHandle, &es, 4, NULL, NULL))                 // Size of a record
     {
-        f.close();
-        data = NULL;
-        printf("Could not read record size from DBCFile %s.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("Could not read record size from DBCFile %s. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
-    if (f.read(&ss, 4) != 4)                                // String size
+    if (!SFileReadFile(fileHandle, &ss, 4, NULL, NULL))                 // String size
     {
-        f.close();
-        data = NULL;
-        printf("Could not read string block size from DBCFile %s.\n", filename.c_str());
+        SFileCloseFile(fileHandle);
+        printf("Could not read string block size from DBCFile %s. err=%u\n", filename.c_str(), GetLastError());
         return false;
     }
 
@@ -106,8 +94,7 @@ bool DBCFile::open()
     stringSize = ss;
     if (fieldCount * 4 != recordSize)
     {
-        f.close();
-        data = NULL;
+        SFileCloseFile(fileHandle);
         printf("Field count and record size in DBCFile %s do not match.\n", filename.c_str());
         return false;
     }
@@ -116,20 +103,20 @@ bool DBCFile::open()
     stringTable = data + recordSize * recordCount;
 
     size_t data_size = recordSize * recordCount + stringSize;
-    if (f.read(data, data_size) != data_size)
+
+    if (!SFileReadFile(fileHandle, data, data_size, NULL, NULL))
     {
-        f.close();
-        data = NULL;
+        SFileCloseFile(fileHandle);
         printf("DBCFile %s did not contain expected amount of data for records.\n", filename.c_str());
         return false;
     }
 
-    f.close();
+    SFileCloseFile(fileHandle);
     return true;
 }
 DBCFile::~DBCFile()
 {
-    delete [] data;
+    delete[] data;
 }
 
 DBCFile::Record DBCFile::getRecord(size_t id)

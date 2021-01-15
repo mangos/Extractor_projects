@@ -26,7 +26,7 @@
 #define MODEL_H
 
 #include <vector>
-#include <ml/loadlib.h>
+#include <loadlib.h>
 #include "vec3d.h"
 #include "modelheaders.h"
 #include "wmo.h"

@@ -22,9 +22,7 @@ set(TOOLS_DIR "tools")
 set(EXTRACTOR_BINARIES_DIR "${CMAKE_SOURCE_DIR}/src/tools/Extractor_Binaries")
 
 set(SHARED_SRCS
-    shared/dbcfile.cpp
     shared/ExtractorCommon.cpp
-    shared/dbcfile.h
     shared/ExtractorCommon.h
 )
 
@@ -33,6 +31,7 @@ set(SHARED_SRCS
 #=======================================================#
 add_executable(map-extractor
     map-extractor/System.cpp
+    map-extractor/dbcfile.cpp
     ${SHARED_SRCS}
     $<$<BOOL:${WIN32}>:map-extractor/map-extractor.rc>
 )
@@ -66,6 +65,8 @@ endif()
 add_executable(vmap-extractor
     vmap-extractor/adtfile.cpp
     vmap-extractor/adtfile.h
+    vmap-extractor/dbcfile.cpp
+    vmap-extractor/dbcfile.h
     vmap-extractor/assembler.cpp
     vmap-extractor/model.cpp
     vmap-extractor/model.h
@@ -136,6 +137,7 @@ target_include_directories(mmap-extractor
 
 target_link_libraries(mmap-extractor
     PUBLIC
+        loadlib
         vmap2
         shared
         RecastNavigation::Recast
@@ -149,16 +151,16 @@ install(
 )
 
 install (
-	FILES "${EXTRACTOR_BINARIES_DIR}/MoveMapGen.sh"        
+	FILES "${EXTRACTOR_BINARIES_DIR}/MoveMapGen.sh"
          DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 install (
-	FILES "${EXTRACTOR_BINARIES_DIR}/offmesh.txt"        
+	FILES "${EXTRACTOR_BINARIES_DIR}/offmesh.txt"
          DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 
 install (
-	FILES "${EXTRACTOR_BINARIES_DIR}/mmap_excluded.txt"        
+	FILES "${EXTRACTOR_BINARIES_DIR}/mmap_excluded.txt"
          DESTINATION ${BIN_DIR}/${TOOLS_DIR}
 )
 

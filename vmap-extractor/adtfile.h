@@ -25,7 +25,7 @@
 #ifndef ADT_H
 #define ADT_H
 
-#include <ml/mpq.h>
+#include <mpq.h>
 #include "wmo.h"
 #include "vmapexport.h"
 #include "model.h"
@@ -172,7 +172,6 @@ class ADTFile
          */
         bool init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths,int iCoreNumber, const void *szRawVMAPMagic);
     private:
-        MPQFile ADT; /**< TODO */
         string AdtFilename; /**< TODO */
 };
 
