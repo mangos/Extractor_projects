@@ -46,7 +46,7 @@ bool WMORoot::open()
 {
     HANDLE mpqFile;
     if (!OpenNewestFile(filename.c_str(), &mpqFile)) {
-        printf("Error opening WMO Root %s\n", filename.cstr());
+        printf("Error opening WMO Root %s\n", filename.c_str());
     }
     MPQFile f(mpqFile, filename.c_str());
     if (f.isEof())
@@ -157,7 +157,7 @@ bool WMOGroup::open()
     HANDLE mpqHandle;
 
     if (!OpenNewestFile(filename.c_str(), &mpqHandle)) {
-        printf("Error opening WMOGroup %s\n", filename.cstr());
+        printf("Error opening WMOGroup %s\n", filename.c_str());
     }
 
     MPQFile f(mpqHandle, filename.c_str());
@@ -680,7 +680,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     HANDLE wmoHandle;
 
     if (!OpenNewestFile(fname.c_str(), &wmoHandle)) {
-        printf("Error opening WMO file %s\n", fname.cstr());
+        printf("Error opening WMO file %s\n", fname.c_str());
     }
 
     WMORoot froot(fname);
