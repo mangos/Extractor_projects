@@ -271,7 +271,8 @@ void ParseMapFiles(int iCoreNumber)
         sprintf(fn, "World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
 
         HANDLE handleWDT;
-        if (!OpenNewestFile(fn, &handleWDT)) {
+        if (!OpenNewestFile(fn, &handleWDT))
+        {
             printf("Error opening WDT file %s\n", fn);
             continue;
         }
@@ -561,7 +562,8 @@ void LoadCommonMPQFiles(int client)
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
         sprintf_s(dirname, "%s\\Data\\%s", input_path, Locales[i]);
-        if (!stat(dirname, &info)) {
+        if (!stat(dirname, &info))
+        {
             locale = Locales[i];
         }
     }
@@ -578,7 +580,8 @@ void LoadCommonMPQFiles(int client)
         if (ClientFileExists(filename))
         {
             HANDLE fileHandle;
-            if (!OpenArchive(filename, &fileHandle)) {
+            if (!OpenArchive(filename, &fileHandle))
+            {
                 printf("Error open archive: %s\n\n", filename);
             }
             //new MPQFile(fileHandle, filename);

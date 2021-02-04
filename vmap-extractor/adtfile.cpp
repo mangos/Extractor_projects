@@ -35,7 +35,8 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
 {
     HANDLE adtHandle;
 
-    if (!OpenNewestFile(AdtFilename.c_str(), &adtHandle)) {
+    if (!OpenNewestFile(AdtFilename.c_str(), &adtHandle))
+    {
         printf("Error initializing ADT %s\n", AdtFilename.c_str());
     }
 

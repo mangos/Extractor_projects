@@ -40,7 +40,8 @@ Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0
 bool Model::open(StringSet& failedPaths, int iCoreNumber)
 {
     HANDLE mpqHandle;
-    if (!OpenNewestFile(filename.c_str(), &mpqHandle)) {
+    if (!OpenNewestFile(filename.c_str(), &mpqHandle))
+    {
         printf("Error opening model file %s\n", filename.c_str());
         return false;
     }
@@ -286,7 +287,8 @@ void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
     printf("\n");
     printf("Extracting GameObject models...\n");
     HANDLE dbcHandle;
-    if (!OpenNewestFile("DBFilesClient\\GameObjectDisplayInfo.dbc", &dbcHandle)) {
+    if (!OpenNewestFile("DBFilesClient\\GameObjectDisplayInfo.dbc", &dbcHandle))
+    {
         printf("Error opening GameObjectDisplayInfo.dbc\n");
         return;
     }
