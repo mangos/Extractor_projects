@@ -1526,8 +1526,8 @@ void LoadCommonMPQFiles(int client)
     string locale;
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
-        sprintf_s(dirname, "%s\\Data\\%s", input_path, Locales[i]);
-        if (!stat(dirname, &info))
+        sprintf(dirname, "%s/Data/%s/locale-%s.MPQ", input_path, Locales[i], Locales[i]);
+        if (ClientFileExists(dirname))
         {
             locale = Locales[i];
         }
