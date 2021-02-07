@@ -1416,7 +1416,7 @@ void LoadLocaleMPQFiles(int const locale)
                 }
 
                 sprintf(filename, "%s/Data/%s/patch-%s%s.MPQ", input_path, Locales[locale], Locales[locale], ext);
-                if (!OpenArchive(filename))
+                if (ClientFileExists(filename) && !OpenArchive(filename))
                 {
                     printf("Error open patch archive: %s\n", filename);
                 }
