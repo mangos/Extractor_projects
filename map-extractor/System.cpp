@@ -1405,6 +1405,23 @@ void LoadLocaleMPQFiles(int const locale)
     }
 
     switch (iCoreNumber) {
+        case CLIENT_TBC:
+        case CLIENT_WOTLK:
+            for (int i = 1; i < 5; ++i)
+            {
+                char ext[3] = "";
+                if (i > 1)
+                {
+                    sprintf(ext, "-%i", i);
+                }
+
+                sprintf(filename, "%s/Data/%s/patch-%s%s.MPQ", input_path, Locales[locale], Locales[locale], ext);
+                if (ClientFileExists(filename) && !OpenArchive(filename))
+                {
+                    printf("Error open patch archive: %s\n", filename);
+                }
+            }
+            break;
         case CLIENT_CATA:
             // prepare sorted list patches in locale dir and Data root
             Updates updates;
