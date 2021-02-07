@@ -29,6 +29,10 @@
 WDTFile::WDTFile(HANDLE handle, char* file_name, char* file_name1): WDT(handle, file_name)
 {
     filename.assign(file_name1);
+    for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++)
+    {
+        mapAreaInfo[i] = NULL;
+    }
 }
 
 bool WDTFile::init(char* map_id, unsigned int mapID)
