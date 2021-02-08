@@ -111,36 +111,36 @@ static const char* kClassicMPQList[] =
 
 static const char* kTBCMPQList[] =
 {
-    "patch.MPQ",
-    "%s\\patch-%s.MPQ",
-    "%s\\patch-%s-2.MPQ",
     "patch-2.MPQ",
+    "patch.MPQ",
+    "%s/patch-%s-2.MPQ",
+    "%s/patch-%s.MPQ",
     "expansion.MPQ",
     "common.MPQ",
-    "%s\\locale-%s.MPQ",
-    "%s\\speech-%s.MPQ",
-    "%s\\expansion-locale-%s.MPQ",
-    "%s\\expansion-speech-%s.MPQ"
+    "%s/locale-%s.MPQ",
+    "%s/speech-%s.MPQ",
+    "%s/expansion-locale-%s.MPQ",
+    "%s/expansion-speech-%s.MPQ"
 };
 
 static const char* kWOTLKMPQList[] =
 {
-    "%s\\patch-%s.MPQ",
+    "%s/patch-%s.MPQ",
     "patch.MPQ",
-    "%s\\patch-%s-2.MPQ",
-    "%s\\patch-%s-3.MPQ",
+    "%s/patch-%s-2.MPQ",
+    "%s/patch-%s-3.MPQ",
     "patch-2.MPQ",
     "patch-3.MPQ",
     "expansion.MPQ",
     "lichking.MPQ",
     "common.MPQ",
     "common-2.MPQ",
-    "%s\\locale-%s.MPQ",
-    "%s\\speech-%s.MPQ",
-    "%s\\expansion-locale-%s.MPQ",
-    "%s\\lichking-locale-%s.MPQ",
-    "%s\\expansion-speech-%s.MPQ",
-    "%s\\lichking-speech-%s.MPQ"
+    "%s/locale-%s.MPQ",
+    "%s/speech-%s.MPQ",
+    "%s/expansion-locale-%s.MPQ",
+    "%s/lichking-locale-%s.MPQ",
+    "%s/expansion-speech-%s.MPQ",
+    "%s/lichking-speech-%s.MPQ"
 };
 
 /**
@@ -1530,10 +1530,10 @@ void LoadCommonMPQFiles(int client)
         if (ClientFileExists(dirname))
         {
             locale = Locales[i];
+            printf("Detected locale: %s\n", locale.c_str());
+            break;
         }
     }
-
-    printf("Detected locale: %s\n", locale.c_str());
 
     // Loading patches in reverse-order.
     for (int i = (count - 1); i >= 0; i--)
@@ -1541,7 +1541,7 @@ void LoadCommonMPQFiles(int client)
         // Replace possible locale info.
         sprintf_s(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
         // Definitive filename.
-        sprintf_s(filename, "%s\\Data\\%s", input_path, temp_file);
+        sprintf_s(filename, "%s/Data/%s", input_path, temp_file);
         printf("Loading archive %s\n", filename);
         if (ClientFileExists(filename))
         {
@@ -1659,6 +1659,7 @@ int main(int argc, char** argv)
 
                     //Close MPQs
                     CloseArchives();
+                    break;
                 }
             }
 

@@ -109,36 +109,36 @@ static const char* kClassicMPQList[] =
 
 static const char* kTBCMPQList[] =
 {
-    "patch.MPQ",
-    "%s\\patch-%s.MPQ",
-    "%s\\patch-%s-2.MPQ",
     "patch-2.MPQ",
+    "patch.MPQ",
+    "%s/patch-%s-2.MPQ",
+    "%s/patch-%s.MPQ",
     "expansion.MPQ",
     "common.MPQ",
-    "%s\\locale-%s.MPQ",
-    "%s\\speech-%s.MPQ",
-    "%s\\expansion-locale-%s.MPQ",
-    "%s\\expansion-speech-%s.MPQ"
+    "%s/locale-%s.MPQ",
+    "%s/speech-%s.MPQ",
+    "%s/expansion-locale-%s.MPQ",
+    "%s/expansion-speech-%s.MPQ"
 };
 
 static const char* kWOTLKMPQList[] =
 {
-    "%s\\patch-%s.MPQ",
+    "%s/patch-%s.MPQ",
     "patch.MPQ",
-    "%s\\patch-%s-2.MPQ",
-    "%s\\patch-%s-3.MPQ",
+    "%s/patch-%s-2.MPQ",
+    "%s/patch-%s-3.MPQ",
     "patch-2.MPQ",
     "patch-3.MPQ",
     "expansion.MPQ",
     "lichking.MPQ",
     "common.MPQ",
     "common-2.MPQ",
-    "%s\\locale-%s.MPQ",
-    "%s\\speech-%s.MPQ",
-    "%s\\expansion-locale-%s.MPQ",
-    "%s\\lichking-locale-%s.MPQ",
-    "%s\\expansion-speech-%s.MPQ",
-    "%s\\lichking-speech-%s.MPQ"
+    "%s/locale-%s.MPQ",
+    "%s/speech-%s.MPQ",
+    "%s/expansion-locale-%s.MPQ",
+    "%s/lichking-locale-%s.MPQ",
+    "%s/expansion-speech-%s.MPQ",
+    "%s/lichking-speech-%s.MPQ"
 };
 
 //static const char * szWorkDirMaps = ".\\Maps";
@@ -312,12 +312,7 @@ void ParseMapFiles(int iCoreNumber)
 
 void getGamePath()
 {
-#ifdef _WIN32
-    strcpy(input_path, "Data\\");
-#else
     strcpy(input_path, "Data/");
-#endif
-
 }
 
 bool scan_patches(char* scanmatch, std::vector<std::string>& pArchiveNames)
@@ -561,21 +556,21 @@ void LoadCommonMPQFiles(int client)
     string locale;
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
-        sprintf_s(dirname, "%s\\Data\\%s", input_path, Locales[i]);
+        sprintf_s(dirname, "%s/Data/%s", input_path, Locales[i]);
         if (!stat(dirname, &info))
         {
             locale = Locales[i];
+            printf("Detected locale: %s\n", locale.c_str());
+            break;
         }
     }
-
-    printf("Detected locale: %s\n", locale.c_str());
 
     for (int i = (count-1); i >= 0; i--)
     {
         // Replace possible locale info.
         sprintf_s(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
         // Definitive filename.
-        sprintf_s(filename, "%s\\Data\\%s", input_path, temp_file);
+        sprintf_s(filename, "%s/Data/%s", input_path, temp_file);
         printf("Loading archive %s\n", filename);
         if (ClientFileExists(filename))
         {
