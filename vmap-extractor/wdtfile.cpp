@@ -68,13 +68,13 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
         if (!strcmp(fourcc, "MAIN"))
         {
             // Area Info
-            if (size != (MAP_TILE_SIZE * MAP_TILE_SIZE * sizeof(SMAreaInfo))) 
+            if (size != (MAP_TILE_SIZE * MAP_TILE_SIZE * sizeof(SMAreaInfo)))
             {
                 printf("The size for the ADT Map Tile is not the expected one. This file looks corrupted: %s", filename.c_str());
                 return false;
             }
 
-            for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++) 
+            for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++)
             {
                 SMAreaInfo* info = new SMAreaInfo();
                 WDT.read(&(info->flags), 4);
@@ -131,7 +131,7 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
 WDTFile::~WDTFile(void)
 {
     WDT.close();
-    for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++) 
+    for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++)
     {
         delete mapAreaInfo[i];
     }
