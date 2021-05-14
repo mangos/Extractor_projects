@@ -143,6 +143,24 @@ static const char* kWOTLKMPQList[] =
     "%s/lichking-speech-%s.MPQ"
 };
 
+static const char* kCATAMPQList[] =
+{
+    "%s/expansion3-locale-%s.MPQ",
+    "%s/expansion3-speech-%s.MPQ"
+    "expansion3.MPQ",
+    "%s/expansion2-locale-%s.MPQ",
+    "%s/expansion2-speech-%s.MPQ"
+    "expansion2.MPQ",
+    "%s/expansion1-locale-%s.MPQ",
+    "%s/expansion1-speech-%s.MPQ",
+    "expansion1.MPQ",
+    "%s/locale-%s.MPQ",
+    "%s/speech-%s.MPQ",
+    "world.MPQ",
+    "world2.MPQ",
+    "alternate.MPQ",
+    "art.MPQ",
+};
 /**
  * @brief
  *
@@ -1481,6 +1499,10 @@ void LoadCommonMPQFiles(int client)
     case CLIENT_WOTLK:
         count = sizeof(kWOTLKMPQList) / sizeof(char*);
         std::copy(std::begin(kWOTLKMPQList), std::end(kWOTLKMPQList), std::begin(temp));
+        break;
+    case CLIENT_CATA:
+        count = sizeof(kCATAMPQList) / sizeof(char*);
+        std::copy(std::begin(kCATAMPQList), std::end(kCATAMPQList), std::begin(temp));
         break;
     }
 
