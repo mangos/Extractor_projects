@@ -241,44 +241,6 @@ bool HandleArgs(int argc, char** argv)
 
 }
 
-uint32 ReadBuildOldWay(int thisLocale)
-{
-    // include build info file also
-    std::string filename = std::string("component.wow-") + Locales[thisLocale] + ".txt";
-    //printf("Read %s file... ", filename.c_str());
-
-    HANDLE fileHandle{};
-
-    MPQFile m(fileHandle, filename.c_str());
-    if (m.isEof())
-    {
-        printf("Fatal error: Not found %s file!\n", filename.c_str());
-        exit(1);
-    }
-
-    std::string text = m.getPointer();
-    m.close();
-
-    size_t pos = text.find("version=\"");
-    size_t pos1 = pos + strlen("version=\"");
-    size_t pos2 = text.find("\"", pos1);
-    if (pos == text.npos || pos2 == text.npos || pos1 >= pos2)
-    {
-        printf("Fatal error: Invalid  %s file format!\n", filename.c_str());
-        exit(1);
-    }
-
-    std::string build_str = text.substr(pos1, pos2 - pos1);
-
-    int build = atoi(build_str.c_str());
-    if (build <= 0)
-    {
-        printf("Fatal error: Invalid  %s file format!\n", filename.c_str());
-        exit(1);
-    }
-    return build;
-}
-
 void AppendDBCFileListTo(HANDLE mpqHandle, std::set<std::string>& filelist)
 {
     SFILE_FIND_DATA findFileData;
