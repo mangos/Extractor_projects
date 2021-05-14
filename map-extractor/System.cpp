@@ -1187,7 +1187,7 @@ void ExtractMapsFromMpq(uint32 build)
         WDT_file wdt;
         if (!wdt.loadFile(mpq_map_name, false))
         {
-            printf("Warning: Failed loading %s map WDT data (This message can be safely ignored)\n", map_ids[z].name);
+            printf("Warning: Failed loading map %s.wdt (This message can be safely ignored)\n", map_ids[z].name);
             continue;
         }
 
@@ -1271,7 +1271,7 @@ void ExtractDBCFiles(int locale, bool basicLocale)
             ++count;
         }
     }
-    printf(" Extracted %u files\n\n", count);
+    printf("Extracted %u DBC/DB2 files\n\n", count);
 }
 
 typedef std::pair < std::string /*full_filename*/, char const* /*locale_prefix*/ > UpdatesPair;
