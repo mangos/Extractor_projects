@@ -1328,7 +1328,8 @@ void AppendPatchMPQFilesToList(char const* subdir, char const* suffix, char cons
             {
                 updates[ubuild] = UpdatesPair(ffd.cFileName, section);
             }
-        } while (FindNextFile(hFind, &ffd) != 0);
+        }
+        while (FindNextFile(hFind, &ffd) != 0);
 
         FindClose(hFind);
     }
