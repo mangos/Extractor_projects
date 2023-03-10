@@ -22,16 +22,13 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <cassert>
-#include <algorithm>
-#include <cstdio>
-
-#include <mpq.h>
-#include "model.h"
-#include "wmo.h"
-#include "dbcfile.h"
 #include "vmapexport.h"
-#include <ExtractorCommon.h>
+#include "model.h"
+#include "ExtractorCommon.h"
+#include "dbcfile.h"
+
+#include <string>
+
 
 Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0)
 {
@@ -185,7 +182,7 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
 
 
 
-ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile, int coreNumber)
+ModelInstance::ModelInstance(MPQFile& f, std::string& ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile, int coreNumber)
 {
     float ff[3];
     f.read(&id, 4);
@@ -251,7 +248,7 @@ ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, ui
 
 bool ExtractSingleModel(std::string& origPath, std::string& fixedName, StringSet& failedPaths, int iCoreNumber, const void *szRawVMAPMagic)
 {
-    string ext = GetExtension(origPath);
+    std::string ext = GetExtension(origPath);
 
     // < 3.1.0 ADT MMDX section store filename.mdx filenames for corresponded .m2 file
     if ((ext == "mdx") || (ext=="mdl"))
@@ -315,9 +312,9 @@ void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
             continue;
         }
 
-        string name;
+        std::string name;
 
-        string ch_ext = GetExtension(path);
+        std::string ch_ext = GetExtension(path);
         if (ch_ext.empty())
         {
             continue;

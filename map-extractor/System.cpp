@@ -1254,8 +1254,8 @@ void ExtractDBCFiles(int locale, bool basicLocale)
     if (iCoreNumber == CLIENT_TBC)
     {
         // extract Build info file
-        string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
-        string filename = path + mpq_name;
+        std::string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
+        std::string filename = path + mpq_name;
 
         ExtractFile(mpq_name.c_str(), filename);
     }
@@ -1270,8 +1270,8 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
         // extract Build info file
         {
-            string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
-            string filename = path + mpq_name;
+            std::string mpq_name = std::string("component.wow-") + Locales[locale] + ".txt";
+            std::string filename = path + mpq_name;
 
             ExtractFile(mpq_name.c_str(), filename);
         }
@@ -1279,9 +1279,9 @@ void ExtractDBCFiles(int locale, bool basicLocale)
 
     // extract DBCs
     int count = 0;
-    for (set<string>::iterator iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
+    for (auto iter = dbcfiles.begin(); iter != dbcfiles.end(); ++iter)
     {
-        string filename = path;
+        std::string filename = path;
         filename += (iter->c_str() + strlen("DBFilesClient\\"));
 
         if (ExtractFile(iter->c_str(), filename))
@@ -1485,7 +1485,7 @@ void LoadCommonMPQFiles(int client)
     char filename[512];
     char temp_file[512];
     int count = 0;
-    string temp[256];
+    std::string temp[256];
     switch (client)
     {
     case CLIENT_CLASSIC:
@@ -1508,7 +1508,7 @@ void LoadCommonMPQFiles(int client)
 
     char dirname[512];
     struct stat info;
-    string locale;
+    std::string locale;
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
         sprintf(dirname, "%s/Data/%s/locale-%s.MPQ", input_path, Locales[i], Locales[i]);

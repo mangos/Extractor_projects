@@ -22,44 +22,18 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <cstdio>
-#include <iostream>
-#include <vector>
-#include <list>
-#include <algorithm>
-#include <errno.h>
-
-#if defined WIN32
-#include <Windows.h>
-#include <sys/stat.h>
-#include <direct.h>
-#define mkdir _mkdir
-#else
-#include <sys/stat.h>
-
-#include <dirent.h>
-/* This isn't the nicest way to do things
- * TODO: Fix this with snprintf instead and check it still works
- */
-#define sprintf_s sprintf
-#endif
-
-#undef min
-#undef max
-
-//#pragma warning(disable : 4505)
-//#pragma comment(lib, "Winmm.lib")
-
-#include <map>
+#include "Auth/md5.h"
 
 //From Extractor
 #include "adtfile.h"
 #include "wdtfile.h"
 #include "dbcfile.h"
-#include "wmo.h"
-#include <mpq.h>
-#include "vmapexport.h"
-#include "Auth/md5.h"
+#include "model.h"
+
+//#include "wmo.h"
+//#include <mpq.h>
+//#include "vmapexport.h"
+//#include "Auth/md5.h"
 
 #include "ExtractorCommon.h"
 
@@ -159,16 +133,14 @@ bool FileExists(const char* file)
 
 void compute_md5(const char* value, char* result)
 {
-    md5_byte_t digest[16];
-    md5_state_t ctx;
-
-    mangos_md5_init(&ctx);
-    md5_append(&ctx, (const unsigned char*)value, strlen(value));
-    md5_finish(&ctx, digest);
+    MD5 ctx;
+    ctx.Initialize();
+    ctx.UpdateData((const unsigned char*)value, strlen(value));
+    ctx.Finalize();
 
     for(int i=0;i<16;i++)
     {
-        sprintf(result+2*i,"%02x",digest[i]);
+        sprintf(result + 2 * i, "%02x", (ctx.GetDigest())[i]);
     }
     result[32]='\0';
 }
@@ -177,12 +149,12 @@ std::string GetUniformName(std::string& path)
 {
     std::transform(path.begin(),path.end(),path.begin(),::tolower);
 
-    string tempPath;
-    string file;
+    std::string tempPath;
+    std::string file;
     char digest[33];
 
     std::size_t found = path.find_last_of("/\\");
-    if (found != string::npos)
+    if (found != std::string::npos)
     {
       file = path.substr(found+1);
       tempPath = path.substr(0,found);
@@ -201,7 +173,7 @@ std::string GetUniformName(std::string& path)
         compute_md5("\\",digest);
     }
 
-    string result;
+    std::string result;
     result = result.assign(digest) + "-" + file;
 
     return result;
@@ -209,7 +181,7 @@ std::string GetUniformName(std::string& path)
 
 std::string GetExtension(std::string& path)
 {
-    string ext;
+    std::string ext;
     size_t foundExt = path.find_last_of(".");
     if (foundExt != std::string::npos)
     {
@@ -534,7 +506,7 @@ void LoadCommonMPQFiles(int client)
     char filename[512];
     char temp_file[512];
     int count = 0;
-    string temp[256];
+    std::string temp[256];
     switch (client)
     {
         case CLIENT_CLASSIC:
@@ -553,7 +525,7 @@ void LoadCommonMPQFiles(int client)
 
     char dirname[512];
     struct stat info;
-    string locale;
+    std::string locale;
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
         sprintf_s(dirname, "%s/Data/%s", input_path, Locales[i]);
