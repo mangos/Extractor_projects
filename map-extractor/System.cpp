@@ -22,31 +22,16 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include <set>
+#include "ace/OS_NS_dirent.h"
 
+#include "mpq.h"
+#include "adt.h"
+#include "wdt.h"
 #include "dbcfile.h"
-#include <mpq.h>
-
-#include <adt.h>
-#include <wdt.h>
 #include "ExtractorCommon.h"
 
-#ifndef WIN32
-#include <unistd.h>
-/* This isn't the nicest way to do things..
- * TODO: Fix this with snprintf instead and check that it still works
- */
-#define sprintf_s sprintf
-#endif
-
-#ifdef WIN32
-#include "direct.h"
-#include <windows.h>
-#else
-#include <dirent.h>
-#include <sys/stat.h>
-#endif
 extern ArchiveSet gOpenArchives;    /**< TODO */
 
 /**
@@ -1354,17 +1339,17 @@ void AppendPatchMPQFilesToList(char const* subdir, char const* suffix, char cons
 
 #else
 
-    if (DIR* dp = opendir(dirname))
+    if (ACE_DIR* dp = opendir(dirname))
     {
         int ubuild = 0;
-        dirent* dirp;
-        while ((dirp = readdir(dp)) != NULL)
+        ACE_DIRENT* dirp;
+        while ((dirp = ACE_OS::readdir(dp)) != NULL)
             if (sscanf(dirp->d_name, scanname, &ubuild) == 1 && (!iCoreNumber || ubuild <= iCoreNumber))
             {
                 updates[ubuild] = UpdatesPair(dirp->d_name, section);
             }
 
-        closedir(dp);
+        ACE_OS::closedir(dp);
     }
 
 #endif
@@ -1486,6 +1471,7 @@ void LoadCommonMPQFiles(int client)
     char temp_file[512];
     int count = 0;
     std::string temp[256];
+
     switch (client)
     {
     case CLIENT_CLASSIC:
@@ -1524,9 +1510,9 @@ void LoadCommonMPQFiles(int client)
     for (int i = (count - 1); i >= 0; i--)
     {
         // Replace possible locale info.
-        sprintf_s(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
+        sprintf(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
         // Definitive filename.
-        sprintf_s(filename, "%s/Data/%s", input_path, temp_file);
+        sprintf(filename, "%s/Data/%s", input_path, temp_file);
         printf("Loading archive %s\n", filename);
         if (ClientFileExists(filename))
         {

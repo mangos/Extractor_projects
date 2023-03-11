@@ -22,6 +22,7 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
+#include "ace/OS_NS_dirent.h"
 #include "Auth/md5.h"
 
 //From Extractor
@@ -30,12 +31,8 @@
 #include "dbcfile.h"
 #include "model.h"
 
-//#include "wmo.h"
-//#include <mpq.h>
-//#include "vmapexport.h"
-//#include "Auth/md5.h"
-
 #include "ExtractorCommon.h"
+
 
 //------------------------------------------------------------------------------
 // Defines
@@ -375,11 +372,11 @@ void AppendPatchMPQFilesToList(char const* subdir, char const* suffix, char cons
 
 #else
 
-    if (DIR* dp = opendir(dirname))
+    if (ACE_DIR* dp = ACE_OS::opendir(dirname))
     {
         int ubuild = 0;
-        dirent* dirp;
-        while ((dirp = readdir(dp)) != NULL)
+        ACE_DIRENT* dirp;
+        while ((dirp = ACE_OS::readdir(dp)) != NULL)
             if (sscanf(dirp->d_name, scanname, &ubuild) == 1 && (!iCoreNumber || ubuild <= iCoreNumber))
             {
                 updates[ubuild] = UpdatesPair(dirp->d_name, section);
@@ -528,7 +525,7 @@ void LoadCommonMPQFiles(int client)
     std::string locale;
     for (int i = 0; i < LOCALES_COUNT; i++)
     {
-        sprintf_s(dirname, "%s/Data/%s", input_path, Locales[i]);
+        sprintf(dirname, "%s/Data/%s", input_path, Locales[i]);
         if (!stat(dirname, &info))
         {
             locale = Locales[i];
@@ -540,9 +537,9 @@ void LoadCommonMPQFiles(int client)
     for (int i = (count-1); i >= 0; i--)
     {
         // Replace possible locale info.
-        sprintf_s(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
+        sprintf(temp_file, temp[i].c_str(), locale.c_str(), locale.c_str());
         // Definitive filename.
-        sprintf_s(filename, "%s/Data/%s", input_path, temp_file);
+        sprintf(filename, "%s/Data/%s", input_path, temp_file);
         printf("Loading archive %s\n", filename);
         if (ClientFileExists(filename))
         {
