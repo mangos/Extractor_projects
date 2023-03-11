@@ -22,37 +22,8 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <stdio.h>
-#include <deque>
-#include <set>
-#include <cstdlib>
-#include <cstring>
+#include "ace/OS_NS_sys_stat.h"
 #include "ExtractorCommon.h"
-
-#ifdef WIN32
-#include <direct.h>
-#else
-#include <sys/stat.h>
-#endif
-
-#include <fcntl.h>
-
-#if defined( __GNUC__ )
-#define _open   open
-#define _close close
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-
-#else
-#include <io.h>
-#endif
-
-#ifdef O_LARGEFILE
-#define OPEN_FLAGS  (O_RDONLY | O_BINARY | O_LARGEFILE)
-#else
-#define OPEN_FLAGS (O_RDONLY | O_BINARY)
-#endif
 
 /**
 *  This function searches for and opens the WoW exe file, using all known variations on its spelling
@@ -414,7 +385,6 @@ void setMMapMagicVersion(int iCoreNumber, char* magic)
 //#define MMAP_VERSION 4
 
 
-
 /**
 * @Create Folders based on the path provided
 *
@@ -422,12 +392,7 @@ void setMMapMagicVersion(int iCoreNumber, char* magic)
 */
 void CreateDir(const std::string& sPath)
 {
-#ifdef WIN32
-    _mkdir(sPath.c_str());
-#else
-    mkdir(sPath.c_str(), 0777);
-#endif
-
+    ACE_OS::mkdir(sPath.c_str());
 }
 
 /**
@@ -436,16 +401,10 @@ void CreateDir(const std::string& sPath)
 * @param sFileName
 * @return bool
 */
-bool ClientFileExists(const char* sFileName)
+bool ClientFileExists(const char* file)
 {
-    int fp = _open(sFileName, OPEN_FLAGS);
-    if (fp != -1)
-    {
-        _close(fp);
-        return true;
-    }
-
-    return false;
+    ACE_stat pstat;
+    return (ACE_OS::stat(file, &pstat) == 0);
 }
 
 /**************************************************************************/
@@ -602,4 +561,3 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
 
     return false;
 }
-
