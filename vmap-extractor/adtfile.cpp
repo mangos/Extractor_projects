@@ -22,10 +22,9 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <algorithm>
-#include <cstdio>
-#include "vmapexport.h"
 #include "adtfile.h"
+#include "mpq.h"
+#include "model.h"
 
 ADTFile::ADTFile(char* filename): AdtFilename(filename)
 {

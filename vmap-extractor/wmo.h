@@ -25,14 +25,16 @@
 #ifndef WMO_H
 #define WMO_H
 
+#include <string>
+#include <set>
+
+#include "vec3d.h"
+#include "mpq.h"
+#include "loadlib.h"
+
 #define TILESIZE (533.33333f)
 #define CHUNKSIZE ((TILESIZE) / 16.0f)
 
-#include <string>
-#include <set>
-#include "vec3d.h"
-#include <mpq.h>
-#include <loadlib.h>
 
 // MOPY flags
 #define WMO_MATERIAL_NOCAMCOLLIDE    0x01

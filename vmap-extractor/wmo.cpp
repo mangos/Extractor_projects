@@ -478,7 +478,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                         {
                             if (liquidEntry == 1)   // water type
                             {
-                                if (filename.find("coilfang_raid") != string::npos)
+                                if (filename.find("coilfang_raid") != std::string::npos)
                                 {
                                     // set water type to special coilfang raid water
                                     liquidEntry = 41;
@@ -510,7 +510,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                 case 3:
                     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
                     {
-                        if ((filename.find("stratholme_raid") != string::npos) || (filename.find("Stratholme_raid") != string::npos))
+                        if ((filename.find("stratholme_raid") != std::string::npos) || (filename.find("Stratholme_raid") != std::string::npos))
                         {
                             liquidEntry = 21;   // Naxxramas slime
                         }
@@ -644,7 +644,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
 {
     // Copy files from archive
     char szLocalFile[1024];
-    string plain_name = GetUniformName(fname);
+    std::string plain_name = GetUniformName(fname);
 
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name.c_str());
 
@@ -712,7 +712,7 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
             char groupFileName[1024];
             sprintf(groupFileName, "%s_%03d.wmo", temp, i);
 
-            string s(groupFileName);
+            std::string s(groupFileName);
 
             WMOGroup fgroup(s);
             if (!fgroup.open())
