@@ -22,7 +22,6 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <cstdio>
 #include "vmapexport.h"
 #include "wdtfile.h"
 
@@ -91,10 +90,10 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
                 WDT.read(buf, size);
                 char* p = buf;
                 int q = 0;
-                gWmoInstansName = new string[size];
+                gWmoInstansName = new std::string[size];
                 while (p < buf + size)
                 {
-                    string path(p);
+                    std::string path(p);
                     gWmoInstansName[q++] = GetUniformName(path);
                     p = p + strlen(p) + 1;
                 }
@@ -107,8 +106,8 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
             if (size)
             {
                 gnWMO = (int)size / 64;
-                string gWMO_mapname;
-                string fake_mapname;
+                std::string gWMO_mapname;
+                std::string fake_mapname;
                 fake_mapname = "65 65 ";
                 //gWMO_mapname = fake_mapname + filename;
                 gWMO_mapname = fake_mapname + std::string(map_id);

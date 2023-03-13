@@ -25,10 +25,9 @@
 #ifndef ADT_H
 #define ADT_H
 
-#include <mpq.h>
-#include "wmo.h"
+#include "loadlib.h"
 #include "vmapexport.h"
-#include "model.h"
+
 
 #define TILESIZE (533.33333f)
 #define CHUNKSIZE ((TILESIZE) / 16.0f)
@@ -159,8 +158,8 @@ class ADTFile
         ~ADTFile();
         int nWMO; /**< TODO */
         int nMDX; /**< TODO */
-        string* WmoInstansName; /**< TODO */
-        string* ModelInstansName; /**< TODO */
+        std::string* WmoInstansName; /**< TODO */
+        std::string* ModelInstansName; /**< TODO */
         /**
          * @brief
          *
@@ -172,7 +171,7 @@ class ADTFile
          */
         bool init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failedPaths,int iCoreNumber, const void *szRawVMAPMagic);
     private:
-        string AdtFilename; /**< TODO */
+        std::string AdtFilename; /**< TODO */
 };
 
 #endif

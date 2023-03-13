@@ -22,10 +22,9 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <iostream>
-#include <sstream>
+#ifndef __EXTRACTOR_COMMON__
+#define __EXTRACTOR_COMMON__
+
 #include "loadlib.h"
 
 FILE* openWoWExe(char const* path = NULL);
@@ -59,3 +58,5 @@ enum CoreNumber
     CLIENT_WOD = 5,
     CLIENT_LEGION = 6
 };
+
+#endif
