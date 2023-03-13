@@ -21,6 +21,8 @@
 set(TOOLS_DIR "tools")
 set(EXTRACTOR_BINARIES_DIR "${CMAKE_SOURCE_DIR}/src/tools/Extractor_Binaries")
 
+add_subdirectory(loadlib)
+
 set(SHARED_SRCS
     shared/ExtractorCommon.cpp
     shared/ExtractorCommon.h
@@ -38,13 +40,15 @@ add_executable(map-extractor
 
 target_include_directories(map-extractor
     PUBLIC
-        shared
-        map-extractor
+      shared
+      map-extractor
 )
 
 target_link_libraries(map-extractor
     PUBLIC
-    loadlib
+      ace
+      loadlib
+      Threads::Threads
 )
 
 install(
@@ -84,14 +88,16 @@ add_executable(vmap-extractor
 
 target_include_directories(vmap-extractor
     PUBLIC
-        shared
-        vmap-extractor
+      shared
+      vmap-extractor
 )
 
 target_link_libraries(vmap-extractor
     PUBLIC
-        loadlib
-        vmap2
+      loadlib
+      vmap2
+      ace
+      Threads::Threads
 )
 
 install(
@@ -101,9 +107,9 @@ install(
 
 if(WIN32 AND MSVC)
     install(
-        FILES $<TARGET_PDB_FILE:vmap-extractor>
-        DESTINATION ${BIN_DIR}/${TOOLS_DIR}
-        OPTIONAL
+      FILES $<TARGET_PDB_FILE:vmap-extractor>
+      DESTINATION ${BIN_DIR}/${TOOLS_DIR}
+      OPTIONAL
 )
 endif()
 
@@ -131,18 +137,17 @@ add_executable(mmap-extractor
 
 target_include_directories(mmap-extractor
     PUBLIC
-        shared
-        Movemap-Generator
+      shared
+      Movemap-Generator
 )
 
 target_link_libraries(mmap-extractor
     PUBLIC
-        loadlib
-        vmap2
-        shared
-        RecastNavigation::Recast
-        Threads::Threads
-        ${OPENSSL_LIBRARIES}
+      loadlib
+      vmap2
+      shared
+      RecastNavigation::Recast
+      Threads::Threads
 )
 
 install(
