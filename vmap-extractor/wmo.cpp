@@ -48,6 +48,7 @@ bool WMORoot::open()
     if (!OpenNewestFile(filename.c_str(), &mpqFile))
     {
         printf("Error opening WMO Root %s\n", filename.c_str());
+		return false;
     }
     MPQFile f(mpqFile, filename.c_str());
     if (f.isEof())

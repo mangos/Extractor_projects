@@ -670,27 +670,31 @@ int main(int argc, char** argv)
     std::string sdir = std::string(szWorkDirWmo) + "/dir";
     std::string sdir_bin = std::string(szWorkDirWmo) + "/dir_bin";
     struct stat status;
-    bool dirty = false;
+    bool existed = false;
 
     if (!stat(sdir.c_str(), &status) || !stat(sdir_bin.c_str(), &status))
     {
         printf(" Your %s directory seems to exist, please delete it!\n", szWorkDirWmo);
-        dirty = true;
+		existed = true;
     }
 
     if (!stat(outDir.c_str(), &status))
     {
         printf(" Your %s directory seems to exist, please delete it!\n", outDir.c_str());
-        dirty = true;
+		existed = true;
     }
 
-    if (dirty)
+    if (existed)
     {
-        printf(" <press return to exit>");
+		printf("  Overwrite directory or file? \n  Enter 'y' to continue , 'n' or other to exit:");
         char garbage[2];
         int ret = scanf("%c", garbage);
-        return 1;
+		if (garbage[0]!='y') {
+			printf(" <press return to exit>");
+			return 1;
+		}
     }
+	
 
     printf(" Beginning work ....\n");
     //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -762,6 +766,8 @@ int main(int argc, char** argv)
         getchar();
         return 1;
     }
+
+	printf(" AssembleVMAP ...\n");
 
     success = AssembleVMAP(std::string(szWorkDirWmo), outDir, szRawVMAPMagic);
 
