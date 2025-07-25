@@ -192,7 +192,7 @@ std::string GetUniformName(std::string& path)
         file = tempPath = path;
     }
 
-    if(!tempPath.empty())
+    if (!tempPath.empty())
     {
         compute_md5(tempPath.c_str(),digest);
     }

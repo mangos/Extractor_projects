@@ -61,7 +61,7 @@ namespace MMAP
             {                                                                                   \
                 debugWrite(file, data);                                                         \
             }                                                                                   \
-            if(file) fclose(file);                                                              \
+            if (file) fclose(file);                                                              \
             {                                                                                   \
                 printf("%sWriting debug output...                       \r", tileString);       \
             }                                                                                   \
