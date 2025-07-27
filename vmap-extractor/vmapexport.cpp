@@ -166,7 +166,7 @@ void compute_md5(const char* value, char* result)
     md5_append(&ctx, (const unsigned char*)value, strlen(value));
     md5_finish(&ctx, digest);
 
-    for(int i=0;i<16;i++)
+    for (int i=0;i<16;i++)
     {
         sprintf(result+2*i,"%02x",digest[i]);
     }
