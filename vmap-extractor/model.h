@@ -44,6 +44,7 @@ class Model
         Vec3D* vertices; /**< TODO */
         uint16* indices; /**< TODO */
         size_t nIndices; /**< TODO */
+        uint32 nVertices; /**< TODO */
 
         /**
          * @brief
@@ -85,6 +86,8 @@ class Model
             delete[] indices;
             vertices = NULL;
             indices = NULL;
+            nIndices = 0;
+            nVertices = 0;
         }
         std::string filename; /**< TODO */
 };
