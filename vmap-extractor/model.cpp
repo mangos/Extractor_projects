@@ -33,7 +33,26 @@
 #include "vmapexport.h"
 #include <ExtractorCommon.h>
 
-Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0)
+/// Inlined M2 view/skin header for Classic/TBC (equivalent to the per-LOD skin profile).
+/// WOTLK+ stores per-view data in separate .skin files; Classic/TBC embeds all
+/// views sequentially in the M2 file starting at ofsViews.
+#pragma pack(push,1)
+struct ModelView
+{
+    uint32 nVertexCount;   ///< number of view-local vertices (= entries in lookup table)
+    uint32 ofsVertexData;  ///< offset to uint16 view→model vertex lookup array
+    uint32 nIndexCount;    ///< number of triangle indices
+    uint32 ofsIndices;     ///< offset to uint16 triangle index array
+    uint32 nBones;         ///< number of bone indices (unused by extractor)
+    uint32 ofsBones;       ///< offset to bone index data (unused by extractor)
+    uint32 nSubSections;   ///< number of texture unit assignments (batches)
+    uint32 ofsSubSections; ///< offset to sub-section array
+    uint32 nBatches;       ///< number of texture batches (unused by extractor)
+    uint32 ofsBatches;     ///< offset to batch data (unused by extractor)
+};
+#pragma pack(pop)
+
+Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0), nIndices(0), nVertices(0), boundingVertices(0), ok(false), headerClassicTBC(), headerOthers()
 {
 }
 
@@ -63,6 +82,7 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
     uint32 uofsBoundingTriangles = 0;
     uint32 unBoundingVertices = 0;
     uint32 unBoundingTriangles = 0;
+
 
     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
     {
@@ -104,20 +124,135 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
         indices = new uint16[nIndices];
         memcpy(indices, triangles, nIndices * 2);
 
+        nVertices = unBoundingVertices;
+
         f.close();
     }
     else
     {
-        //printf("not included %s\n", filename.c_str());
+        // No bounding triangles — fall back to render geometry from first view
+        // (Classic/TBC only. WOTLK+ stores render views in separate .skin files,
+        //  so the M2 header has no view offsets and this fallback cannot apply.)
+        uint32 nRenderVertices = 0;
+        uint32 nViews = 0;
+        uint32 ofsViews = 0;
+        uint32 ofsVertices = 0;
+
+        if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
+        {
+            nRenderVertices = headerClassicTBC.nVertices;
+            nViews = headerClassicTBC.nViews;
+            ofsViews = headerClassicTBC.ofsViews;
+            ofsVertices = headerClassicTBC.ofsVertices;
+        }
+
+        if (nRenderVertices > 0 && nViews > 0 && ofsViews > 0 && ofsVertices > 0)
+        {
+            size_t fileSize = f.getSize();
+            size_t const modelViewSize = sizeof(ModelView);
+
+            // Check view header is within file
+            if (ofsViews + modelViewSize <= fileSize)
+            {
+                ModelView view;
+                memcpy(&view, f.getBuffer() + ofsViews, modelViewSize);
+
+                if (view.nIndexCount > 0 && view.nVertexCount > 0 &&
+                    view.ofsIndices > 0 && view.ofsVertexData > 0 &&
+                    view.nIndexCount <= 65536 && view.nVertexCount <= 65536 &&
+                    size_t(view.ofsIndices) + size_t(view.nIndexCount) * sizeof(uint16) <= fileSize &&
+                    size_t(view.ofsVertexData) + size_t(view.nVertexCount) * sizeof(uint16) <= fileSize &&
+                    size_t(ofsVertices) + size_t(nRenderVertices) * 40 <= fileSize)
+                {
+                    // Read triangle indices from the first view
+                    nIndices = (view.nIndexCount / 3) * 3;
+                    indices = new uint16[nIndices];
+                    memcpy(indices, f.getBuffer() + view.ofsIndices, nIndices * sizeof(uint16));
+
+                    // Read vertex lookups (maps view→model vertex indices)
+                    uint16* vertexLookup = reinterpret_cast<uint16*>(f.getBuffer() + view.ofsVertexData);
+
+                    // Allocate bounding vertices (view-local count)
+                    nVertices = view.nVertexCount;
+                    vertices = new Vec3D[nVertices];
+
+                    // Resolve each view-local vertex to its model-space position
+                    // Classic M2 vertex entry at ofsVertices:
+                    //   Vec3D pos (12 bytes) + uint8[4] weights + uint8[4] bones +
+                    //   Vec3D normal (12 bytes) + Vec2D texCoord (8 bytes) = 40 bytes
+                    uint32 const M2_VERTEX_STRIDE = 40;
+                    bool badLookup = false;
+                    for (uint32 i = 0; i < view.nVertexCount; i++)
+                    {
+                        uint16 modelVertIdx = vertexLookup[i];
+                        if (modelVertIdx < nRenderVertices)
+                        {
+                            auto src = reinterpret_cast<Vec3D*>(f.getBuffer() + ofsVertices + modelVertIdx * M2_VERTEX_STRIDE);
+                            memcpy(&vertices[i], src, sizeof(Vec3D));
+                        }
+                        else
+                        {
+                            badLookup = true;
+                        }
+                    }
+
+                    if (badLookup)
+                    {
+                        delete[] vertices;
+                        delete[] indices;
+                        vertices = nullptr;
+                        indices = nullptr;
+                        nVertices = 0;
+                        nIndices = 0;
+                    }
+                    else
+                    {
+                        // Compute bounding box to validate geometry has real volume
+                        float bbMinX = vertices[0].x, bbMaxX = vertices[0].x;
+                        float bbMinY = vertices[0].y, bbMaxY = vertices[0].y;
+                        float bbMinZ = vertices[0].z, bbMaxZ = vertices[0].z;
+                        for (uint32 i = 1; i < view.nVertexCount; i++)
+                        {
+                            if (vertices[i].x < bbMinX) bbMinX = vertices[i].x;
+                            if (vertices[i].x > bbMaxX) bbMaxX = vertices[i].x;
+                            if (vertices[i].y < bbMinY) bbMinY = vertices[i].y;
+                            if (vertices[i].y > bbMaxY) bbMaxY = vertices[i].y;
+                            if (vertices[i].z < bbMinZ) bbMinZ = vertices[i].z;
+                            if (vertices[i].z > bbMaxZ) bbMaxZ = vertices[i].z;
+                        }
+
+                        // Reject near-singleton (point-like) models — BIH builder hangs when all three
+                        // bounding-box axes collapse to near-zero, making valid splits impossible
+                        if (bbMaxX - bbMinX < 0.001f && bbMaxY - bbMinY < 0.001f && bbMaxZ - bbMinZ < 0.001f)
+                        {
+                            delete[] vertices;
+                            delete[] indices;
+                            vertices = nullptr;
+                            indices = nullptr;
+                            nVertices = 0;
+                            nIndices = 0;
+                        }
+                        else
+                        {
+                            bBoundingTriangles = true;
+                        }
+                    }
+                }
+            }
+        }
+
         f.close();
+
+        if (!bBoundingTriangles)
+        {
         return false;
+    }
     }
     return true;
 }
 
 bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const void *szRawVMAPMagic)
 {
-    int N[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     FILE* output = fopen(outfilename.c_str(), "wb");
     if (!output)
     {
@@ -126,22 +261,38 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
     }
 
     fwrite(szRawVMAPMagic, 8, 1, output);
-    uint32 nVertices = 0;
-    if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
-    {
-        nVertices = headerClassicTBC.nBoundingVertices;
-    }
-    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
-    {
-        nVertices = headerOthers.nBoundingVertices;
-    }
-
     fwrite(&nVertices, sizeof(int), 1, output);
     uint32 nofgroups = 1;
     fwrite(&nofgroups, sizeof(uint32), 1, output);
-    fwrite(N, 4 * 3, 1, output); // rootwmoid, flags, groupid
-    fwrite(N, sizeof(float), 3 * 2, output); //bbox, only needed for WMO currently
-    fwrite(N, 4, 1, output); // liquidflags
+
+    uint32 rootwmoid = 0;
+    uint32 mogpflags = 0;
+    uint32 groupWMOID = 0;
+    fwrite(&rootwmoid, sizeof(uint32), 1, output);
+    fwrite(&mogpflags, sizeof(uint32), 1, output);
+    fwrite(&groupWMOID, sizeof(uint32), 1, output);
+
+    // Compute bounding box from actual vertices
+    Vec3D bmin(0, 0, 0), bmax(0, 0, 0);
+    if (nVertices > 0)
+    {
+        bmin = vertices[0];
+        bmax = vertices[0];
+        for (size_t i = 1; i < nVertices; i++)
+    {
+            if (vertices[i].x < bmin.x) bmin.x = vertices[i].x;
+            if (vertices[i].y < bmin.y) bmin.y = vertices[i].y;
+            if (vertices[i].z < bmin.z) bmin.z = vertices[i].z;
+            if (vertices[i].x > bmax.x) bmax.x = vertices[i].x;
+            if (vertices[i].y > bmax.y) bmax.y = vertices[i].y;
+            if (vertices[i].z > bmax.z) bmax.z = vertices[i].z;
+    }
+    }
+    fwrite(&bmin, sizeof(float) * 3, 1, output);
+    fwrite(&bmax, sizeof(float) * 3, 1, output);
+
+    uint32 liquidflags = 0;
+    fwrite(&liquidflags, sizeof(uint32), 1, output);
     fwrite("GRP ", 4, 1, output);
     uint32 branches = 1;
     int wsize;
@@ -156,15 +307,11 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
     fwrite(&nIndexes, sizeof(uint32), 1, output);
     if (nIndexes > 0)
     {
-        for (uint32 i = 0; i < nIndices; ++i)
+        for (uint32 i = 0; i + 2 < nIndices; i += 3)
         {
-            // index[0] -> x, index[1] -> y, index[2] -> z, index[3] -> x ...
-            if ((i % 3) - 1 == 0)
-            {
-                uint16 tmp = indices[i];
-                indices[i] = indices[i+1];
-                indices[i+1] = tmp;
-            }
+            uint16 tmp = indices[i + 1];
+            indices[i + 1] = indices[i + 2];
+            indices[i + 2] = tmp;
         }
         fwrite(indices, sizeof(unsigned short), nIndexes, output);
     }
@@ -181,6 +328,8 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
 
     return true;
 }
+
+
 
 ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile, int coreNumber)
 {
