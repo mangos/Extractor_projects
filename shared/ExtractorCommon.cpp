@@ -310,7 +310,6 @@ void showWebsiteBanner()
         );
 }
 
-
 /**
 *  This function returns the .map file 'magic' number based on the core number
 *
@@ -420,8 +419,6 @@ void setMMapMagicVersion(int iCoreNumber, char* magic)
 }
 
 //#define MMAP_VERSION 4
-
-
 
 /**
 * @Create Folders based on the path provided
@@ -610,4 +607,3 @@ bool shouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
 
     return false;
 }
-

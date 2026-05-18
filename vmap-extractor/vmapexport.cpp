@@ -640,7 +640,6 @@ bool processArgv(int argc, char** argv)
     return result;
 }
 
-
 //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 // Main
 //
@@ -745,7 +744,6 @@ int main(int argc, char** argv)
             strcpy(map_ids[x].name, dbc.getRecord(x).getString(1));
             printf(" Map %d - %s\n", map_ids[x].id, map_ids[x].name);
         }
-
 
         ParseMapFiles(iCoreNumber);
         delete [] map_ids;

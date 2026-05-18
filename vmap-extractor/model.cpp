@@ -64,7 +64,6 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
     uint32 unBoundingVertices = 0;
     uint32 unBoundingTriangles = 0;
 
-
     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
     {
         memcpy(&headerClassicTBC, f.getBuffer(), sizeof(ModelHeaderClassicTBC));
@@ -182,8 +181,6 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
 
     return true;
 }
-
-
 
 ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile, int coreNumber)
 {

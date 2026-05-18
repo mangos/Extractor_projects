@@ -50,10 +50,18 @@
 class WMORoot
 {
     public:
-        uint32 nTextures, nGroups, nP, nLights, nModels, nDoodads, nDoodadSets, RootWMOID, liquidType; /**< TODO */
-        unsigned int col; /**< TODO */
-        float bbcorn1[3]; /**< TODO */
-        float bbcorn2[3]; /**< TODO */
+        uint32 nTextures;      /**< Number of textures in WMO */
+        uint32 nGroups;        /**< Number of groups in WMO */
+        uint32 nP;             /**< Number of portals in WMO */
+        uint32 nLights;        /**< Number of lights in WMO */
+        uint32 nModels;        /**< Number of models in WMO */
+        uint32 nDoodads;       /**< Number of doodads in WMO */
+        uint32 nDoodadSets;    /**< Number of doodad sets in WMO */
+        uint32 RootWMOID;      /**< Root WMO identifier */
+        uint32 liquidType;     /**< Liquid type for WMO */
+        unsigned int col;      /**< Color/ambient information */
+        float bbcorn1[3];      /**< Bounding box corner 1 (x,y,z) */
+        float bbcorn2[3];      /**< Bounding box corner 2 (x,y,z) */
 
         /**
          * @brief
@@ -81,7 +89,7 @@ class WMORoot
          */
         bool ConvertToVMAPRootWmo(FILE* output, const void *szRawVMAPMagic);
     private:
-        std::string filename; /**< TODO */
+        std::string filename; /**< WMO filename for this group */
 };
 
 /**
@@ -90,11 +98,14 @@ class WMORoot
  */
 struct WMOLiquidHeader
 {
-    int xverts, yverts, xtiles, ytiles; /**< TODO */
-    float pos_x; /**< TODO */
-    float pos_y; /**< TODO */
-    float pos_z; /**< TODO */
-    short type; /**< TODO */
+    int xverts;           /**< Number of vertices in X direction */
+    int yverts;           /**< Number of vertices in Y direction */
+    int xtiles;           /**< Number of tiles in X direction */
+    int ytiles;           /**< Number of tiles in Y direction */
+    float pos_x;          /**< Liquid position X coordinate */
+    float pos_y;          /**< Liquid position Y coordinate */
+    float pos_z;          /**< Liquid position Z coordinate */
+    short type;           /**< Liquid type identifier */
 };
 
 /**
@@ -103,9 +114,9 @@ struct WMOLiquidHeader
  */
 struct WMOLiquidVert
 {
-    uint16 unk1; /**< TODO */
-    uint16 unk2; /**< TODO */
-    float height; /**< TODO */
+    uint16 unk1;         /**< Unknown field 1 - reserved for future use */
+    uint16 unk2;         /**< Unknown field 2 - reserved for future use */
+    float height;        /**< Height value for liquid vertex */
 };
 
 /**
@@ -116,29 +127,35 @@ class WMOGroup
 {
     public:
         // MOGP
-        int groupName, descGroupName, mogpFlags; /**< TODO */
-        float bbcorn1[3]; /**< TODO */
-        float bbcorn2[3]; /**< TODO */
-        uint16 moprIdx; /**< TODO */
-        uint16 moprNItems; /**< TODO */
-        uint16 nBatchA; /**< TODO */
-        uint16 nBatchB; /**< TODO */
-        uint32 nBatchC, fogIdx, liquidType, groupWMOID; /**< TODO */
+        int groupName;              /**< Group name identifier */
+        int descGroupName;          /**< Description group name identifier */
+        int mogpFlags;              /**< MOGP flags for group properties */
+        float bbcorn1[3];           /**< Bounding box corner 1 (x,y,z) */
+        float bbcorn2[3];           /**< Bounding box corner 2 (x,y,z) */
+        uint16 moprIdx;             /**< MOPR index */
+        uint16 moprNItems;          /**< Number of MOPR items */
+        uint16 nBatchA;             /**< Number of batch A items */
+        uint16 nBatchB;             /**< Number of batch B items */
+        uint32 nBatchC;             /**< Number of batch C items */
+        uint32 fogIdx;              /**< Fog index */
+        uint32 liquidType;          /**< Liquid type for group */
+        uint32 groupWMOID;          /**< Group WMO identifier */
 
-        int mopy_size, moba_size; /**< TODO */
-        int LiquEx_size; /**< TODO */
-        unsigned int nVertices; /**< number when loaded */
-        int nTriangles; /**< number when loaded */
-        char* MOPY; /**< TODO */
-        uint16* MOVI; /**< TODO */
-        uint16* MoviEx; /**< TODO */
-        float* MOVT; /**< TODO */
-        uint16* MOBA; /**< TODO */
-        int* MobaEx; /**< TODO */
-        WMOLiquidHeader* hlq; /**< TODO */
-        WMOLiquidVert* LiquEx; /**< TODO */
-        char* LiquBytes; /**< TODO */
-        uint32 liquflags; /**< TODO */
+        int mopy_size;              /**< Size of MOPY data */
+        int moba_size;              /**< Size of MOBA data */
+        int LiquEx_size;            /**< Size of liquid data */
+        unsigned int nVertices;     /**< Number of vertices when loaded */
+        int nTriangles;             /**< Number of triangles when loaded */
+        char* MOPY;                 /**< Material/operation data */
+        uint16* MOVI;               /**< Vertex indices */
+        uint16* MoviEx;             /**< Extended vertex indices */
+        float* MOVT;                /**< Vertex positions */
+        uint16* MOBA;               /**< Batches */
+        int* MobaEx;                /**< Extended batch data */
+        WMOLiquidHeader* hlq;       /**< Liquid header */
+        WMOLiquidVert* LiquEx;      /**< Liquid vertices */
+        char* LiquBytes;            /**< Liquid byte data */
+        uint32 liquflags;           /**< Liquid flags */
 
         /**
          * @brief
@@ -169,7 +186,7 @@ class WMOGroup
         int ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPreciseVectorData, int iCoreNumber);
 
     private:
-        std::string filename; /**< TODO */
+        std::string filename; /**< WMO filename for this group */
 };
 
 /**

@@ -174,7 +174,6 @@ namespace MMAP
              */
             void buildNavMesh(int mapID, dtNavMesh*& navMesh, dtNavMeshParams*& navMeshParams);
 
-
             /**
              * @brief move map building
              *

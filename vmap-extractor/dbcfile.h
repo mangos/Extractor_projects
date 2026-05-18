@@ -69,19 +69,23 @@ public:
          * @param message
          */
         Exception(const std::string& message) : message(message)
-        { }
+        {}
         /**
          * @brief
          *
          */
         virtual ~Exception()
-        { }
+        {}
         /**
          * @brief
          *
          * @return const std::string
          */
-        const std::string& getMessage() { return message; }
+        const std::string& getMessage()
+        {
+             return message;
+        }
+
     private:
         std::string message; /**< TODO */
     };
@@ -97,7 +101,7 @@ public:
          *
          */
         NotFound() : Exception("Key was not found")
-        { }
+        {}
     };
     class Iterator;
     /**

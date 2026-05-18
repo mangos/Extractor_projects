@@ -648,7 +648,6 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
 
     sprintf(szLocalFile, "%s/%s", szWorkDirWmo, plain_name.c_str());
 
-
     if (FileExists(szLocalFile))
     {
         return true;

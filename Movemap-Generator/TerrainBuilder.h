@@ -151,7 +151,10 @@ namespace MMAP
              *
              * @return bool
              */
-            bool usesLiquids() { return !m_skipLiquid; }
+            bool usesLiquids()
+            {
+                 return !m_skipLiquid;
+            }
 
             /**
              * @brief vert and triangle methods

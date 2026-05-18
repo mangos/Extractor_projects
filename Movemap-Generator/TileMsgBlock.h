@@ -33,8 +33,16 @@ class TileBuilder
     public:
         TileBuilder(MMAP::MapBuilder* builder, int mapID, int tileX, int tileY, dtNavMesh* mesh) :
             m_navMesh(mesh), m_tileY(tileY), m_tileX(tileX), m_mapID(mapID), m_builder(builder) {}
-        ~TileBuilder() { delete m_navMesh; }
-        void Work() { m_builder->buildTile(m_mapID, m_tileX, m_tileY, m_navMesh); }
+        ~TileBuilder()
+        {
+             delete m_navMesh;
+        }
+
+        void Work()
+        {
+             m_builder->buildTile(m_mapID, m_tileX, m_tileY, m_navMesh);
+        }
+
     private:
         int m_mapID;
         int m_tileX;
@@ -43,14 +51,16 @@ class TileBuilder
         dtNavMesh* m_navMesh;
 };
 
-
 class Tile_Message_Block : public ACE_Message_Block
 {
     public:
         typedef ACE_Message_Block BASE;
 
         Tile_Message_Block(TileBuilder* _tileBuilder, size_t size = 0) : BASE(size), m_tileBuilder(_tileBuilder) {}
-        ~Tile_Message_Block() { delete m_tileBuilder; }
+        ~Tile_Message_Block()
+        {
+             delete m_tileBuilder;
+        }
 
         TileBuilder* GetTileBuilder() const { return m_tileBuilder; }
 

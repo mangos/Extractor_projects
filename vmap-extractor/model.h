@@ -72,7 +72,10 @@ class Model
          * @brief
          *
          */
-        ~Model() {_unload();}
+        ~Model()
+        {
+            _unload();
+        }
 
     private:
         /**

@@ -28,7 +28,6 @@
 #include "ace/Task.h"
 #include "ace/Barrier.h"
 
-
 class TileThreadPool : public ACE_Task<ACE_MT_SYNCH>
 {
 public:

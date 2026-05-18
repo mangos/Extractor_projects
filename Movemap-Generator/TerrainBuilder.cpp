@@ -31,11 +31,10 @@
 #include "MapTree.h"
 #include "ModelInstance.h"
 
-
 namespace MMAP
 {
-    TerrainBuilder::TerrainBuilder(bool skipLiquid) : m_skipLiquid(skipLiquid) { }
-    TerrainBuilder::~TerrainBuilder() { }
+    TerrainBuilder::TerrainBuilder(bool skipLiquid) : m_skipLiquid(skipLiquid) {}
+    TerrainBuilder::~TerrainBuilder() {}
 
     /**************************************************************************/
     void TerrainBuilder::getLoopVars(Spot portion, int& loopStart, int& loopEnd, int& loopInc)
