@@ -1382,7 +1382,8 @@ void LoadLocaleMPQFiles(int const locale)
         return;
     }
 
-    switch (iCoreNumber) {
+    switch (iCoreNumber)
+    {
         case CLIENT_TBC:
         case CLIENT_WOTLK:
             for (int i = 1; i < 5; ++i)
@@ -1586,7 +1587,8 @@ int main(int argc, char** argv)
 
     int FirstLocale = -1;
 
-    switch (iCoreNumber) {
+    switch (iCoreNumber)
+    {
         case CLIENT_CLASSIC:
             // Open MPQs
             LoadCommonMPQFiles(iCoreNumber);

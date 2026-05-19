@@ -83,7 +83,6 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
     uint32 unBoundingVertices = 0;
     uint32 unBoundingTriangles = 0;
 
-
     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
     {
         memcpy(&headerClassicTBC, f.getBuffer(), sizeof(ModelHeaderClassicTBC));
@@ -245,8 +244,8 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
 
         if (!bBoundingTriangles)
         {
-        return false;
-    }
+            return false;
+        }
     }
     return true;
 }
@@ -279,14 +278,14 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
         bmin = vertices[0];
         bmax = vertices[0];
         for (size_t i = 1; i < nVertices; i++)
-    {
+        {
             if (vertices[i].x < bmin.x) bmin.x = vertices[i].x;
             if (vertices[i].y < bmin.y) bmin.y = vertices[i].y;
             if (vertices[i].z < bmin.z) bmin.z = vertices[i].z;
             if (vertices[i].x > bmax.x) bmax.x = vertices[i].x;
             if (vertices[i].y > bmax.y) bmax.y = vertices[i].y;
             if (vertices[i].z > bmax.z) bmax.z = vertices[i].z;
-    }
+        }
     }
     fwrite(&bmin, sizeof(float) * 3, 1, output);
     fwrite(&bmax, sizeof(float) * 3, 1, output);
@@ -328,8 +327,6 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
 
     return true;
 }
-
-
 
 ModelInstance::ModelInstance(MPQFile& f, string& ModelInstName, uint32 mapID, uint32 tileX, uint32 tileY, FILE* pDirfile, int coreNumber)
 {
