@@ -434,7 +434,8 @@ void LoadLocaleMPQFiles(int const locale)
         return;
     }
 
-    switch (iCoreNumber) {
+    switch (iCoreNumber)
+    {
         case CLIENT_TBC:
         case CLIENT_WOTLK:
             for (int i = 1; i < 5; ++i)
