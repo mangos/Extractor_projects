@@ -54,11 +54,13 @@ class WDTFile
          * @param file_name1
          */
         WDTFile(HANDLE handle, char* file_name, char* file_name1);
+
         /**
          * @brief
          *
          */
         ~WDTFile(void);
+
         /**
          * @brief
          *

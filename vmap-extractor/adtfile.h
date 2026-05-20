@@ -152,6 +152,7 @@ class ADTFile
          * @param filename
          */
         ADTFile(char* filename);
+
         /**
          * @brief
          *
@@ -161,6 +162,7 @@ class ADTFile
         int nMDX; /**< TODO */
         string* WmoInstansName; /**< TODO */
         string* ModelInstansName; /**< TODO */
+
         /**
          * @brief
          *

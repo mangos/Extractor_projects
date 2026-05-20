@@ -33,6 +33,7 @@
 
 namespace MMAP
 {
+
     /**
      * @brief this class gathers all debug info holding and output
      *
@@ -51,6 +52,7 @@ namespace MMAP
          */
         IntermediateValues() :  compactHeightfield(NULL), heightfield(NULL),
             contours(NULL), polyMesh(NULL), polyMeshDetail(NULL) {}
+
         /**
          * @brief
          *
@@ -73,6 +75,7 @@ namespace MMAP
          * @param mesh
          */
         void debugWrite(FILE* file, const rcHeightfield* mesh);
+
         /**
          * @brief
          *
@@ -80,6 +83,7 @@ namespace MMAP
          * @param chf
          */
         void debugWrite(FILE* file, const rcCompactHeightfield* chf);
+
         /**
          * @brief
          *
@@ -87,6 +91,7 @@ namespace MMAP
          * @param cs
          */
         void debugWrite(FILE* file, const rcContourSet* cs);
+
         /**
          * @brief
          *
@@ -94,6 +99,7 @@ namespace MMAP
          * @param mesh
          */
         void debugWrite(FILE* file, const rcPolyMesh* mesh);
+
         /**
          * @brief
          *

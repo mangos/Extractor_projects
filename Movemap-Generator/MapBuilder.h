@@ -46,22 +46,26 @@ using namespace VMAP;
 
 namespace MMAP
 {
+
     /**
      * @brief
      *
      */
     typedef map<uint32, set<uint32>*> TileList;
+
     /**
      * @brief
      *
      */
     struct Tile
     {
+
         /**
          * @brief
          *
          */
         Tile() : chf(NULL), solid(NULL), cset(NULL), pmesh(NULL), dmesh(NULL) {}
+
         /**
          * @brief
          *
@@ -158,6 +162,7 @@ namespace MMAP
              *
              */
             void discoverTiles();
+
             /**
              * @brief
              *
@@ -206,6 +211,7 @@ namespace MMAP
             void getTileBounds(int tileX, int tileY,
                                float* verts, int vertCount,
                                float* bmin, float* bmax);
+
             /**
              * @brief
              *

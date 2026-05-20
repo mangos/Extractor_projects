@@ -184,8 +184,8 @@ std::string GetUniformName(std::string& path)
     std::size_t found = path.find_last_of("/\\");
     if (found != string::npos)
     {
-      file = path.substr(found+1);
-      tempPath = path.substr(0,found);
+    file = path.substr(found+1);
+    tempPath = path.substr(0,found);
     }
     else
     {

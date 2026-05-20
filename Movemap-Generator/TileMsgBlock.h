@@ -35,12 +35,12 @@ class TileBuilder
             m_navMesh(mesh), m_tileY(tileY), m_tileX(tileX), m_mapID(mapID), m_builder(builder) {}
         ~TileBuilder()
         {
-             delete m_navMesh;
+            delete m_navMesh;
         }
 
         void Work()
         {
-             m_builder->buildTile(m_mapID, m_tileX, m_tileY, m_navMesh);
+            m_builder->buildTile(m_mapID, m_tileX, m_tileY, m_navMesh);
         }
 
     private:
@@ -59,7 +59,7 @@ class Tile_Message_Block : public ACE_Message_Block
         Tile_Message_Block(TileBuilder* _tileBuilder, size_t size = 0) : BASE(size), m_tileBuilder(_tileBuilder) {}
         ~Tile_Message_Block()
         {
-             delete m_tileBuilder;
+            delete m_tileBuilder;
         }
 
         TileBuilder* GetTileBuilder() const { return m_tileBuilder; }

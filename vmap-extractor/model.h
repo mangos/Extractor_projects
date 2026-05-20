@@ -53,6 +53,7 @@ class Model
          * @return bool
          */
         bool open(std::set<std::string>& failedPaths, int iCoreNumber);
+
         /**
          * @brief
          *
@@ -69,6 +70,7 @@ class Model
          * @param filename
          */
         Model(std::string& filename);
+
         /**
          * @brief
          *
@@ -115,6 +117,7 @@ class ModelInstance
          *
          */
         ModelInstance() {}
+
         /**
          * @brief
          *

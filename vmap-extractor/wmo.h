@@ -69,6 +69,7 @@ class WMORoot
          * @param filename
          */
         WMORoot(std::string& filename);
+
         /**
          * @brief
          *
@@ -81,6 +82,7 @@ class WMORoot
          * @return bool
          */
         bool open();
+
         /**
          * @brief
          *
@@ -163,6 +165,7 @@ class WMOGroup
          * @param filename
          */
         WMOGroup(std::string& filename);
+
         /**
          * @brief
          *
@@ -175,6 +178,7 @@ class WMOGroup
          * @return bool
          */
         bool open();
+
         /**
          * @brief
          *

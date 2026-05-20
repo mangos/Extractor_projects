@@ -39,6 +39,7 @@ using namespace MaNGOS;
 
 namespace MMAP
 {
+
     /**
      * @brief
      *
@@ -76,6 +77,7 @@ namespace MMAP
     // see following files:
     // src/tools/map-extractor/system.cpp
     // src/game/GridMap.cpp
+
     /**
      * @brief
      *
@@ -110,6 +112,7 @@ namespace MMAP
              * @param skipLiquid
              */
             TerrainBuilder(bool skipLiquid);
+
             /**
              * @brief
              *
@@ -125,6 +128,7 @@ namespace MMAP
              * @param meshData
              */
             void loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, char const* MAP_VERSION_MAGIC);
+
             /**
              * @brief
              *
@@ -135,6 +139,7 @@ namespace MMAP
              * @return bool
              */
             bool loadVMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData);
+
             /**
              * @brief
              *
@@ -153,7 +158,7 @@ namespace MMAP
              */
             bool usesLiquids()
             {
-                 return !m_skipLiquid;
+                return !m_skipLiquid;
             }
 
             /**
@@ -167,6 +172,7 @@ namespace MMAP
              */
             static void transform(vector<G3D::Vector3>& original, vector<G3D::Vector3>& transformed,
                                   float scale, G3D::Matrix3& rotation, G3D::Vector3& position);
+
             /**
              * @brief
              *
@@ -174,6 +180,7 @@ namespace MMAP
              * @param dest
              */
             static void copyVertices(vector<G3D::Vector3>& source, G3D::Array<float>& dest);
+
             /**
              * @brief
              *
@@ -183,6 +190,7 @@ namespace MMAP
              * @param flip
              */
             static void copyIndices(vector<VMAP::MeshTriangle>& source, G3D::Array<int>& dest, int offest, bool flip);
+
             /**
              * @brief
              *
@@ -191,6 +199,7 @@ namespace MMAP
              * @param offset
              */
             static void copyIndices(G3D::Array<int>& src, G3D::Array<int>& dest, int offset);
+
             /**
              * @brief
              *
@@ -293,6 +302,7 @@ namespace MMAP
              *
              */
             TerrainBuilder();
+
             /**
              * @brief hide copy constructor
              *

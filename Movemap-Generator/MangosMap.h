@@ -28,6 +28,7 @@
 // following is copied from src/game/GridMap.h (too many useless includes there to use original file)
 namespace MaNGOS
 {
+
     /**
      * @brief
      *

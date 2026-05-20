@@ -43,6 +43,7 @@ class DBCFile
          */
         DBCFile(const std::string& filename);
         DBCFile(HANDLE file);
+
         /**
          * @brief
          *
@@ -70,12 +71,14 @@ class DBCFile
                  */
                 Exception(const std::string& message): message(message)
                 {}
+
                 /**
                  * @brief
                  *
                  */
                 virtual ~Exception()
                 {}
+
                 /**
                  * @brief
                  *
@@ -89,6 +92,7 @@ class DBCFile
             private:
                 std::string message; /**< TODO */
         };
+
         /**
          * @brief
          *
@@ -104,6 +108,7 @@ class DBCFile
                 {}
         };
         class Iterator;
+
         /**
          * @brief Iteration over database
          *
@@ -123,6 +128,7 @@ class DBCFile
                     offset = r.offset;
                     return *this;
                 }
+
                 /**
                  * @brief
                  *
@@ -134,6 +140,7 @@ class DBCFile
                     assert(field < file.fieldCount);
                     return *reinterpret_cast<float*>(offset + (field * 4));
                 }
+
                 /**
                  * @brief
                  *
@@ -145,6 +152,7 @@ class DBCFile
                     assert(field < file.fieldCount);
                     return *reinterpret_cast<unsigned int*>(offset + (field * 4));
                 }
+
                 /**
                  * @brief
                  *
@@ -156,6 +164,7 @@ class DBCFile
                     assert(field < file.fieldCount);
                     return *reinterpret_cast<int*>(offset + (field * 4));
                 }
+
                 /**
                  * @brief
                  *
@@ -167,6 +176,7 @@ class DBCFile
                     assert(ofs < file.recordSize);
                     return *reinterpret_cast<unsigned char*>(offset + ofs);
                 }
+
                 /**
                  * @brief
                  *
@@ -210,6 +220,7 @@ class DBCFile
                  */
                 Iterator(DBCFile& file, unsigned char* offset):
                     record(file, offset) {}
+
                 /**
                  * @brief Advance (prefix only)
                  *
@@ -220,12 +231,14 @@ class DBCFile
                     record.offset += record.file.recordSize;
                     return *this;
                 }
+
                 /**
                  * @brief Return address of current instance
                  *
                  * @return const Record &operator
                  */
                 Record const& operator*() const { return record; }
+
                 /**
                  * @brief
                  *
@@ -235,6 +248,7 @@ class DBCFile
                 {
                     return &record;
                 }
+
                 /**
                  * @brief Comparison
                  *
@@ -245,6 +259,7 @@ class DBCFile
                 {
                     return record.offset == b.record.offset;
                 }
+
                 /**
                  * @brief
                  *
@@ -266,30 +281,35 @@ class DBCFile
          * @return Record
          */
         Record getRecord(size_t id);
+
         /**
          * @brief Get begin iterator over records
          *
          * @return Iterator
          */
         Iterator begin();
+
         /**
          * @brief Get begin iterator over records
          *
          * @return Iterator
          */
         Iterator end();
+
         /**
          * @brief Trivial
          *
          * @return size_t
          */
         size_t getRecordCount() const { return recordCount;}
+
         /**
          * @brief
          *
          * @return size_t
          */
         size_t getFieldCount() const { return fieldCount; }
+
         /**
          * @brief
          *

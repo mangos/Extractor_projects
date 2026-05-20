@@ -66,6 +66,7 @@ char output_path[128] = ".";        /**< TODO */
 char input_path[128] = ".";         /**< TODO */
 uint32 maxAreaId = 0;               /**< TODO */
 int iCoreNumber = 0;
+
 /**
  * @brief Data types which can be extracted
  *
@@ -161,6 +162,7 @@ static const char* kCATAMPQList[] =
     "alternate.MPQ",
     "art.MPQ",
 };
+
 /**
  * @brief
  *
