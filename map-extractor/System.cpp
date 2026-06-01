@@ -34,7 +34,8 @@
 
 #ifndef WIN32
 #include <unistd.h>
-/* This isn't the nicest way to do things..
+
+/** This isn't the nicest way to do things..
  * TODO: Fix this with snprintf instead and check that it still works
  */
 #define sprintf_s sprintf
@@ -47,6 +48,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #endif
+
 extern ArchiveSet gOpenArchives;    /**< TODO */
 
 /**
@@ -97,70 +99,70 @@ static const int LANG_COUNT = 12;
 
 static const char* kClassicMPQList[] =
 {
-    "patch-2.MPQ",
-    "patch.MPQ",
-    "wmo.MPQ",
-    "texture.MPQ",
-    "terrain.MPQ",
-    "speech.MPQ",
-    "sound.MPQ",
-    "model.MPQ",
-    "misc.MPQ",
-    "dbc.MPQ",
-    "base.MPQ"
+        "patch-2.MPQ",
+        "patch.MPQ",
+        "wmo.MPQ",
+        "texture.MPQ",
+        "terrain.MPQ",
+        "speech.MPQ",
+        "sound.MPQ",
+        "model.MPQ",
+        "misc.MPQ",
+        "dbc.MPQ",
+        "base.MPQ"
 };
 
 static const char* kTBCMPQList[] =
 {
-    "patch-2.MPQ",
-    "patch.MPQ",
-    "%s/patch-%s-2.MPQ",
-    "%s/patch-%s.MPQ",
-    "expansion.MPQ",
-    "common.MPQ",
-    "%s/locale-%s.MPQ",
-    "%s/speech-%s.MPQ",
-    "%s/expansion-locale-%s.MPQ",
-    "%s/expansion-speech-%s.MPQ"
+        "patch-2.MPQ",
+        "patch.MPQ",
+        "%s/patch-%s-2.MPQ",
+        "%s/patch-%s.MPQ",
+        "expansion.MPQ",
+        "common.MPQ",
+        "%s/locale-%s.MPQ",
+        "%s/speech-%s.MPQ",
+        "%s/expansion-locale-%s.MPQ",
+        "%s/expansion-speech-%s.MPQ"
 };
 
 static const char* kWOTLKMPQList[] =
 {
-    "%s/patch-%s.MPQ",
-    "patch.MPQ",
-    "%s/patch-%s-2.MPQ",
-    "%s/patch-%s-3.MPQ",
-    "patch-2.MPQ",
-    "patch-3.MPQ",
-    "expansion.MPQ",
-    "lichking.MPQ",
-    "common.MPQ",
-    "common-2.MPQ",
-    "%s/locale-%s.MPQ",
-    "%s/speech-%s.MPQ",
-    "%s/expansion-locale-%s.MPQ",
-    "%s/lichking-locale-%s.MPQ",
-    "%s/expansion-speech-%s.MPQ",
-    "%s/lichking-speech-%s.MPQ"
+        "%s/patch-%s.MPQ",
+        "patch.MPQ",
+        "%s/patch-%s-2.MPQ",
+        "%s/patch-%s-3.MPQ",
+        "patch-2.MPQ",
+        "patch-3.MPQ",
+        "expansion.MPQ",
+        "lichking.MPQ",
+        "common.MPQ",
+        "common-2.MPQ",
+        "%s/locale-%s.MPQ",
+        "%s/speech-%s.MPQ",
+        "%s/expansion-locale-%s.MPQ",
+        "%s/lichking-locale-%s.MPQ",
+        "%s/expansion-speech-%s.MPQ",
+        "%s/lichking-speech-%s.MPQ"
 };
 
 static const char* kCATAMPQList[] =
 {
-    "%s/expansion3-locale-%s.MPQ",
-    "%s/expansion3-speech-%s.MPQ"
-    "expansion3.MPQ",
-    "%s/expansion2-locale-%s.MPQ",
-    "%s/expansion2-speech-%s.MPQ"
-    "expansion2.MPQ",
-    "%s/expansion1-locale-%s.MPQ",
-    "%s/expansion1-speech-%s.MPQ",
-    "expansion1.MPQ",
-    "%s/locale-%s.MPQ",
-    "%s/speech-%s.MPQ",
-    "world.MPQ",
-    "world2.MPQ",
-    "alternate.MPQ",
-    "art.MPQ",
+        "%s/expansion3-locale-%s.MPQ",
+        "%s/expansion3-speech-%s.MPQ"
+        "expansion3.MPQ",
+        "%s/expansion2-locale-%s.MPQ",
+        "%s/expansion2-speech-%s.MPQ"
+        "expansion2.MPQ",
+        "%s/expansion1-locale-%s.MPQ",
+        "%s/expansion1-speech-%s.MPQ",
+        "expansion1.MPQ",
+        "%s/locale-%s.MPQ",
+        "%s/speech-%s.MPQ",
+        "world.MPQ",
+        "world2.MPQ",
+        "alternate.MPQ",
+        "art.MPQ",
 };
 
 /**
@@ -274,7 +276,9 @@ void AppendDBCFileListTo(HANDLE mpqHandle, std::set<std::string>& filelist)
     filelist.insert(findFileData.cFileName);
 
     while (SFileFindNextFile(searchHandle, &findFileData))
+    {
         filelist.insert(findFileData.cFileName);
+    }
 
     SFileFindClose(searchHandle);
 }
@@ -292,7 +296,9 @@ void AppendDB2FileListTo(HANDLE mpqHandle, std::set<std::string>& filelist)
     filelist.insert(findFileData.cFileName);
 
     while (SFileFindNextFile(searchHandle, &findFileData))
+    {
         filelist.insert(findFileData.cFileName);
+    }
 
     SFileFindClose(searchHandle);
 }
@@ -726,17 +732,27 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
     if (CONF_allow_height_limit && minHeight < CONF_use_minHeight)
     {
         for (int y = 0; y < ADT_GRID_SIZE; y++)
+        {
             for (int x = 0; x < ADT_GRID_SIZE; x++)
+            {
                 if (V8[y][x] < CONF_use_minHeight)
                 {
                     V8[y][x] = CONF_use_minHeight;
                 }
+            }
+        }
+
         for (int y = 0; y <= ADT_GRID_SIZE; y++)
+        {
             for (int x = 0; x <= ADT_GRID_SIZE; x++)
+            {
                 if (V9[y][x] < CONF_use_minHeight)
                 {
                     V9[y][x] = CONF_use_minHeight;
                 }
+            }
+        }
+
         if (minHeight < CONF_use_minHeight)
         {
             minHeight = CONF_use_minHeight;
@@ -791,29 +807,39 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
         if (heightHeader.flags & MAP_HEIGHT_AS_INT8)
         {
             for (int y = 0; y < ADT_GRID_SIZE; y++)
+            {
                 for (int x = 0; x < ADT_GRID_SIZE; x++)
                 {
                     uint8_V8[y][x] = uint8((V8[y][x] - minHeight) * step + 0.5f);
                 }
+            }
+
             for (int y = 0; y <= ADT_GRID_SIZE; y++)
+            {
                 for (int x = 0; x <= ADT_GRID_SIZE; x++)
                 {
                     uint8_V9[y][x] = uint8((V9[y][x] - minHeight) * step + 0.5f);
                 }
+            }
             map.heightMapSize += sizeof(uint8_V9) + sizeof(uint8_V8);
         }
         else if (heightHeader.flags & MAP_HEIGHT_AS_INT16)
         {
             for (int y = 0; y < ADT_GRID_SIZE; y++)
+            {
                 for (int x = 0; x < ADT_GRID_SIZE; x++)
                 {
                     uint16_V8[y][x] = uint16((V8[y][x] - minHeight) * step + 0.5f);
                 }
+            }
+
             for (int y = 0; y <= ADT_GRID_SIZE; y++)
+            {
                 for (int x = 0; x <= ADT_GRID_SIZE; x++)
                 {
                     uint16_V9[y][x] = uint16((V9[y][x] - minHeight) * step + 0.5f);
                 }
+            }
             map.heightMapSize += sizeof(uint16_V9) + sizeof(uint16_V8);
         }
         else
@@ -1358,11 +1384,12 @@ void AppendPatchMPQFilesToList(char const* subdir, char const* suffix, char cons
         int ubuild = 0;
         dirent* dirp;
         while ((dirp = readdir(dp)) != NULL)
+        {
             if (sscanf(dirp->d_name, scanname, &ubuild) == 1 && (!iCoreNumber || ubuild <= iCoreNumber))
             {
                 updates[ubuild] = UpdatesPair(dirp->d_name, section);
             }
-
+        }
         closedir(dp);
     }
 
@@ -1488,22 +1515,22 @@ void LoadCommonMPQFiles(int client)
     string temp[256];
     switch (client)
     {
-    case CLIENT_CLASSIC:
-        count = sizeof(kClassicMPQList) / sizeof(char*);
-        std::copy(std::begin(kClassicMPQList), std::end(kClassicMPQList), std::begin(temp));
-        break;
-    case CLIENT_TBC:
-        count = sizeof(kTBCMPQList) / sizeof(char*);
-        std::copy(std::begin(kTBCMPQList), std::end(kTBCMPQList), std::begin(temp));
-        break;
-    case CLIENT_WOTLK:
-        count = sizeof(kWOTLKMPQList) / sizeof(char*);
-        std::copy(std::begin(kWOTLKMPQList), std::end(kWOTLKMPQList), std::begin(temp));
-        break;
-    case CLIENT_CATA:
-        count = sizeof(kCATAMPQList) / sizeof(char*);
-        std::copy(std::begin(kCATAMPQList), std::end(kCATAMPQList), std::begin(temp));
-        break;
+        case CLIENT_CLASSIC:
+            count = sizeof(kClassicMPQList) / sizeof(char*);
+            std::copy(std::begin(kClassicMPQList), std::end(kClassicMPQList), std::begin(temp));
+            break;
+        case CLIENT_TBC:
+            count = sizeof(kTBCMPQList) / sizeof(char*);
+            std::copy(std::begin(kTBCMPQList), std::end(kTBCMPQList), std::begin(temp));
+            break;
+        case CLIENT_WOTLK:
+            count = sizeof(kWOTLKMPQList) / sizeof(char*);
+            std::copy(std::begin(kWOTLKMPQList), std::end(kWOTLKMPQList), std::begin(temp));
+            break;
+        case CLIENT_CATA:
+            count = sizeof(kCATAMPQList) / sizeof(char*);
+            std::copy(std::begin(kCATAMPQList), std::end(kCATAMPQList), std::begin(temp));
+            break;
     }
 
     char dirname[512];

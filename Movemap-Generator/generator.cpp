@@ -97,20 +97,20 @@ void printUsage(char* prg)
 }
 
 bool handleArgs(int argc, char** argv,
-                char* gameInputPath,
-                int& mapnum,
-                int& tileX,
-                int& tileY,
-                float& maxAngle,
-                bool& skipLiquid,
-                bool& skipContinents,
-                bool& skipJunkMaps,
-                bool& skipBattlegrounds,
-                bool& debugOutput,
-                bool& silent,
-                bool& bigBaseUnit,
-                int& num_threads,
-                char*& offMeshInputPath)
+    char* gameInputPath,
+    int& mapnum,
+    int& tileX,
+    int& tileY,
+    float& maxAngle,
+    bool& skipLiquid,
+    bool& skipContinents,
+    bool& skipJunkMaps,
+    bool& skipBattlegrounds,
+    bool& debugOutput,
+    bool& silent,
+    bool& bigBaseUnit,
+    int& num_threads,
+    char*& offMeshInputPath)
 {
     char* param = NULL;
     for (int i = 1; i < argc; ++i)
@@ -367,20 +367,20 @@ int main(int argc, char** argv)
     int mapnum = -1;
     float maxAngle = 60.0f;
     int tileX = -1, tileY = -1;
-    bool skipLiquid = false,
-         skipContinents = false,
-         skipJunkMaps = true,
-         skipBattlegrounds = false,
-         debugOutput = false,
-         silent = false,
-         bigBaseUnit = false;
+    bool skipLiquid = false;
+    bool skipContinents = false;
+    bool skipJunkMaps = true;
+    bool skipBattlegrounds = false;
+    bool debugOutput = false;
+    bool silent = false;
+    bool bigBaseUnit = false;
     int num_threads = 0;
     char* offMeshInputPath = NULL;
 
     bool validParam = handleArgs(argc, argv, input_path, mapnum,
-                                 tileX, tileY, maxAngle,
-                                 skipLiquid, skipContinents, skipJunkMaps, skipBattlegrounds,
-                                 debugOutput, silent, bigBaseUnit, num_threads, offMeshInputPath);
+        tileX, tileY, maxAngle,
+        skipLiquid, skipContinents, skipJunkMaps, skipBattlegrounds,
+        debugOutput, silent, bigBaseUnit, num_threads, offMeshInputPath);
 
     if (!validParam)
     {
@@ -415,7 +415,7 @@ int main(int argc, char** argv)
     }
 
     MapBuilder builder(map_magic, maxAngle, skipLiquid, skipContinents, skipJunkMaps,
-                       skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
+        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
 
     ACE_Time_Value elapsed;
     ACE_High_Res_Timer timer;

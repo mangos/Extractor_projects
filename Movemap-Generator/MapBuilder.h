@@ -105,14 +105,14 @@ namespace MMAP
              * @param offMeshFilePath
              */
             MapBuilder(const char* magic,
-                       float maxWalkableAngle   = 60.f,
-                       bool skipLiquid          = false,
-                       bool skipContinents      = false,
-                       bool skipJunkMaps        = true,
-                       bool skipBattlegrounds   = false,
-                       bool debugOutput         = false,
-                       bool bigBaseUnit         = false,
-                       const char* offMeshFilePath = NULL);
+                float maxWalkableAngle   = 60.f,
+                bool skipLiquid          = false,
+                bool skipContinents      = false,
+                bool skipJunkMaps        = true,
+                bool skipBattlegrounds   = false,
+                bool debugOutput         = false,
+                bool bigBaseUnit         = false,
+                const char* offMeshFilePath = NULL);
 
             /**
              * @brief
@@ -191,12 +191,12 @@ namespace MMAP
              * @param navMesh
              */
             void buildMoveMapTile(int mapID,
-                                  int tileX,
-                                  int tileY,
-                                  MeshData& meshData,
-                                  float bmin[3],
-                                  float bmax[3],
-                                  dtNavMesh* navMesh);
+                int tileX,
+                int tileY,
+                MeshData& meshData,
+                float bmin[3],
+                float bmax[3],
+                dtNavMesh* navMesh);
 
             /**
              * @brief
@@ -209,8 +209,8 @@ namespace MMAP
              * @param bmax
              */
             void getTileBounds(int tileX, int tileY,
-                               float* verts, int vertCount,
-                               float* bmin, float* bmax);
+                float* verts, int vertCount,
+                float* bmin, float* bmax);
 
             /**
              * @brief

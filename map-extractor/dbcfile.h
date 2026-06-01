@@ -218,8 +218,8 @@ class DBCFile
                  * @param file
                  * @param offset
                  */
-                Iterator(DBCFile& file, unsigned char* offset):
-                    record(file, offset) {}
+                Iterator(DBCFile& file, unsigned char* offset)
+                    : record(file, offset) {}
 
                 /**
                  * @brief Advance (prefix only)

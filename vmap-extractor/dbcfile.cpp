@@ -29,8 +29,8 @@
 
 #include <cstdio>
 
-DBCFile::DBCFile(const std::string& filename) :
-    filename(filename),
+DBCFile::DBCFile(const std::string& filename)
+    :filename(filename),
     data(0)
 {
 

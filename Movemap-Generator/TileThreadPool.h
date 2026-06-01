@@ -30,14 +30,14 @@
 
 class TileThreadPool : public ACE_Task<ACE_MT_SYNCH>
 {
-public:
-    TileThreadPool();
-    ~TileThreadPool();
-    int start(int threads = 1);
-    virtual int svc(void);
+    public:
+        TileThreadPool();
+        ~TileThreadPool();
+        int start(int threads = 1);
+        virtual int svc(void);
 
-protected:
-    ACE_Barrier *m_barrier;
+    protected:
+        ACE_Barrier *m_barrier;
 };
 
 #endif

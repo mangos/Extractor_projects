@@ -85,47 +85,47 @@ bool WMORoot::open()
             f.read(&liquidType, 4);
             break;
         }
-        /*
-        else if (!strcmp(fourcc,"MOTX"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOMT"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOGN"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOGI"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOLT"))
-        {
-        }
-        else if (!strcmp(fourcc,"MODN"))
-        {
-        }
-        else if (!strcmp(fourcc,"MODS"))
-        {
-        }
-        else if (!strcmp(fourcc,"MODD"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOSB"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOPV"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOPT"))
-        {
-        }
-        else if (!strcmp(fourcc,"MOPR"))
-        {
-        }
-        else if (!strcmp(fourcc,"MFOG"))
-        {
-        }
-        */
+        /**
+         else if (!strcmp(fourcc,"MOTX"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOMT"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOGN"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOGI"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOLT"))
+         {
+         }
+         else if (!strcmp(fourcc,"MODN"))
+         {
+         }
+         else if (!strcmp(fourcc,"MODS"))
+         {
+         }
+         else if (!strcmp(fourcc,"MODD"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOSB"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOPV"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOPT"))
+         {
+         }
+         else if (!strcmp(fourcc,"MOPR"))
+         {
+         }
+         else if (!strcmp(fourcc,"MFOG"))
+         {
+         }
+         */
         f.seek((int)nextpos);
     }
     f.close();
@@ -243,12 +243,12 @@ bool WMOGroup::open()
             LiquBytes = new char[nLiquBytes];
             f.read(LiquBytes, nLiquBytes);
 
-            /* std::ofstream llog("Buildings/liquid.log", ios_base::out | ios_base::app);
-            llog << filename;
-            llog << "\nbbox: " << bbcorn1[0] << ", " << bbcorn1[1] << ", " << bbcorn1[2] << " | " << bbcorn2[0] << ", " << bbcorn2[1] << ", " << bbcorn2[2];
-            llog << "\nlpos: " << hlq->pos_x << ", " << hlq->pos_y << ", " << hlq->pos_z;
-            llog << "\nx-/yvert: " << hlq->xverts << "/" << hlq->yverts << " size: " << size << " expected size: " << 30 + hlq->xverts*hlq->yverts*8 + hlq->xtiles*hlq->ytiles << std::endl;
-            llog.close(); */
+            /** std::ofstream llog("Buildings/liquid.log", ios_base::out | ios_base::app);
+             llog << filename;
+             llog << "\nbbox: " << bbcorn1[0] << ", " << bbcorn1[1] << ", " << bbcorn1[2] << " | " << bbcorn2[0] << ", " << bbcorn2[1] << ", " << bbcorn2[2];
+             llog << "\nlpos: " << hlq->pos_x << ", " << hlq->pos_y << ", " << hlq->pos_z;
+             llog << "\nx-/yvert: " << hlq->xverts << "/" << hlq->yverts << " size: " << size << " expected size: " << 30 + hlq->xverts*hlq->yverts*8 + hlq->xtiles*hlq->ytiles << std::endl;
+             llog.close(); */
         }
         f.seek((int)nextpos);
     }
@@ -405,10 +405,12 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
         int check = 3 * nColVertices;
         fwrite(VERT, 4, 3, output);
         for (uint32 i = 0; i < nVertices; ++i)
+        {
             if (IndexRenum[i] >= 0)
             {
                 check -= fwrite(MOVT + 3 * i, sizeof(float), 3, output);
             }
+        }
 
         assert(check == 0);
 
@@ -500,7 +502,7 @@ int WMOGroup::ConvertToVMAPGroupWmo(FILE* output, WMORoot* rootWMO, bool pPrecis
                 case 2:
                     if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
                     {
-                    liquidEntry = 3;        // magma
+                        liquidEntry = 3;        // magma
                     }
                     if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
                     {

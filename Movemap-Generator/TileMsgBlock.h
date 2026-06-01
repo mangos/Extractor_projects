@@ -31,8 +31,9 @@
 class TileBuilder
 {
     public:
-        TileBuilder(MMAP::MapBuilder* builder, int mapID, int tileX, int tileY, dtNavMesh* mesh) :
-            m_navMesh(mesh), m_tileY(tileY), m_tileX(tileX), m_mapID(mapID), m_builder(builder) {}
+        TileBuilder(MMAP::MapBuilder* builder, int mapID, int tileX, int tileY, dtNavMesh* mesh)
+            : m_navMesh(mesh), m_tileY(tileY), m_tileX(tileX), m_mapID(mapID), m_builder(builder) {}
+
         ~TileBuilder()
         {
             delete m_navMesh;

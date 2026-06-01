@@ -38,7 +38,8 @@
 #include <sys/stat.h>
 
 #include <dirent.h>
-/* This isn't the nicest way to do things
+
+/** This isn't the nicest way to do things
  * TODO: Fix this with snprintf instead and check it still works
  */
 #define sprintf_s sprintf
@@ -94,51 +95,51 @@ static const int LANG_COUNT = 12;
 
 static const char* kClassicMPQList[] =
 {
-    "patch-2.MPQ",
-    "patch.MPQ",
-    "wmo.MPQ",
-    "texture.MPQ",
-    "terrain.MPQ",
-    "speech.MPQ",
-    "sound.MPQ",
-    "model.MPQ",
-    "misc.MPQ",
-    "dbc.MPQ",
-    "base.MPQ"
+        "patch-2.MPQ",
+        "patch.MPQ",
+        "wmo.MPQ",
+        "texture.MPQ",
+        "terrain.MPQ",
+        "speech.MPQ",
+        "sound.MPQ",
+        "model.MPQ",
+        "misc.MPQ",
+        "dbc.MPQ",
+        "base.MPQ"
 };
 
 static const char* kTBCMPQList[] =
 {
-    "patch-2.MPQ",
-    "patch.MPQ",
-    "%s/patch-%s-2.MPQ",
-    "%s/patch-%s.MPQ",
-    "expansion.MPQ",
-    "common.MPQ",
-    "%s/locale-%s.MPQ",
-    "%s/speech-%s.MPQ",
-    "%s/expansion-locale-%s.MPQ",
-    "%s/expansion-speech-%s.MPQ"
+        "patch-2.MPQ",
+        "patch.MPQ",
+        "%s/patch-%s-2.MPQ",
+        "%s/patch-%s.MPQ",
+        "expansion.MPQ",
+        "common.MPQ",
+        "%s/locale-%s.MPQ",
+        "%s/speech-%s.MPQ",
+        "%s/expansion-locale-%s.MPQ",
+        "%s/expansion-speech-%s.MPQ"
 };
 
 static const char* kWOTLKMPQList[] =
 {
-    "%s/patch-%s.MPQ",
-    "patch.MPQ",
-    "%s/patch-%s-2.MPQ",
-    "%s/patch-%s-3.MPQ",
-    "patch-2.MPQ",
-    "patch-3.MPQ",
-    "expansion.MPQ",
-    "lichking.MPQ",
-    "common.MPQ",
-    "common-2.MPQ",
-    "%s/locale-%s.MPQ",
-    "%s/speech-%s.MPQ",
-    "%s/expansion-locale-%s.MPQ",
-    "%s/lichking-locale-%s.MPQ",
-    "%s/expansion-speech-%s.MPQ",
-    "%s/lichking-speech-%s.MPQ"
+        "%s/patch-%s.MPQ",
+        "patch.MPQ",
+        "%s/patch-%s-2.MPQ",
+        "%s/patch-%s-3.MPQ",
+        "patch-2.MPQ",
+        "patch-3.MPQ",
+        "expansion.MPQ",
+        "lichking.MPQ",
+        "common.MPQ",
+        "common-2.MPQ",
+        "%s/locale-%s.MPQ",
+        "%s/speech-%s.MPQ",
+        "%s/expansion-locale-%s.MPQ",
+        "%s/lichking-locale-%s.MPQ",
+        "%s/expansion-speech-%s.MPQ",
+        "%s/lichking-speech-%s.MPQ"
 };
 
 //static const char * szWorkDirMaps = ".\\Maps";
@@ -184,8 +185,8 @@ std::string GetUniformName(std::string& path)
     std::size_t found = path.find_last_of("/\\");
     if (found != string::npos)
     {
-    file = path.substr(found+1);
-    tempPath = path.substr(0,found);
+        file = path.substr(found+1);
+        tempPath = path.substr(0,found);
     }
     else
     {
@@ -408,11 +409,12 @@ void AppendPatchMPQFilesToList(char const* subdir, char const* suffix, char cons
         int ubuild = 0;
         dirent* dirp;
         while ((dirp = readdir(dp)) != NULL)
+        {
             if (sscanf(dirp->d_name, scanname, &ubuild) == 1 && (!iCoreNumber || ubuild <= iCoreNumber))
             {
                 updates[ubuild] = UpdatesPair(dirp->d_name, section);
             }
-
+        }
         closedir(dp);
     }
 
@@ -523,7 +525,7 @@ void LoadLocaleMPQFiles(int const locale)
                 }
             }
             break;
-        }
+    }
 }
 
 /**

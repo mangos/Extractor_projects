@@ -171,7 +171,7 @@ namespace MMAP
              * @param position
              */
             static void transform(vector<G3D::Vector3>& original, vector<G3D::Vector3>& transformed,
-                                  float scale, G3D::Matrix3& rotation, G3D::Vector3& position);
+                float scale, G3D::Matrix3& rotation, G3D::Vector3& position);
 
             /**
              * @brief

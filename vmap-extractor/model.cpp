@@ -129,9 +129,9 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
     }
     else
     {
-        // No bounding triangles — fall back to render geometry from first view
-        // (Classic/TBC only. WOTLK+ stores render views in separate .skin files,
-        //  so the M2 header has no view offsets and this fallback cannot apply.)
+        /** No bounding triangles — fall back to render geometry from first view
+         * (Classic/TBC only. WOTLK+ stores render views in separate .skin files,
+         *  so the M2 header has no view offsets and this fallback cannot apply.)*/
         uint32 nRenderVertices = 0;
         uint32 nViews = 0;
         uint32 ofsViews = 0;
@@ -212,12 +212,30 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
                         float bbMinZ = vertices[0].z, bbMaxZ = vertices[0].z;
                         for (uint32 i = 1; i < view.nVertexCount; i++)
                         {
-                            if (vertices[i].x < bbMinX) bbMinX = vertices[i].x;
-                            if (vertices[i].x > bbMaxX) bbMaxX = vertices[i].x;
-                            if (vertices[i].y < bbMinY) bbMinY = vertices[i].y;
-                            if (vertices[i].y > bbMaxY) bbMaxY = vertices[i].y;
-                            if (vertices[i].z < bbMinZ) bbMinZ = vertices[i].z;
-                            if (vertices[i].z > bbMaxZ) bbMaxZ = vertices[i].z;
+                            if (vertices[i].x < bbMinX)
+                            {
+                                bbMinX = vertices[i].x;
+                            }
+                            if (vertices[i].x > bbMaxX)
+                            {
+                                bbMaxX = vertices[i].x;
+                            }
+                            if (vertices[i].y < bbMinY)
+                            {
+                                bbMinY = vertices[i].y;
+                            }
+                            if (vertices[i].y > bbMaxY)
+                            {
+                                bbMaxY = vertices[i].y;
+                            }
+                            if (vertices[i].z < bbMinZ)
+                            {
+                                bbMinZ = vertices[i].z;
+                            }
+                            if (vertices[i].z > bbMaxZ)
+                            {
+                                bbMaxZ = vertices[i].z;
+                            }
                         }
 
                         // Reject near-singleton (point-like) models — BIH builder hangs when all three
@@ -279,12 +297,30 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
         bmax = vertices[0];
         for (size_t i = 1; i < nVertices; i++)
         {
-            if (vertices[i].x < bmin.x) bmin.x = vertices[i].x;
-            if (vertices[i].y < bmin.y) bmin.y = vertices[i].y;
-            if (vertices[i].z < bmin.z) bmin.z = vertices[i].z;
-            if (vertices[i].x > bmax.x) bmax.x = vertices[i].x;
-            if (vertices[i].y > bmax.y) bmax.y = vertices[i].y;
-            if (vertices[i].z > bmax.z) bmax.z = vertices[i].z;
+            if (vertices[i].x < bmin.x)
+            {
+                bmin.x = vertices[i].x;
+            }
+            if (vertices[i].y < bmin.y)
+            {
+                bmin.y = vertices[i].y;
+            }
+            if (vertices[i].z < bmin.z)
+            {
+                bmin.z = vertices[i].z;
+            }
+            if (vertices[i].x > bmax.x)
+            {
+                bmax.x = vertices[i].x;
+            }
+            if (vertices[i].y > bmax.y)
+            {
+                bmax.y = vertices[i].y;
+            }
+            if (vertices[i].z > bmax.z)
+            {
+                bmax.z = vertices[i].z;
+            }
         }
     }
     fwrite(&bmin, sizeof(float) * 3, 1, output);

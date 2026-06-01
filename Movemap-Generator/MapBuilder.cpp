@@ -39,9 +39,9 @@ using namespace VMAP;
 namespace MMAP
 {
     MapBuilder::MapBuilder(char const* magic, float maxWalkableAngle, bool skipLiquid,
-                           bool skipContinents, bool skipJunkMaps, bool skipBattlegrounds,
-                           bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath) :
-        m_terrainBuilder(NULL),
+        bool skipContinents, bool skipJunkMaps, bool skipBattlegrounds,
+        bool debugOutput, bool bigBaseUnit, const char* offMeshFilePath)
+            : m_terrainBuilder(NULL),
         m_debugOutput(debugOutput),
         m_skipContinents(skipContinents),
         m_skipJunkMaps(skipJunkMaps),
@@ -214,10 +214,12 @@ namespace MMAP
 
             // add all tiles within bounds to tile list.
             for (uint32 i = minX; i <= maxX; ++i)
+            {
                 for (uint32 j = minY; j <= maxY; ++j)
                 {
                     tiles->insert(StaticMapTree::packTileID(i, j));
                 }
+            }
         }
 
         if (!tiles->size())
@@ -494,8 +496,8 @@ namespace MMAP
 
     /**************************************************************************/
     void MapBuilder::buildMoveMapTile(int mapID, int tileX, int tileY,
-                                      MeshData& meshData, float bmin[3], float bmax[3],
-                                      dtNavMesh* navMesh)
+        MeshData& meshData, float bmin[3], float bmax[3],
+        dtNavMesh* navMesh)
     {
         // console output
         char tileString[10];
@@ -732,10 +734,12 @@ namespace MMAP
         // set polygons as walkable
         // TODO: special flags for DYNAMIC polygons, ie surfaces that can be turned on and off
         for (int i = 0; i < iv.polyMesh->npolys; ++i)
+        {
             if (iv.polyMesh->areas[i] & RC_WALKABLE_AREA)
             {
                 iv.polyMesh->flags[i] = iv.polyMesh->areas[i];
             }
+        }
 
         // setup mesh parameters
         dtNavMeshCreateParams params;

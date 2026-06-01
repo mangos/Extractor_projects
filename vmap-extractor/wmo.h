@@ -199,7 +199,8 @@ class WMOGroup
  */
 class WMOInstance
 {
-        static std::set<int> ids; /**< TODO */
+    static std::set<int> ids; /**< TODO */
+
     public:
         std::string MapName; /**< TODO */
         int currx; /**< TODO */
