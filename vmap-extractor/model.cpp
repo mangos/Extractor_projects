@@ -33,7 +33,7 @@
 #include "vmapexport.h"
 #include <ExtractorCommon.h>
 
-Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0)
+Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0), nIndices(0), boundingVertices(0), ok(false), headerClassicTBC(), headerOthers()
 {
 }
 
