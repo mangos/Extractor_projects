@@ -44,7 +44,6 @@ class Model
         Vec3D* vertices; /**< TODO */
         uint16* indices; /**< TODO */
         size_t nIndices; /**< TODO */
-        uint32 nVertices; /**< vertex count for vmap output */
 
         /**
          * @brief
