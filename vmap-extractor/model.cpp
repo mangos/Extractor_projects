@@ -33,26 +33,7 @@
 #include "vmapexport.h"
 #include <ExtractorCommon.h>
 
-/// Inlined M2 view/skin header for Classic/TBC (equivalent to the per-LOD skin profile).
-/// WOTLK+ stores per-view data in separate .skin files; Classic/TBC embeds all
-/// views sequentially in the M2 file starting at ofsViews.
-#pragma pack(push,1)
-struct ModelView
-{
-    uint32 nVertexCount;   ///< number of view-local vertices (= entries in lookup table)
-    uint32 ofsVertexData;  ///< offset to uint16 view→model vertex lookup array
-    uint32 nIndexCount;    ///< number of triangle indices
-    uint32 ofsIndices;     ///< offset to uint16 triangle index array
-    uint32 nBones;         ///< number of bone indices (unused by extractor)
-    uint32 ofsBones;       ///< offset to bone index data (unused by extractor)
-    uint32 nSubSections;   ///< number of texture unit assignments (batches)
-    uint32 ofsSubSections; ///< offset to sub-section array
-    uint32 nBatches;       ///< number of texture batches (unused by extractor)
-    uint32 ofsBatches;     ///< offset to batch data (unused by extractor)
-};
-#pragma pack(pop)
-
-Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0), nIndices(0), nVertices(0), boundingVertices(0), ok(false), headerClassicTBC(), headerOthers()
+Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0)
 {
 }
 
@@ -123,129 +104,13 @@ bool Model::open(StringSet& failedPaths, int iCoreNumber)
         indices = new uint16[nIndices];
         memcpy(indices, triangles, nIndices * 2);
 
-        nVertices = unBoundingVertices;
-
         f.close();
     }
     else
     {
-        // No bounding triangles — fall back to render geometry from first view
-        // (Classic/TBC only. WOTLK+ stores render views in separate .skin files,
-        //  so the M2 header has no view offsets and this fallback cannot apply.)
-        uint32 nRenderVertices = 0;
-        uint32 nViews = 0;
-        uint32 ofsViews = 0;
-        uint32 ofsVertices = 0;
-
-        if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
-        {
-            nRenderVertices = headerClassicTBC.nVertices;
-            nViews = headerClassicTBC.nViews;
-            ofsViews = headerClassicTBC.ofsViews;
-            ofsVertices = headerClassicTBC.ofsVertices;
-        }
-
-        if (nRenderVertices > 0 && nViews > 0 && ofsViews > 0 && ofsVertices > 0)
-        {
-            size_t fileSize = f.getSize();
-            size_t const modelViewSize = sizeof(ModelView);
-
-            // Check view header is within file
-            if (ofsViews + modelViewSize <= fileSize)
-            {
-                ModelView view;
-                memcpy(&view, f.getBuffer() + ofsViews, modelViewSize);
-
-                if (view.nIndexCount > 0 && view.nVertexCount > 0 &&
-                    view.ofsIndices > 0 && view.ofsVertexData > 0 &&
-                    view.nIndexCount <= 65536 && view.nVertexCount <= 65536 &&
-                    size_t(view.ofsIndices) + size_t(view.nIndexCount) * sizeof(uint16) <= fileSize &&
-                    size_t(view.ofsVertexData) + size_t(view.nVertexCount) * sizeof(uint16) <= fileSize &&
-                    size_t(ofsVertices) + size_t(nRenderVertices) * 40 <= fileSize)
-                {
-                    // Read triangle indices from the first view
-                    nIndices = (view.nIndexCount / 3) * 3;
-                    indices = new uint16[nIndices];
-                    memcpy(indices, f.getBuffer() + view.ofsIndices, nIndices * sizeof(uint16));
-
-                    // Read vertex lookups (maps view→model vertex indices)
-                    uint16* vertexLookup = reinterpret_cast<uint16*>(f.getBuffer() + view.ofsVertexData);
-
-                    // Allocate bounding vertices (view-local count)
-                    nVertices = view.nVertexCount;
-                    vertices = new Vec3D[nVertices];
-
-                    // Resolve each view-local vertex to its model-space position
-                    // Classic M2 vertex entry at ofsVertices:
-                    //   Vec3D pos (12 bytes) + uint8[4] weights + uint8[4] bones +
-                    //   Vec3D normal (12 bytes) + Vec2D texCoord (8 bytes) = 40 bytes
-                    uint32 const M2_VERTEX_STRIDE = 40;
-                    bool badLookup = false;
-                    for (uint32 i = 0; i < view.nVertexCount; i++)
-                    {
-                        uint16 modelVertIdx = vertexLookup[i];
-                        if (modelVertIdx < nRenderVertices)
-                        {
-                            auto src = reinterpret_cast<Vec3D*>(f.getBuffer() + ofsVertices + modelVertIdx * M2_VERTEX_STRIDE);
-                            memcpy(&vertices[i], src, sizeof(Vec3D));
-                        }
-                        else
-                        {
-                            badLookup = true;
-                        }
-                    }
-
-                    if (badLookup)
-                    {
-                        delete[] vertices;
-                        delete[] indices;
-                        vertices = nullptr;
-                        indices = nullptr;
-                        nVertices = 0;
-                        nIndices = 0;
-                    }
-                    else
-                    {
-                        // Compute bounding box to validate geometry has real volume
-                        float bbMinX = vertices[0].x, bbMaxX = vertices[0].x;
-                        float bbMinY = vertices[0].y, bbMaxY = vertices[0].y;
-                        float bbMinZ = vertices[0].z, bbMaxZ = vertices[0].z;
-                        for (uint32 i = 1; i < view.nVertexCount; i++)
-                        {
-                            if (vertices[i].x < bbMinX) bbMinX = vertices[i].x;
-                            if (vertices[i].x > bbMaxX) bbMaxX = vertices[i].x;
-                            if (vertices[i].y < bbMinY) bbMinY = vertices[i].y;
-                            if (vertices[i].y > bbMaxY) bbMaxY = vertices[i].y;
-                            if (vertices[i].z < bbMinZ) bbMinZ = vertices[i].z;
-                            if (vertices[i].z > bbMaxZ) bbMaxZ = vertices[i].z;
-                        }
-
-                        // Reject near-singleton (point-like) models — BIH builder hangs when all three
-                        // bounding-box axes collapse to near-zero, making valid splits impossible
-                        if (bbMaxX - bbMinX < 0.001f && bbMaxY - bbMinY < 0.001f && bbMaxZ - bbMinZ < 0.001f)
-                        {
-                            delete[] vertices;
-                            delete[] indices;
-                            vertices = nullptr;
-                            indices = nullptr;
-                            nVertices = 0;
-                            nIndices = 0;
-                        }
-                        else
-                        {
-                            bBoundingTriangles = true;
-                        }
-                    }
-                }
-            }
-        }
-
+        //printf("not included %s\n", filename.c_str());
         f.close();
-
-        if (!bBoundingTriangles)
-        {
-            return false;
-        }
+        return false;
     }
     return true;
 }
@@ -260,6 +125,15 @@ bool Model::ConvertToVMAPModel(std::string& outfilename,int iCoreNumber, const v
     }
 
     fwrite(szRawVMAPMagic, 8, 1, output);
+    uint32 nVertices = 0;
+    if (iCoreNumber == CLIENT_CLASSIC || iCoreNumber == CLIENT_TBC)
+    {
+        nVertices = headerClassicTBC.nBoundingVertices;
+    }
+    if (iCoreNumber == CLIENT_WOTLK || iCoreNumber == CLIENT_CATA)
+    {
+        nVertices = headerOthers.nBoundingVertices;
+    }
     fwrite(&nVertices, sizeof(int), 1, output);
     uint32 nofgroups = 1;
     fwrite(&nofgroups, sizeof(uint32), 1, output);
