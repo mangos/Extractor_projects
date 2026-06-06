@@ -428,7 +428,7 @@ void setMMapMagicVersion(int iCoreNumber, char* magic)
     }
 }
 
-//#define MMAP_VERSION 4
+//#define MMAP_VERSION 5
 
 /**
  * @Create Folders based on the path provided
