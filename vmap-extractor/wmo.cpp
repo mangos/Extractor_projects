@@ -661,7 +661,8 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     if (rchr != NULL)
     {
         char cpy[4];
-        strncpy((char*)cpy, rchr, 4);
+        strncpy((char*)cpy, rchr, sizeof(cpy) - 1);
+        cpy[sizeof(cpy) - 1] = '\0';
         for (int i = 0; i < 4; ++i)
         {
             int m = cpy[i];
@@ -708,8 +709,10 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
         for (uint32 i = 0; i < froot.nGroups; ++i)
         {
             char temp[1024];
-            strcpy(temp, fname.c_str());
-            temp[fname.length() - 4] = 0;
+            strncpy(temp, fname.c_str(), sizeof(temp) - 1);
+            temp[sizeof(temp) - 1] = '\0';
+            if (fname.length() >= 4)
+                temp[fname.length() - 4] = '\0';
             char groupFileName[1024];
             sprintf(groupFileName, "%s_%03d.wmo", temp, i);
 

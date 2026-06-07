@@ -294,7 +294,7 @@ namespace MMAP
         fclose(objFile);
 
         char tileString[25];
-        sprintf(tileString, "[%02u,%02u]: ", tileY, tileX);
+        sprintf(tileString, "[%02u,%02u]: ", tileX, tileY);
         printf("%sWriting debug output...                       \r", tileString);
 
         sprintf(objFileName, "meshes/%03u.map", mapID);
