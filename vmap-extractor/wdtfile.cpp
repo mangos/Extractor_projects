@@ -135,6 +135,8 @@ WDTFile::~WDTFile(void)
     {
         delete mapAreaInfo[i];
     }
+    delete [] gWmoInstansName;
+    gWmoInstansName = NULL;
 }
 
 bool WDTFile::hasTerrain(int x, int y)

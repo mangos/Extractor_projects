@@ -140,7 +140,7 @@ namespace MMAP
             {
                 tileX = uint32(atoi(files[i].substr(7, 2).c_str()));
                 tileY = uint32(atoi(files[i].substr(4, 2).c_str()));
-                tileID = StaticMapTree::packTileID(tileY, tileX);
+                tileID = StaticMapTree::packTileID(tileX, tileY);
 
                 tiles->insert(tileID);
                 count++;

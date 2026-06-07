@@ -171,6 +171,11 @@ bool handleArgs(int argc, char** argv,
 
             char* stileX = strtok(param, ",");
             char* stileY = strtok(NULL, ",");
+            if (!stileX || !stileY)
+            {
+                printf("Invalid tile format. Expected: tileX,tileY\n");
+                return false;
+            }
             int tilex = atoi(stileX);
             int tiley = atoi(stileY);
 
