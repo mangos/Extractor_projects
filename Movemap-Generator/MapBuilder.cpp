@@ -332,7 +332,11 @@ namespace MMAP
         m_terrainBuilder->loadMap(mapID, tileX, tileY, meshData, m_magic);
 
         // get model data
-        m_terrainBuilder->loadVMap(mapID, tileX, tileY, meshData);
+        // NOTE: vmap (.vmtile) files are written by the vmap-extractor with the
+        // opposite tile-coordinate order to map (.map) files, so loadVMap must be
+        // called with tileY/tileX swapped relative to loadMap. Un-swapping this
+        // (PR #35) caused WMO/building geometry to be silently skipped.
+        m_terrainBuilder->loadVMap(mapID, tileY, tileX, meshData);
 
         // if there is no data, give up now
         if (!meshData.solidVerts.size() && !meshData.liquidVerts.size())
