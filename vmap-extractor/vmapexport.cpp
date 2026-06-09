@@ -282,9 +282,9 @@ void ParseMapFiles(int iCoreNumber)
         if (WDT.init(id, map_ids[i].id))
         {
             printf(" Processing Map %u (%s)\n[", map_ids[i].id, map_ids[i].name);
-            for (int x = 0; x < 64; ++x)
+            for (int y = 0; y < 64; ++y)
             {
-                for (int y = 0; y < 64; ++y)
+                for (int x = 0; x < 64; ++x)
                 {
                     if (ADTFile* ADT = WDT.GetMap(x, y))
                     {
