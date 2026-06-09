@@ -138,8 +138,8 @@ namespace MMAP
             getDirContents(files, "vmaps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
             {
-                tileX = uint32(atoi(files[i].substr(8, 2).c_str()));
-                tileY = uint32(atoi(files[i].substr(5, 2).c_str()));
+                tileX = uint32(atoi(files[i].substr(5, 2).c_str()));
+                tileY = uint32(atoi(files[i].substr(8, 2).c_str()));
                 tileID = StaticMapTree::packTileID(tileX, tileY);
 
                 tiles->insert(tileID);
@@ -151,8 +151,8 @@ namespace MMAP
             getDirContents(files, "maps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
             {
-                tileY = uint32(atoi(files[i].substr(4, 2).c_str()));
-                tileX = uint32(atoi(files[i].substr(6, 2).c_str()));
+                tileY = uint32(atoi(files[i].substr(3, 2).c_str()));
+                tileX = uint32(atoi(files[i].substr(5, 2).c_str()));
                 tileID = StaticMapTree::packTileID(tileX, tileY);
 
                 if (tiles->insert(tileID).second)
