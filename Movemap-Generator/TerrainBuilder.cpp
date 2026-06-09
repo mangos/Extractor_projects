@@ -85,7 +85,7 @@ namespace MMAP
     bool TerrainBuilder::loadMap(uint32 mapID, uint32 tileX, uint32 tileY, MeshData& meshData, Spot portion,char const* MAP_VERSION_MAGIC)
     {
         char mapFileName[255];
-        sprintf(mapFileName, "maps/%04u%02u%02u.map", mapID, tileY, tileX);
+        sprintf(mapFileName, "maps/%04u%02u%02u.map", mapID, tileX, tileY);
 
         FILE* mapFile = fopen(mapFileName, "rb");
         if (!mapFile)
