@@ -140,7 +140,11 @@ namespace MMAP
             {
                 tileX = uint32(atoi(files[i].substr(7, 2).c_str()));
                 tileY = uint32(atoi(files[i].substr(4, 2).c_str()));
-                tileID = StaticMapTree::packTileID(tileX, tileY);
+                // Revert PR #36: keep the vmtile parse packing (tileY, tileX) so it
+                // matches the map parse below. .map and .vmtile files store the same
+                // physical tile in opposite coordinate order; packing them the same
+                // way here desyncs the IDs and double-enumerates tiles.
+                tileID = StaticMapTree::packTileID(tileY, tileX);
 
                 tiles->insert(tileID);
                 count++;
