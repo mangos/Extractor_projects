@@ -146,7 +146,7 @@ bool WDTFile::hasTerrain(int x, int y)
 
 ADTFile* WDTFile::GetMap(int x, int y)
 {
-    if (!(x >= 0 && y >= 0 && x < 64 && y < 64) || !hasTerrain(y, x))
+    if (!(x >= 0 && y >= 0 && x < 64 && y < 64) || !hasTerrain(x, y))
     {
         return NULL;
     }
