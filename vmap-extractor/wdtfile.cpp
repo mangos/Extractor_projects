@@ -29,6 +29,9 @@
 WDTFile::WDTFile(HANDLE handle, char* file_name, char* file_name1): WDT(handle, file_name)
 {
     filename.assign(file_name1);
+    // Initialize so the destructor's delete[] is safe for WDTs with no MWMO chunk.
+    gWmoInstansName = NULL;
+
     for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++)
     {
         mapAreaInfo[i] = NULL;
@@ -119,7 +122,8 @@ bool WDTFile::init(char* map_id, unsigned int mapID)
                     WMOInstance inst(WDT, gWmoInstansName[id], mapID, 65, 65, dirfile);
                 }
                 delete[] gWmoInstansName;
-            }
+                // Null after free so the destructor's delete[] cannot double-free.
+                gWmoInstansName = NULL;            }
         }
         WDT.seek((int)nextpos);
     }
