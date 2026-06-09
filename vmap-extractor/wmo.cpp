@@ -660,9 +660,15 @@ bool ExtractSingleWmo(std::string& fname, int iCoreNumber, const void *szRawVMAP
     const char* rchr = strrchr(plain_name.c_str(), '_');
     if (rchr != NULL)
     {
-        char cpy[4];
-        strncpy((char*)cpy, rchr, sizeof(cpy) - 1);
-        cpy[sizeof(cpy) - 1] = '\0';
+        // Copy the full "_NNN" suffix (4 chars) so the digit count below sees all
+        // three digits and group files are detected/skipped. PR #36 copied only 3
+        // chars, dropping the last digit (p==2, never 3), so group files were
+        // processed as roots and the extractor failed reading non-existent
+        // sub-group files (e.g. *_000.wmo). cpy[5] + explicit NUL keeps it safe.
+        char cpy[5];
+        strncpy((char*)cpy, rchr, 4);
+        cpy[4] = '\0';
+
         for (int i = 0; i < 4; ++i)
         {
             int m = cpy[i];
