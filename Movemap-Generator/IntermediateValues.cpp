@@ -312,7 +312,7 @@ namespace MMAP
         fwrite(&b, sizeof(char), 1, objFile);
         fclose(objFile);
 
-        sprintf(objFileName, "meshes/%03u%02u%02u.mesh", mapID, tileX, tileY);
+        sprintf(objFileName, "meshes/%04u%02u%02u.mesh", mapID, tileX, tileY);
         objFile = fopen(objFileName, "wb");
         if (!objFile)
         {
