@@ -1243,7 +1243,7 @@ void ExtractMapsFromMpq(uint32 build)
                     continue;
                 }
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
-                sprintf(output_filename, "%s/maps/%04u%02u%02u.map", output_path, map_ids[z].id, y, x);
+                sprintf(output_filename, "%s/maps/%04u%02u%02u.map", output_path, map_ids[z].id, x, y);
                 ConvertADT(mpq_filename, output_filename, build);// , y, x);
             }
             // draw progress bar
