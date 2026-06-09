@@ -102,13 +102,13 @@ namespace MMAP
         vector<string> files;
         int mapID;
         uint32 tileX, tileY, tileID, count = 0;
-        char filter[12];
+        char filter[32];
 
         printf(" Discovering maps...  ");
         getDirContents(files, "maps");
         for (uint32 i = 0; i < files.size(); ++i)
         {
-            mapID = uint32(atoi(files[i].substr(0, 3).c_str()));
+            mapID = uint32(atoi(files[i].substr(0, 4).c_str()));
             if (m_tiles.find(mapID) == m_tiles.end())
             {
                 m_tiles.insert(pair<uint32, set<uint32>*>(mapID, new set<uint32>));
@@ -120,7 +120,7 @@ namespace MMAP
         getDirContents(files, "vmaps", "*.vmtree");
         for (uint32 i = 0; i < files.size(); ++i)
         {
-            mapID = uint32(atoi(files[i].substr(0, 3).c_str()));
+            mapID = uint32(atoi(files[i].substr(0, 4).c_str()));
             m_tiles.insert(pair<uint32, set<uint32>*>(mapID, new set<uint32>));
             count++;
         }
@@ -133,7 +133,7 @@ namespace MMAP
             set<uint32>* tiles = (*itr).second;
             mapID = (*itr).first;
 
-            sprintf(filter, "%03u*.vmtile", mapID);
+            sprintf(filter, "%04u*.vmtile", mapID);
             files.clear();
             getDirContents(files, "vmaps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
@@ -150,7 +150,7 @@ namespace MMAP
                 count++;
             }
 
-            sprintf(filter, "%03u*", mapID);
+            sprintf(filter, "%04u*", mapID);
             files.clear();
             getDirContents(files, "maps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
@@ -237,7 +237,7 @@ namespace MMAP
         buildNavMesh(mapID, navMesh, meshParams);
         if (!navMesh)
         {
-            printf("Failed creating navmesh for map %03u!              \n", mapID);
+            printf("Failed creating navmesh for map %04u!              \n", mapID);
             if (meshParams)
             {
                 delete meshParams;
@@ -251,7 +251,7 @@ namespace MMAP
         }
 
         // now start building/scheduling mmtiles for each tile
-        printf(" %s map %03u [%u tiles]\n", activated() ? "Scheduling" : "Building", mapID, (unsigned int)tiles->size());
+        printf(" %s map %04u [%u tiles]\n", activated() ? "Scheduling" : "Building", mapID, (unsigned int)tiles->size());
         for (set<uint32>::iterator it = tiles->begin(); it != tiles->end(); ++it)
         {
             uint32 tileX, tileY;
@@ -303,7 +303,7 @@ namespace MMAP
 
         if (!activated())
         {
-            printf(" Map %03u complete!\n\n", mapID);
+            printf(" Map %04u complete!\n\n", mapID);
         }
     }
 
@@ -368,7 +368,7 @@ namespace MMAP
 
         m_terrainBuilder->loadOffMeshConnections(mapID, tileX, tileY, meshData, m_offMeshFilePath);
 
-        printf(" Building map %03u - Tile [%02u,%02u]\n", mapID, tileX, tileY);
+        printf(" Building map %04u - Tile [%02u,%02u]\n", mapID, tileX, tileY);
         buildMoveMapTile(mapID, tileX, tileY, meshData, bmin, bmax, navMesh);
     }
 
@@ -485,7 +485,7 @@ namespace MMAP
         if (isFirstNavMesh)
         {
             char fileName[25];
-            sprintf(fileName, "mmaps/%03u.mmap", mapID);
+            sprintf(fileName, "mmaps/%04u.mmap", mapID);
 
             FILE* file = fopen(fileName, "wb");
             if (!file)
@@ -844,7 +844,7 @@ namespace MMAP
 
             // file output
             char fileName[255];
-            sprintf(fileName, "mmaps/%03u%02i%02i.mmtile", mapID, tileX, tileY);
+            sprintf(fileName, "mmaps/%04u%02i%02i.mmtile", mapID, tileX, tileY);
             FILE* file = fopen(fileName, "wb");
             if (!file)
             {
@@ -910,7 +910,7 @@ namespace MMAP
     bool MapBuilder::shouldSkipTile(int mapID, int tileX, int tileY)
     {
         char fileName[255];
-        sprintf(fileName, "mmaps/%03u%02i%02i.mmtile", mapID, tileX, tileY);
+        sprintf(fileName, "mmaps/%04u%02i%02i.mmtile", mapID, tileX, tileY);
         FILE* file = fopen(fileName, "rb");
         if (!file)
         {

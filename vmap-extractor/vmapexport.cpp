@@ -268,7 +268,7 @@ void ParseMapFiles(int iCoreNumber)
     printf("\n");
     for (unsigned int i = 0; i < map_count; ++i)
     {
-        sprintf(id, "%03u", map_ids[i].id);
+        sprintf(id, "%04u", map_ids[i].id);
         sprintf(fn, "World\\Maps\\%s\\%s.wdt", map_ids[i].name, map_ids[i].name);
 
         HANDLE handleWDT;
@@ -288,7 +288,7 @@ void ParseMapFiles(int iCoreNumber)
                 {
                     if (ADTFile* ADT = WDT.GetMap(x, y))
                     {
-                        //sprintf(id_filename,"%02u %02u %03u",x,y,map_ids[i].id);//!!!!!!!!!
+                        //sprintf(id_filename,"%02u %02u %04u",x,y,map_ids[i].id);//!!!!!!!!!
                         ADT->init(map_ids[i].id, x, y, failedPaths, iCoreNumber, szRawVMAPMagic);
                         delete ADT;
                     }
