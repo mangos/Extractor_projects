@@ -1244,7 +1244,7 @@ void ExtractMapsFromMpq(uint32 build)
                 }
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
                 sprintf(output_filename, "%s/maps/%04u%02u%02u.map", output_path, map_ids[z].id, x, y);
-                ConvertADT(mpq_filename, output_filename, build);// , y, x);
+                ConvertADT(mpq_filename, output_filename, build);// , x, y);
             }
             // draw progress bar
             printf(" Processing........................%d%%\r", (100 * (y + 1)) / WDT_MAP_SIZE);
