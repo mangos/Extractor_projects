@@ -49,7 +49,7 @@ namespace MMAP
 #define DEBUG_WRITE(fileExtension,data)                                                         \
         do                                                                                      \
         {                                                                                       \
-            sprintf(fileName, (name + fileExtension).c_str(), mapID, tileY, tileX);             \
+            sprintf(fileName, (name + fileExtension).c_str(), mapID, tileX, tileY);             \
             FILE* file = fopen(fileName, "wb");                                                 \
             if (!file)                                                                          \
             {                                                                                   \
