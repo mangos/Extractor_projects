@@ -138,8 +138,8 @@ namespace MMAP
             getDirContents(files, "vmaps", filter);
             for (uint32 i = 0; i < files.size(); ++i)
             {
-                tileX = uint32(atoi(files[i].substr(7, 2).c_str()));
-                tileY = uint32(atoi(files[i].substr(4, 2).c_str()));
+                tileX = uint32(atoi(files[i].substr(8, 2).c_str()));
+                tileY = uint32(atoi(files[i].substr(5, 2).c_str()));
                 // Revert PR #36: keep the vmtile parse packing (tileY, tileX) so it
                 // matches the map parse below. .map and .vmtile files store the same
                 // physical tile in opposite coordinate order; packing them the same
