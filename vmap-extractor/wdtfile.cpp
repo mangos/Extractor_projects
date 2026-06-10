@@ -31,6 +31,7 @@ WDTFile::WDTFile(HANDLE handle, char* file_name, char* file_name1): WDT(handle, 
     filename.assign(file_name1);
     // Initialize so the destructor's delete[] is safe for WDTs with no MWMO chunk.
     gWmoInstansName = NULL;
+
     for (int i = 0; i < MAP_TILE_SIZE * MAP_TILE_SIZE; i++)
     {
         mapAreaInfo[i] = NULL;
