@@ -28,6 +28,9 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 #include <Recast.h>
 #include <DetourNavMesh.h>
@@ -37,8 +40,6 @@
 
 #include "IVMapManager.h"
 #include "WorldModel.h"
-
-#include "TileThreadPool.h"
 
 using namespace std;
 using namespace VMAP;
@@ -112,7 +113,8 @@ namespace MMAP
                 bool skipBattlegrounds   = false,
                 bool debugOutput         = false,
                 bool bigBaseUnit         = false,
-                const char* offMeshFilePath = NULL);
+                const char* offMeshFilePath = NULL,
+                unsigned int threads     = 0);  ///< 0 == hardware_concurrency, 1 == serial
 
             /**
              * @brief
@@ -125,7 +127,7 @@ namespace MMAP
              *
              * @param mapID
              */
-            void buildMap(int mapID, bool standAlone = true);
+            void buildMap(int mapID);
 
             /**
              * @brief builds an mmap tile for the specified map and its mesh
@@ -141,10 +143,6 @@ namespace MMAP
              *
              */
             void buildAllMaps();
-
-            int activate(int num_threads);
-
-            bool activated() const { return m_poolActivated; }
 
             /**
              * @brief
@@ -177,7 +175,7 @@ namespace MMAP
              * @param mapID
              * @param navMesh
              */
-            void buildNavMesh(int mapID, dtNavMesh*& navMesh, dtNavMeshParams*& navMeshParams);
+            void buildNavMesh(int mapID, dtNavMesh*& navMesh);
 
             /**
              * @brief move map building
@@ -233,6 +231,23 @@ namespace MMAP
              */
             bool shouldSkipTile(int mapID, int tileX, int tileY);
 
+            /**
+             * @brief Per-thread worker body for parallel buildMap path. Pops
+             * TileTasks off the shared queue until empty, building each tile
+             * into a private navmesh cloned from the map navmesh's params.
+             */
+            void workerLoop(dtNavMesh* navMesh);
+
+            /**
+             * @brief A single tile-build unit handed to a worker.
+             */
+            struct TileTask
+            {
+                int mapID;
+                int tileX;
+                int tileY;
+            };
+
             TerrainBuilder* m_terrainBuilder; /**< TODO */
             TileList m_tiles; /**< TODO */
 
@@ -247,11 +262,10 @@ namespace MMAP
             bool m_bigBaseUnit; /**< TODO */
             char const* m_magic;
 
-            int             m_numThreads;
-            TileThreadPool* m_threadPool;
-            bool            m_poolActivated;
-
-            rcContext* m_rcContext; /**< build performance - not really used for now */
+            unsigned int m_threads;        ///< worker count for parallel buildMap; 1 == serial
+            std::mutex m_queueMutex;       ///< guards m_taskQueue
+            std::queue<TileTask> m_taskQueue;
+            std::mutex m_debugOutputMutex; ///< serializes --debugOutput writes to the shared per-map marker file
     };
 }
 
