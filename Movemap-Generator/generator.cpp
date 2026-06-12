@@ -420,7 +420,7 @@ int main(int argc, char** argv)
     }
 
     MapBuilder builder(map_magic, maxAngle, skipLiquid, skipContinents, skipJunkMaps,
-        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath);
+        skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath, num_threads);
 
     ACE_Time_Value elapsed;
     ACE_High_Res_Timer timer;
@@ -432,22 +432,9 @@ int main(int argc, char** argv)
     }
     else
     {
-        if (num_threads && builder.activate(num_threads)== -1)
-        {
-            if (!silent)
-            {
-                printf(" Thread initialization was not ok. The build is single threaded\n");
-            }
-        }
-
-        if (builder.activated())
-        {
-            printf(" Using %d thread(s) for building\n", num_threads);
-        }
-
         if (mapnum >= 0)
         {
-            builder.buildMap(uint32(mapnum), true);
+            builder.buildMap(mapnum);
         }
         else
         {
