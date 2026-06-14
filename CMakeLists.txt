@@ -157,9 +157,6 @@ add_executable(mmap-extractor
     Movemap-Generator/MMapCommon.h
     Movemap-Generator/TerrainBuilder.cpp
     Movemap-Generator/TerrainBuilder.h
-    Movemap-Generator/TileMsgBlock.h
-    Movemap-Generator/TileThreadPool.cpp
-    Movemap-Generator/TileThreadPool.h
     Movemap-Generator/VMapExtensions.cpp
     shared/ExtractorCommon.cpp
     shared/ExtractorCommon.h
