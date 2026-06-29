@@ -26,6 +26,10 @@ set(SHARED_SRCS
     shared/ExtractorCommon.h
 )
 
+# loadlib: mangos's own ADT/WDT/MPQ client-format reader. Lives here (not in
+# the third-party mangosDeps repo) so dep/ stays purely third-party libraries.
+add_subdirectory(loadlib)
+
 #=======================================================#
 #map-extractor
 #=======================================================#
