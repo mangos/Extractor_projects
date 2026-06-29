@@ -544,6 +544,7 @@ bool ConvertADT(char* filename, char* filename2, uint32 build)
 
     if (!adt.loadFile(filename))
     {
+        printf("Error: Failed to load ADT file: %s\n", filename);
         return false;
     }
 
@@ -1221,6 +1222,9 @@ void ExtractMapsFromMpq(uint32 build)
     path += "/maps/";
     CreateDir(path);
 
+    uint32 success_count = 0;
+    uint32 failed_count = 0;
+
     printf("\n Converting map files\n");
     for (uint32 z = 0; z < map_count; ++z)
     {
@@ -1231,25 +1235,69 @@ void ExtractMapsFromMpq(uint32 build)
         if (!wdt.loadFile(mpq_map_name, false))
         {
             printf("Warning: Failed loading map %s.wdt (This message can be safely ignored)\n", map_ids[z].name);
+            ++failed_count;
             continue;
         }
+
+        if (!wdt.main)
+        {
+            printf("Error: WDT main chunk is NULL for map: %s\n", map_ids[z].name);
+            ++failed_count;
+            continue;
+        }
+
+        uint32 adt_count = 0;
+        uint32 adt_exist_in_wdt = 0;
+        for (uint32 y = 0; y < WDT_MAP_SIZE; ++y)
+        {
+            for (uint32 x = 0; x < WDT_MAP_SIZE; ++x)
+            {
+                // Check bit 0 only: some WDT versions use the full uint32
+                if (wdt.main->adt_list[y][x].exist & 0x1)
+                {
+                    ++adt_exist_in_wdt;
+                }
+            }
+        }
+        printf("  WDT indicates %u ADT files exist for this map\n", adt_exist_in_wdt);
 
         for (uint32 y = 0; y < WDT_MAP_SIZE; ++y)
         {
             for (uint32 x = 0; x < WDT_MAP_SIZE; ++x)
             {
-                if (!wdt.main->adt_list[y][x].exist)
+                // Check bit 0 only: this is the ADT existence flag
+                if (!(wdt.main->adt_list[y][x].exist & 0x1))
                 {
                     continue;
                 }
+                ++adt_count;
                 sprintf(mpq_filename, "World\\Maps\\%s\\%s_%u_%u.adt", map_ids[z].name, map_ids[z].name, x, y);
                 sprintf(output_filename, "%s/maps/%04u%02u%02u.map", output_path, map_ids[z].id, y, x);
-                ConvertADT(mpq_filename, output_filename, build);// , y, x);
+                if (ConvertADT(mpq_filename, output_filename, build))
+                {
+                    ++success_count;
+                }
+                else
+                {
+                    ++failed_count;
+                }
             }
             // draw progress bar
             printf(" Processing........................%d%%\r", (100 * (y + 1)) / WDT_MAP_SIZE);
         }
+
+        if (adt_count > 0)
+        {
+            printf("\n  Found %u ADT files for map %s\n", adt_count, map_ids[z].name);
+        }
+        else
+        {
+            printf("\n  WARNING: No ADT files found for map %s (map ID: %u)\n", map_ids[z].name, map_ids[z].id);
+        }
     }
+    printf("\n\nMap extraction complete!\n");
+    printf("Successfully converted: %u tiles\n", success_count);
+    printf("Failed to convert: %u tiles\n", failed_count);
     delete [] areas;
     delete [] map_ids;
 }
