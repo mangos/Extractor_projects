@@ -35,12 +35,16 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
 {
     HANDLE adtHandle;
 
+    // The archive open + read race the shared StormLib file position, so hold
+    // the MPQ lock around them; the in-memory parse that follows is unlocked.
+    std::unique_lock<std::mutex> mpqLock(g_mpqReadMutex);
     if (!OpenNewestFile(AdtFilename.c_str(), &adtHandle))
     {
         printf("Error initializing ADT %s\n", AdtFilename.c_str());
     }
 
     MPQFile ADT(adtHandle, AdtFilename.c_str());
+    mpqLock.unlock();
 
     if (ADT.isEof())
     {
@@ -63,7 +67,13 @@ bool ADTFile::init(uint32 map_num, uint32 tileX, uint32 tileY, StringSet& failed
 
     std::string AdtMapNumber = xMap + ' ' + yMap + ' ' + GetUniformName(filename);
 
-    std::string dirname = std::string(szWorkDirWmo) + "/dir_bin";
+    // Write this tile's placement records to a per-tile temp file rather than
+    // the shared dir_bin. A placement is several fwrites, so concurrent tiles
+    // sharing one handle would interleave (corrupt) records. ParseMapFiles
+    // concatenates these temps into dir_bin in tile order afterwards.
+    char tileSuffix[32];
+    sprintf(tileSuffix, "/dir_bin.%u_%u", tileX, tileY);
+    std::string dirname = std::string(szWorkDirWmo) + tileSuffix;
     FILE* dirfile;
     dirfile = fopen(dirname.c_str(), "ab");
     if (!dirfile)

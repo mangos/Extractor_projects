@@ -28,6 +28,11 @@
 #include <list>
 #include <algorithm>
 #include <errno.h>
+#include <atomic>
+#include <mutex>
+#include <queue>
+#include <thread>
+#include <utility>
 
 #if defined WIN32
 #include <Windows.h>
@@ -145,6 +150,14 @@ static const char* kWOTLKMPQList[] =
 //static const char * szWorkDirMaps = ".\\Maps";
 char const szWorkDirWmo[]   = "./Buildings";
 char       szRawVMAPMagic[] = "VMAP000";
+
+uint32 CONF_threads = 0;            ///< Worker threads for tile extraction; 0 = auto-detect cores, 1 = serial.
+
+// Serializes MPQ archive reads. StormLib mutates a shared per-archive file
+// position with no internal lock, so concurrent reads from one handle race
+// (unsafe on Linux). Held around each OpenNewestFile + MPQFile read; the
+// parsing and geometry conversion that follow run in parallel.
+std::mutex g_mpqReadMutex;
 
 // Local testing functions
 
@@ -281,22 +294,102 @@ void ParseMapFiles(int iCoreNumber)
         WDTFile WDT(handleWDT, fn, map_ids[i].name);
         if (WDT.init(id, map_ids[i].id))
         {
-            printf(" Processing Map %u (%s)\n[", map_ids[i].id, map_ids[i].name);
+            printf(" Processing Map %u (%s)\n", map_ids[i].id, map_ids[i].name);
+
+            // Queue every tile slot; GetMap() returns NULL for absent ones.
+            std::queue<std::pair<int, int> > tileQueue;
             for (int x = 0; x < 64; ++x)
             {
                 for (int y = 0; y < 64; ++y)
                 {
+                    tileQueue.push(std::make_pair(x, y));
+                }
+            }
+
+            uint32 nThreads = CONF_threads ? CONF_threads : std::thread::hardware_concurrency();
+            if (nThreads < 1)
+            {
+                nThreads = 1;
+            }
+
+            uint32 mapId = map_ids[i].id;
+            std::mutex queueMutex;
+            std::mutex failedMutex;
+            auto worker = [&]()
+            {
+                StringSet localFailed;
+                while (true)
+                {
+                    int x, y;
+                    {
+                        std::lock_guard<std::mutex> lock(queueMutex);
+                        if (tileQueue.empty())
+                        {
+                            break;
+                        }
+                        x = tileQueue.front().first;
+                        y = tileQueue.front().second;
+                        tileQueue.pop();
+                    }
                     if (ADTFile* ADT = WDT.GetMap(x, y))
                     {
-                        //sprintf(id_filename,"%02u %02u %04u",x,y,map_ids[i].id);//!!!!!!!!!
-                        ADT->init(map_ids[i].id, x, y, failedPaths, iCoreNumber, szRawVMAPMagic);
+                        ADT->init(mapId, x, y, localFailed, iCoreNumber, szRawVMAPMagic);
                         delete ADT;
                     }
                 }
-                printf("#");
-                fflush(stdout);
+                std::lock_guard<std::mutex> lock(failedMutex);
+                failedPaths.insert(localFailed.begin(), localFailed.end());
+            };
+
+            if (nThreads <= 1)
+            {
+                // Serial path: one worker on this thread.
+                worker();
             }
-            printf("]\n");
+            else
+            {
+                std::vector<std::thread> workers;
+                workers.reserve(nThreads);
+                for (uint32 t = 0; t < nThreads; ++t)
+                {
+                    workers.emplace_back(worker);
+                }
+                for (std::thread& w : workers)
+                {
+                    w.join();
+                }
+            }
+
+            // Concatenate the per-tile temp files into dir_bin in tile order,
+            // so dir_bin is assembled in the same order no matter which worker
+            // wrote which tile, then remove the temps.
+            std::string dirBin = std::string(szWorkDirWmo) + "/dir_bin";
+            if (FILE* out = fopen(dirBin.c_str(), "ab"))
+            {
+                char copyBuf[8192];
+                for (int x = 0; x < 64; ++x)
+                {
+                    for (int y = 0; y < 64; ++y)
+                    {
+                        char tileSuffix[32];
+                        sprintf(tileSuffix, "/dir_bin.%u_%u", (uint32)x, (uint32)y);
+                        std::string tilePath = std::string(szWorkDirWmo) + tileSuffix;
+                        FILE* in = fopen(tilePath.c_str(), "rb");
+                        if (!in)
+                        {
+                            continue;
+                        }
+                        size_t n;
+                        while ((n = fread(copyBuf, 1, sizeof(copyBuf), in)) > 0)
+                        {
+                            fwrite(copyBuf, 1, n, out);
+                        }
+                        fclose(in);
+                        remove(tilePath.c_str());
+                    }
+                }
+                fclose(out);
+            }
         }
     }
 
@@ -595,6 +688,8 @@ void Usage(char* prg)
     printf("   -i, --input <path>     search path for game client archives\n");
     printf("   -s, --small           extract smaller vmaps by optimizing data. Reduces\n");
     printf("                         size by ~ 500MB\n");
+    printf("   -t, --threads #       worker threads for tile extraction. 0 = auto-detect\n");
+    printf("                         cores (default), 1 = serial.\n");
     printf("\n");
     printf(" Example:\n");
     printf(" - use data path and create larger vmaps:\n");
@@ -628,6 +723,18 @@ bool processArgv(int argc, char** argv)
 
             result = true;
             strcpy(input_path, param);
+        }
+        else if (strcmp(argv[i], "-t") == 0 || strcmp(argv[i], "--threads") == 0 )
+        {
+            param = argv[++i];
+            if (!param)
+            {
+                result = false;
+                break;
+            }
+
+            result = true;
+            CONF_threads = atoi(param);
         }
         else
         {

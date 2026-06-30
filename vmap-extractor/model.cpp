@@ -25,6 +25,9 @@
 #include <cassert>
 #include <algorithm>
 #include <cstdio>
+#include <condition_variable>
+#include <mutex>
+#include <set>
 
 #include <mpq.h>
 #include "model.h"
@@ -33,6 +36,16 @@
 #include "vmapexport.h"
 #include <ExtractorCommon.h>
 
+// Dedup model extraction across parallel tile workers. The FileExists()-then-
+// write check is a TOCTOU race once tiles run concurrently. One worker extracts
+// a given model; the rest WAIT until its file is on disk, because the placement
+// written straight after (ModelInstance) opens that file and silently drops the
+// spawn if it is missing.
+static std::mutex s_modelExtractMutex;
+static std::condition_variable s_modelExtractCv;
+static std::set<std::string> s_modelsInProgress;
+static std::set<std::string> s_modelsDone;
+
 Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0), nIndices(0), boundingVertices(0), ok(false), headerClassicTBC(), headerOthers()
 {
 }
@@ -40,12 +53,14 @@ Model::Model(std::string& filename) : filename(filename), vertices(0), indices(0
 bool Model::open(StringSet& failedPaths, int iCoreNumber)
 {
     HANDLE mpqHandle;
+    std::unique_lock<std::mutex> mpqLock(g_mpqReadMutex);
     if (!OpenNewestFile(filename.c_str(), &mpqHandle))
     {
         printf("Error opening model file %s\n", filename.c_str());
         return false;
     }
     MPQFile f(mpqHandle, filename.c_str());
+    mpqLock.unlock();
 
     ok = !f.isEof();
 
@@ -303,18 +318,39 @@ bool ExtractSingleModel(std::string& origPath, std::string& fixedName, StringSet
     output += "/";
     output += fixedName;
 
-    if (FileExists(output.c_str()))
     {
-        return true;
+        std::unique_lock<std::mutex> lock(s_modelExtractMutex);
+        if (s_modelsDone.count(fixedName))
+        {
+            return true;
+        }
+        if (s_modelsInProgress.count(fixedName))
+        {
+            // Another worker is extracting this model; block until its file is
+            // written so the placement that follows can read it.
+            s_modelExtractCv.wait(lock, [&] { return s_modelsDone.count(fixedName) != 0; });
+            return true;
+        }
+        if (FileExists(output.c_str()))
+        {
+            s_modelsDone.insert(fixedName);
+            return true;
+        }
+        // Claim it, then extract outside the lock so distinct models convert in
+        // parallel.
+        s_modelsInProgress.insert(fixedName);
     }
 
     Model mdl(origPath);                                    // Possible changed fname
-    if (!mdl.open(failedPaths, iCoreNumber))
-    {
-        return false;
-    }
+    bool ok = mdl.open(failedPaths, iCoreNumber) && mdl.ConvertToVMAPModel(output, iCoreNumber, szRawVMAPMagic);
 
-    return mdl.ConvertToVMAPModel(output, iCoreNumber, szRawVMAPMagic);
+    {
+        std::lock_guard<std::mutex> lock(s_modelExtractMutex);
+        s_modelsInProgress.erase(fixedName);
+        s_modelsDone.insert(fixedName);
+    }
+    s_modelExtractCv.notify_all();
+    return ok;
 }
 
 void ExtractGameobjectModels(int iCoreNumber, const void *szRawVMAPMagic)
