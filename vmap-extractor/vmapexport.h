@@ -27,6 +27,7 @@
 
 #include <string>
 #include <set>
+#include <mutex>
 
 /**
  * @brief
@@ -47,6 +48,11 @@ enum ModelFlags
 
 extern char const szWorkDirWmo[]; /**< TODO */
 //extern const char* szRawVMAPMagic; /**< vmap magic string for extracted raw vmap data */
+
+/// Serializes MPQ archive reads across worker threads (StormLib's shared
+/// per-archive file position has no internal lock). Held around each
+/// OpenNewestFile + MPQFile read; defined in vmapexport.cpp.
+extern std::mutex g_mpqReadMutex;
 
 /**
  * @brief Test if the specified file exists in the building directory
