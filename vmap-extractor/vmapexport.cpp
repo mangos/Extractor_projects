@@ -75,7 +75,7 @@
 #define MPQ_BLOCK_SIZE 0x1000
 //-----------------------------------------------------------------------------
 
-bool AssembleVMAP(std::string src, std::string dest, const char* szMagic);
+bool AssembleVMAP(std::string src, std::string dest, const char* szMagic, unsigned int nThreads = 0);
 extern ArchiveSet gOpenArchives;
 
 typedef struct
@@ -871,7 +871,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    success = AssembleVMAP(std::string(szWorkDirWmo), outDir, szRawVMAPMagic);
+    success = AssembleVMAP(std::string(szWorkDirWmo), outDir, szRawVMAPMagic, CONF_threads);
 
     if (!success)
     {
