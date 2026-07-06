@@ -22,7 +22,7 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include "ace/High_Res_Timer.h"
+#include <chrono>
 #include "MMapCommon.h"
 #include "MapBuilder.h"
 #include "ExtractorCommon.h"
@@ -422,10 +422,7 @@ int main(int argc, char** argv)
     MapBuilder builder(map_magic, maxAngle, skipLiquid, skipContinents, skipJunkMaps,
         skipBattlegrounds, debugOutput, bigBaseUnit, offMeshInputPath, num_threads);
 
-    ACE_Time_Value elapsed;
-    ACE_High_Res_Timer timer;
-
-    timer.start();
+    auto startTime = std::chrono::steady_clock::now();
     if (tileX > -1 && tileY > -1 && mapnum >= 0)
     {
         builder.buildSingleTile(mapnum, tileX, tileY);
@@ -441,9 +438,9 @@ int main(int argc, char** argv)
             builder.buildAllMaps();
         }
     }
-    timer.stop();
-    timer.elapsed_time(elapsed);
-    printf(" \n Total build time: %ld seconds\n\n", elapsed.sec());
+    auto elapsedSec = std::chrono::duration_cast<std::chrono::seconds>(
+        std::chrono::steady_clock::now() - startTime).count();
+    printf(" \n Total build time: %ld seconds\n\n", (long)elapsedSec);
 
     return silent ? 1 : finish(" Movemap build is complete! Press enter to exit\n", 1);
 }

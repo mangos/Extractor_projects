@@ -35,7 +35,9 @@
 #include <errno.h>
 #include "Platform/Define.h"
 
-#ifndef WIN32
+#ifdef WIN32
+#include <windows.h>
+#else
 #include <stddef.h>
 #include <dirent.h>
 #endif
