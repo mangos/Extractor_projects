@@ -149,7 +149,7 @@ WMORoot::~WMORoot()
 }
 
 WMOGroup::WMOGroup(std::string& filename) : filename(filename),
-    MOPY(0), MOVI(0), MoviEx(0), MOVT(0), MOBA(0), MobaEx(0), LiquEx_size(0), hlq(0), LiquEx(0), LiquBytes(0), liquflags(0)
+    MOPY(0), MOVI(0), MoviEx(0), MOVT(0), MOBA(0), MobaEx(0), hlq(0), LiquEx(0), LiquBytes(0)
 {
 }
 
@@ -181,6 +181,8 @@ bool WMOGroup::open()
         }
         fourcc[4] = 0;
         size_t nextpos = f.getPos() + size;
+        LiquEx_size = 0;
+        liquflags = 0;
 
         if (!strcmp(fourcc, "MOGP")) //header
         {
