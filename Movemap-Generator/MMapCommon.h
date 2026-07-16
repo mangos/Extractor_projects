@@ -25,7 +25,7 @@
 #ifndef MANGOS_H_MMAP_COMMON
 #define MANGOS_H_MMAP_COMMON
 
-// stop warning spam from ACE includes
+// silence CRT deprecation warnings
 #ifdef WIN32
 #  pragma warning( disable : 4996 )
 #endif
@@ -35,7 +35,11 @@
 #include <errno.h>
 #include "Platform/Define.h"
 
-#ifndef WIN32
+#ifdef WIN32
+// FindFirstFile/HANDLE/WIN32_FIND_DATA below. Included explicitly rather than
+// relied upon transitively.
+#include <windows.h>
+#else
 #include <stddef.h>
 #include <dirent.h>
 #endif
