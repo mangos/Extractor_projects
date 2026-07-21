@@ -65,7 +65,7 @@
 #include "wmo.h"
 #include <mpq.h>
 #include "vmapexport.h"
-#include "Auth/md5.h"
+#include <openssl/evp.h>
 
 #include "ExtractorCommon.h"
 
@@ -173,18 +173,24 @@ bool FileExists(const char* file)
 
 void compute_md5(const char* value, char* result)
 {
-    md5_byte_t digest[16];
-    md5_state_t ctx;
+    // Hashes a path string into a stable uniform filename -- no security role.
+    // Uses OpenSSL EVP rather than the 383-line vendored MD5 that used to live
+    // in shared/Auth: the tree already links OpenSSL everywhere, so carrying a
+    // second implementation of the same digest bought nothing.
+    unsigned char digest[EVP_MAX_MD_SIZE];
+    unsigned int  length = 0;
 
-    mangos_md5_init(&ctx);
-    md5_append(&ctx, (const unsigned char*)value, strlen(value));
-    md5_finish(&ctx, digest);
+    EVP_MD_CTX* ctx = EVP_MD_CTX_new();
+    EVP_DigestInit_ex(ctx, EVP_md5(), NULL);
+    EVP_DigestUpdate(ctx, value, strlen(value));
+    EVP_DigestFinal_ex(ctx, digest, &length);
+    EVP_MD_CTX_free(ctx);
 
-    for (int i=0;i<16;i++)
+    for (unsigned int i = 0; i < length; ++i)
     {
-        sprintf(result+2*i,"%02x",digest[i]);
+        sprintf(result + 2 * i, "%02x", digest[i]);
     }
-    result[32]='\0';
+    result[2 * length] = 0;
 }
 
 std::string GetUniformName(std::string& path)

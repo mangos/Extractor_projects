@@ -49,6 +49,9 @@ target_include_directories(map-extractor
 target_link_libraries(map-extractor
     PUBLIC
     loadlib
+    # Its own sources use std::thread (System.cpp parallelises the map pass).
+    # This linked before only because ACE dragged pthread in; nothing declared it.
+    Threads::Threads
 )
 
 install(
@@ -133,6 +136,7 @@ target_link_libraries(vmap-extractor
     PUBLIC
         loadlib
         vmap2
+        Threads::Threads
 )
 
 install(
